@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+
+enum Qroma_LogLevel {
+  LogLevel_All = 0;
+  LogLevel_Info = 10;
+  LogLevel_Error = 100;
+  LogLevel_Nothing = 255;
+}
+
+enum Qroma_DebugCommMode {
+  DebugCommMode_NotSet = 0;
+  DebugCommMode_None = 1;
+  DebugCommMode_SerialOnly = 2;
+  DebugCommMode_BluetoothOnly = 3;
+  DebugCommMode_SerialAndBluetooth = 4;
+}
+
+message Qroma_LogMessage {
+  uint32 tick = 1;
+  string message = 2;
+}
