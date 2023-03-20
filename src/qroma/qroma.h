@@ -2,8 +2,15 @@
 #define QROMA_H
 
 // #include <RTOS.h>
-#include <pb.h>
-#include <functional>
+
+#include "startup/qroma_startup.h"
+#include "qroma-app/QromaAppConfig.h"
+#include "qroma-comm/commBuffer/QromaCommMemBuffer.h"
+#include "qroma-comm/processors/PbCommandProcessor.h"
+
+
+// #include "qroma-comm/qroma-comm.h"
+
 
 // #include "../bluetooth/bluetooth.h"
 // #include "../qroma-point/QromaDevice.h"
@@ -14,13 +21,7 @@
 
 // void startupQroma(QromaDeviceDefaults * deviceDefaults, QromaPointInitializer * qromaPointDefaults, ...);
 
-void startupQroma();
-
-template <typename PbMessage, const pb_msgdesc_t *PbPbMessageFields>
-void registerPbMessage(std::function<void(PbMessage*)> fn)
-{
-  
-}
+// void startupQroma();
 
 
 #endif

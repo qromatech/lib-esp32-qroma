@@ -1,7 +1,11 @@
 #ifndef PB_COMMAND_PROCESSOR_H
 #define PB_COMMAND_PROCESSOR_H
 
-#include "QromaCommBuffer.h"
+#include <pb.h>
+#include <pb_decode.h>
+#include <functional>
+// #include "../commBuffer/IQromaCommBuffer.h"
+#include "QromaBytesProcessor.h"
 
 // #include "pbSerialComm.h"
 // #include "chunkedPrintBuffer.h"
@@ -16,11 +20,28 @@
 //     CommReadingMode_FILE_FROM_COMM = 2
 // } CommReadingMode;
 
-
-class PbCommandProcessor {
+template<typename PbMessage, const pb_msgdesc_t *PbMessageFields>
+class PbCommandProcessor: public QromaBytesProcessor {
 
   public:
-    uint32_t processQromaCommBuffer(QromaCommBuffer * buffer);
+    PbCommandProcessor(std::function<void(PbMessage*)> handlerFunction) {
+      _handlerFunction = handlerFunction;
+    }
+    
+    uint32_t processBytes(const uint8_t * bytes, uint32_t byteCount) {
+      PbMessage pbMessage;
+
+      for (int i=1; i <= byteCount; i++) {
+        pb_istream_t stream = pb_istream_from_buffer(bytes, i);
+        bool decoded = pb_decode(&stream, PbMessageFields, &pbMessage);
+        if (decoded) {
+          _handlerFunction(&pbMessage);
+          return i;
+        }
+      }
+
+      return 0;
+    }
     
     // void doPbCommSetup();
 
@@ -46,6 +67,7 @@ class PbCommandProcessor {
     // void setPbBuildingMessage(bool building);
 
   private:
+    std::function<void(PbMessage*)> _handlerFunction;
     // CommReadingMode _commReadingMode;
     // void setCommReadingMode(CommReadingMode mode);
     // bool processPbCommands();

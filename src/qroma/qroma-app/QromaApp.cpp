@@ -1,16 +1,28 @@
 #include "QromaApp.h"
 
+
+QromaApp _gQromaApp = QromaApp();
+
+QromaApp * getQromaApp() {
+  return &_gQromaApp;
+}
+
+
 QromaApp::QromaApp() {
 
 }
 
-
-QromaSerial * QromaApp::initSerial() {
-  _qromaSerial.init();
-  return &_qromaSerial;
+void QromaApp::init(QromaAppConfig * config) {
+  _qromaCommSerialIo.init(&(config->serialIoConfig));
 }
 
 
-QromaSerial * QromaApp::getSerial() {
-  return &_qromaSerial;
+// QromaCommSerialIo * QromaApp::initSerialCommIo() {
+//   _qromaCommSerialIo.init();
+//   return &_qromaCommSerialIo;
+// }
+
+
+QromaCommSerialIo * QromaApp::getSerialCommIo() {
+  return &_qromaCommSerialIo;
 }

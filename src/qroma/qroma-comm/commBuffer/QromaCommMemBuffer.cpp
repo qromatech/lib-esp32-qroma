@@ -1,8 +1,8 @@
-#include "QromaCommBuffer.h"
-#include "../util/logger.h"
+#include "QromaCommMemBuffer.h"
+#include "../../util/logger.h"
 
 
-QromaCommBuffer::QromaCommBuffer(uint8_t * bufferMemory, uint32_t bufferSize) {
+QromaCommMemBuffer::QromaCommMemBuffer(uint8_t * bufferMemory, uint32_t bufferSize) {
   _bufferMemory = bufferMemory;
   _bufferSize = bufferSize;
 
@@ -11,35 +11,35 @@ QromaCommBuffer::QromaCommBuffer(uint8_t * bufferMemory, uint32_t bufferSize) {
 }
 
 
-void QromaCommBuffer::reset() {
+void QromaCommMemBuffer::reset() {
   memset(_bufferMemory, 0, _bufferSize);
   _bufferWriteIndex = 0;
 }
 
 
-int QromaCommBuffer::getBufferWriteIndex() {
+uint32_t QromaCommMemBuffer::getBufferWriteIndex() {
   return _bufferWriteIndex;
 }
 
 
-const uint8_t * QromaCommBuffer::getBufferMemory() {
+const uint8_t * QromaCommMemBuffer::getBufferContent() {
   return _bufferMemory;
 }
 
 
-void QromaCommBuffer::addByte(uint8_t incomingByte, int now) {
+void QromaCommMemBuffer::addByte(uint8_t incomingByte, int now) {
   _bufferMemory[_bufferWriteIndex] = incomingByte;
   _bufferWriteIndex++;
   _lastTimeBufferAddedTo = now;
 }
 
 
-int QromaCommBuffer::getLastTimeAddedToInMs() {
+uint32_t QromaCommMemBuffer::getLastTimeAddedToInMs() {
   return _lastTimeBufferAddedTo;
 }
 
 
-void QromaCommBuffer::removeFirstNFromBuffer(uint32_t n) {
+void QromaCommMemBuffer::removeFirstNFromBuffer(uint32_t n) {
   logInfo("removeFirstNFromBuffer");
   logInfo(_bufferWriteIndex);
   logInfo(n);

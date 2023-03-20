@@ -1,19 +1,30 @@
 #ifndef QROMA_APP_H
 #define QROMA_APP_H
 
-#include "../qroma-comm/QromaSerial.h"
+#include "QromaAppConfig.h"
+#include "../qroma-comm/io/QromaCommSerialIo.h"
+
 
 class QromaApp {
   public:
     QromaApp();
 
-    QromaSerial * initSerial();
+    void init(QromaAppConfig * config);
+
+    QromaCommSerialIo * getSerialCommIo();
+
+
+    // QromaSerial * initSerial();
     // void initLogger();
 
-    QromaSerial * getSerial();
+    // QromaSerial * getSerial();
 
   private:
-    QromaSerial _qromaSerial;
+    QromaCommSerialIo _qromaCommSerialIo;
 };
+
+
+
+QromaApp * getQromaApp();
 
 #endif

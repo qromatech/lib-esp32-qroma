@@ -1,38 +1,38 @@
-#ifndef CHUNKED_PRINT_BUFFER_H
-#define CHUNKED_PRINT_BUFFER_H
+// #ifndef CHUNKED_PRINT_BUFFER_H
+// #define CHUNKED_PRINT_BUFFER_H
 
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <CircularBuffer.h>
+// #include <stdint.h>
+// #include <stdio.h>
+// #include <string.h>
+// #include <CircularBuffer.h>
 
-#define CHUNKED_PRINT_BUFFER_SIZE 10000
+// #define CHUNKED_PRINT_BUFFER_SIZE 10000
 
 
-class ChunkedPrintBuffer {
-  public:
-    ChunkedPrintBuffer();
+// class ChunkedPrintBuffer {
+//   public:
+//     ChunkedPrintBuffer();
 
-    void _addByte(uint8_t byte);
-    void addBytes(const uint8_t * bytes, size_t length);
+//     void _addByte(uint8_t byte);
+//     void addBytes(const uint8_t * bytes, size_t length);
 
-    void addMessage(const char * msg);
+//     void addMessage(const char * msg);
     
-    void addLine(const char * msg);
-    void addLine(const char * msg, const char * value);
-    void addIntMessageLine(const char * msg, int value);
+//     void addLine(const char * msg);
+//     void addLine(const char * msg, const char * value);
+//     void addIntMessageLine(const char * msg, int value);
 
-    uint32_t size();
-    size_t readBytes(uint8_t *buffer, size_t length);
+//     uint32_t size();
+//     size_t readBytes(uint8_t *buffer, size_t length);
 
-    bool isEmpty();
-
-
-  private:
-    int _lastTimeChunkedPrintBufferAddedTo = 0;
-
-    CircularBuffer<uint8_t, CHUNKED_PRINT_BUFFER_SIZE> * _buffer;
-};
+//     bool isEmpty();
 
 
-#endif  // CHUNKED_PRINT_BUFFER_H
+//   private:
+//     int _lastTimeChunkedPrintBufferAddedTo = 0;
+
+//     CircularBuffer<uint8_t, CHUNKED_PRINT_BUFFER_SIZE> * _buffer;
+// };
+
+
+// #endif  // CHUNKED_PRINT_BUFFER_H

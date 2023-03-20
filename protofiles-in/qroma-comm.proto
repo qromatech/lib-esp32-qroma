@@ -1,32 +1,32 @@
 syntax = "proto3";
 
-import "file-system-commands.proto";
+// import "file-system-commands.proto";
 
 
 
-message ClearToSendQuery {
-  uint32 ctsRandomValue = 1;
-}
+// message ClearToSendQuery {
+//   uint32 ctsRandomValue = 1;
+// }
 
-message ClearToSendResponse {
-  uint32 ctsRandomValue = 1;
-}
+// message ClearToSendResponse {
+//   uint32 ctsRandomValue = 1;
+// }
 
-message QromaCommCommand {
-  oneof command {
-    FileSystemCommand fsCommand = 1;
-    ClearToSendQuery clearToSendQuery = 5;
-  }
-}
+// message QromaCommCommand {
+//   oneof command {
+//     FileSystemCommand fsCommand = 1;
+//     ClearToSendQuery clearToSendQuery = 5;
+//   }
+// }
 
-message QromaCommResponse {
-  oneof response {
-    FileSystemResponse fsResponse = 1;
-    ClearToSendResponse clearToSendResponse = 4;
-  }
-}
+// message QromaCommResponse {
+//   oneof response {
+//     FileSystemResponse fsResponse = 1;
+//     ClearToSendResponse clearToSendResponse = 4;
+//   }
+// }
 
 
-message QromaCommHeader {
-  int32 messageSize = 1;
-}
+// message QromaCommHeader {
+//   int32 messageSize = 1;
+// }

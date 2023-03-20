@@ -5,11 +5,18 @@
   Copyright (c) 2021  Albert Boehmler 
 */
 
+#include <Arduino.h>
 #include "qroma/qroma.h"
 
 
+QromaAppConfig qromaAppConfig = {
+
+};
+
 void setup() {
-  startupQroma();
+  startupQroma(&qromaAppConfig);
 }
 
-void loop() { }
+void loop() {
+  delay(1000);
+}

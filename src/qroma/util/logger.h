@@ -1,8 +1,13 @@
 #ifndef QROMA_LOGGER_H
 #define QROMA_LOGGER_H
 
-#include <proto-nanopb/qroma-types.pb.h>
+#include <qroma-lib-proto/qroma-types.pb.h>
 
+
+class QromaLoggerConfig {
+  public:
+    Qroma_LogLevel logLevel;
+};
 
 
 void initLogger();

@@ -9,12 +9,15 @@
 #include "../qroma-app/QromaApp.h"
 
 
-QromaApp qromaApp = QromaApp();
 
 // void startupQroma(QromaDeviceDefaults * deviceDefaults, QromaPointInitializer * qromaPointInitializers...) {
-void startupQroma() {
+void startupQroma(QromaAppConfig * appConfig) {
 
-  QromaSerial * qromaSerial = qromaApp.initSerial();
+  QromaApp * qromaApp = getQromaApp();
+  qromaApp->init(appConfig);
+  
+
+  // QromaSerial * qromaSerial = qromaApp->initSerial();
   // qromaApp.initLogger(qromaSerial);
 
   
