@@ -8,16 +8,9 @@
 class QromaApp {
   public:
     QromaApp();
-
     void init(QromaAppConfig * config);
 
     QromaCommSerialIo * getSerialCommIo();
-
-
-    // QromaSerial * initSerial();
-    // void initLogger();
-
-    // QromaSerial * getSerial();
 
   private:
     QromaCommSerialIo _qromaCommSerialIo;

@@ -20,6 +20,8 @@ void initQromaAppConfigWithDefaults(
 
   config->loggerConfig.logLevel = Qroma_LogLevel_LogLevel_Error;
 
+  qromaAppConfigFn(config);
+
   bool isValidQromaAppConfig = validateQromaAppConfig(config);
   if (!isValidQromaAppConfig) {
     handleInvalidQromaAppConfig(config);
