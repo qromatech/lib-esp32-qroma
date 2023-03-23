@@ -1,9 +1,6 @@
 #ifndef QROMA_COMM_MEM_BUFFER_H
 #define QROMA_COMM_MEM_BUFFER_H
 
-// #include <stdint.h>
-// #include <stdio.h>
-// #include <string.h>
 
 #include "IQromaCommBuffer.h"
 

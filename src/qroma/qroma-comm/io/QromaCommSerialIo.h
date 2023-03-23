@@ -16,6 +16,10 @@ class QromaCommSerialIo {
 
     void onSerialReceive();
 
+    void serialTxBytes(const uint8_t * bytes, uint32_t byteCount);
+    void serialPrint(const char * message);
+    void serialPrintln(const char * message);
+
   private:
     QromaCommMemBuffer * _qromaCommMemBuffer;
     QromaBytesProcessingPipeline _bytesProcessingPipeline;

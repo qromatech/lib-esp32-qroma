@@ -10,7 +10,6 @@ class QromaCommSerialIoConfig {
     QromaCommMemBuffer * qromaCommMemBuffer;
 
     QromaBytesProcessor** qromaBytesProcessors;
-    // QromaBytesProcessor *qromaBytesProcessors[];
     uint8_t qromaBytesProcessorsCount;
 
     unsigned long baudRate;

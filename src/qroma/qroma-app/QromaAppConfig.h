@@ -23,6 +23,13 @@ class QromaAppConfig {
 
 typedef std::function<void(QromaAppConfig * config)> QromaAppConfigFn;
 
+
+void initQromaAppConfigWithDefaults(
+  QromaAppConfig * config, 
+  QromaCommMemBuffer * serialCommMemBuffer
+);
+
+
 void initQromaAppConfigWithDefaults(
   QromaAppConfig * config, 
   QromaCommMemBuffer * serialCommMemBuffer, 
