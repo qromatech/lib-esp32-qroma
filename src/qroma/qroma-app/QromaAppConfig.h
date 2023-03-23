@@ -12,6 +12,8 @@ class QromaAppConfig {
     QromaCommSerialIoConfig serialIoConfig;
     QromaLoggerConfig loggerConfig;
 
+    bool validate();
+
   
   // buffers
   // processors
@@ -21,19 +23,9 @@ class QromaAppConfig {
 };
 
 
-typedef std::function<void(QromaAppConfig * config)> QromaAppConfigFn;
+QromaAppConfig * getQromaAppConfig();
 
-
-void initQromaAppConfigWithDefaults(
-  QromaAppConfig * config, 
-  QromaCommMemBuffer * serialCommMemBuffer
-);
-
-
-void initQromaAppConfigWithDefaults(
-  QromaAppConfig * config, 
-  QromaCommMemBuffer * serialCommMemBuffer, 
-  QromaAppConfigFn qromaAppConfigFn
-);
+void initConfigWithDefaultValues(QromaAppConfig * config);
+void handleInvalidQromaAppConfig(QromaAppConfig * config);
 
 #endif

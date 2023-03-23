@@ -15,6 +15,8 @@ QromaApp::QromaApp() {
 
 void QromaApp::init(QromaAppConfig * config) {
   _qromaCommSerialIo.init(&(config->serialIoConfig));
+  
+  setLogLevel(config->loggerConfig.logLevel);
 }
 
 

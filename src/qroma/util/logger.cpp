@@ -56,7 +56,9 @@ bool shouldBeLogged(Qroma_LogLevel logLevel) {
 
 
 void debugComm(const char * message, Qroma_DebugCommMode commMode, Qroma_LogLevel logLevel) {
-  if (commMode == Qroma_DebugCommMode_DebugCommMode_None) {
+  if (commMode == Qroma_DebugCommMode_DebugCommMode_None ||
+      !shouldBeLogged(logLevel))
+  {
     return;
   }
 

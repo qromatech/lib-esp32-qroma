@@ -8,13 +8,13 @@
 #include <Arduino.h>
 #include "qroma/qroma.h"
 
+#define COMM_BUFFER_SIZE 100
+uint8_t _commBuffer[COMM_BUFFER_SIZE];
+QromaCommMemBuffer qcMemBuffer = QromaCommMemBuffer(_commBuffer, COMM_BUFFER_SIZE);
 
-QromaAppConfig qromaAppConfig = {
-
-};
 
 void setup() {
-  startupQroma(&qromaAppConfig);
+  startupQroma(&qcMemBuffer);
 }
 
 void loop() {
