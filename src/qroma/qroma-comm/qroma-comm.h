@@ -10,6 +10,8 @@ template <typename PbMessage, const pb_msgdesc_t *PbMessageFields>
 bool sendSerialPbMessage(PbMessage* message)
 {
   uint8_t buffer[2000];
+  memset(buffer, 0, sizeof(buffer));
+  
   pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
   bool encoded = pb_encode(&stream, PbMessageFields, message);
   if (!encoded) {

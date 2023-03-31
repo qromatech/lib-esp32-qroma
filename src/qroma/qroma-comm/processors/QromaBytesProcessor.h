@@ -6,6 +6,7 @@
 class QromaBytesProcessor {
   public:
     virtual uint32_t processBytes(const uint8_t * bytes, uint32_t byteCount);
+    virtual void executeHandler();
 };
 
 #endif

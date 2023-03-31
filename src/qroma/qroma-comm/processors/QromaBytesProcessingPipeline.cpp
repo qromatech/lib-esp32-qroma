@@ -73,13 +73,6 @@ uint32_t QromaBytesProcessingPipeline::processPbCommands(const uint8_t * bytes, 
     uint32_t numBytesProcessed = thisProcessor->processBytes(bytes, byteCount);
     if (numBytesProcessed > 0) {
       return numBytesProcessed;
-      //     if (decoded) {
-//       cbRemoveFirstNFromBuffer(i);
-//       logInfo("REMOVE N FROM BUFFER");
-//       logInfo(i);
-//       logInfo(commBufferWriteIndex - i);
-//       return i;
-//     }
     }
   }
 

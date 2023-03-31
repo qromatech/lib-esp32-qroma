@@ -13,7 +13,7 @@ void QromaCommSerialIo::init(QromaCommSerialIoConfig * config) {
   Serial.onReceive([this]() {
     this->onSerialReceive();
   });
-  Serial.setRxBufferSize(100);
+  Serial.setRxBufferSize(config->rxBufferSize);
 
   Serial.begin(config->baudRate);
 }

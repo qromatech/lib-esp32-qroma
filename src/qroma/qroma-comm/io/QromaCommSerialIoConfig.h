@@ -13,6 +13,7 @@ class QromaCommSerialIoConfig {
     uint8_t qromaBytesProcessorsCount;
 
     unsigned long baudRate;
+    size_t rxBufferSize;
 };
 
 

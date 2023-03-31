@@ -55,7 +55,7 @@ void QromaCommMemBuffer::removeFirstNFromBuffer(uint32_t n) {
   for (int i=0; i < remaining; i++) {
     _bufferMemory[i] = _bufferMemory[n + i];
   }
-  memset(_bufferMemory + (_bufferWriteIndex - n), 0, _bufferSize - remaining);
+  memset(_bufferMemory + remaining, 0, _bufferSize - remaining);
   _bufferWriteIndex -= n;
 
   logInfo((const char*)_bufferMemory);

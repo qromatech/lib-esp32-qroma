@@ -1,6 +1,7 @@
 #ifndef PB_COMMAND_WITH_RESPONSE_PROCESSOR_H
 #define PB_COMMAND_WITH_RESPONSE_PROCESSOR_H
 
+#include <RTOS.h>
 #include <pb.h>
 #include <pb_decode.h>
 #include <functional>
@@ -27,18 +28,34 @@ class PbCommandWithResponseProcessor: public QromaBytesProcessor {
       for (int i=1; i <= byteCount; i++) {
         pb_istream_t stream = pb_istream_from_buffer(bytes, i);
         bool decoded = pb_decode(&stream, PbMessageFields, &pbMessage);
+
         if (decoded) {
-          PbResponse pbResponse;
-          _handlerFunction(&pbMessage, &pbResponse);
-          sendSerialPbMessage<PbResponse, PbResponseFields>(&pbResponse);
+          memcpy(&_pbMessage, &pbMessage, sizeof(PbMessage));
+
+          BaseType_t xTaskStatus = xTaskCreate(taskHandlePbCommandProcessorCommand,
+            "taskHandlePbCommandProcessorCommand", 20000, (void*)(QromaBytesProcessor*)this, 1, NULL);
+
+          if (xTaskStatus != pdPASS) {
+            logError("ERROR CREATING TASK: taskHandlePbCommandProcessorCommand");
+            logError(xTaskStatus);
+          }
+
           return i;
         }
       }
 
       return 0;
     }
+
+    void executeHandler() {
+      PbResponse pbResponse;
+      _handlerFunction(&_pbMessage, &pbResponse);
+      sendSerialPbMessage<PbResponse, PbResponseFields>(&pbResponse);
+    }
     
   private:
+    PbMessage _pbMessage;
+
     std::function<void(PbMessage*, PbResponse*)> _handlerFunction;
 };
 

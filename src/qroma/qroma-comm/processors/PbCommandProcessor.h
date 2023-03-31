@@ -1,10 +1,11 @@
 #ifndef PB_COMMAND_PROCESSOR_H
 #define PB_COMMAND_PROCESSOR_H
 
+#include <RTOS.h>
 #include <pb.h>
 #include <pb_decode.h>
 #include <functional>
-#include "QromaBytesProcessor.h"
+#include "commandTaskHandlers.h"
 
 // #include "pbSerialComm.h"
 // #include "chunkedPrintBuffer.h"
@@ -33,13 +34,27 @@ class PbCommandProcessor: public QromaBytesProcessor {
       for (int i=1; i <= byteCount; i++) {
         pb_istream_t stream = pb_istream_from_buffer(bytes, i);
         bool decoded = pb_decode(&stream, PbMessageFields, &pbMessage);
+
         if (decoded) {
-          _handlerFunction(&pbMessage);
+          memcpy(&_pbMessage, &pbMessage, sizeof(PbMessage));
+
+          BaseType_t xTaskStatus = xTaskCreate(taskHandlePbCommandProcessorCommand,
+            "taskHandlePbCommandProcessorCommand", 12000, (void*)(QromaBytesProcessor*)this, 1, NULL);
+
+          if (xTaskStatus != pdPASS) {
+            logError("ERROR CREATING TASK: taskHandlePbCommandProcessorCommand");
+            logError(xTaskStatus);
+          }
+
           return i;
         }
       }
 
       return 0;
+    }
+
+    void executeHandler() {
+      _handlerFunction(&_pbMessage);
     }
     
     // void doPbCommSetup();
@@ -66,6 +81,8 @@ class PbCommandProcessor: public QromaBytesProcessor {
     // void setPbBuildingMessage(bool building);
 
   private:
+    PbMessage _pbMessage;
+
     std::function<void(PbMessage*)> _handlerFunction;
     // CommReadingMode _commReadingMode;
     // void setCommReadingMode(CommReadingMode mode);
