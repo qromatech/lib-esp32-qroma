@@ -1,15 +1,15 @@
-#ifndef QROMA_NEW_DATA_PROCESSOR_H
-#define QROMA_NEW_DATA_PROCESSOR_H
+// #ifndef QROMA_NEW_DATA_PROCESSOR_H
+// #define QROMA_NEW_DATA_PROCESSOR_H
 
-#include <pb.h>
+// #include <pb.h>
 
-class QromaNewDataProcessor {
-  public:
-    virtual void init();
-    virtual void uninit();
+// class QromaNewDataProcessor {
+//   public:
+//     virtual void init();
+//     virtual void uninit();
     
-    virtual uint32_t processNewData(const uint8_t * bytes, uint32_t byteCount);
-    // virtual void executeHandler();
-};
+//     virtual uint32_t processNewData(const uint8_t * bytes, uint32_t byteCount);
+//     // virtual void executeHandler();
+// };
 
-#endif
+// #endif

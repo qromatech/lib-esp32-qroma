@@ -6,7 +6,7 @@
 #include "QromaNewDataProcessor.h"
 #include <functional>
 
-class QromaNewDataPbProcessor: public QromaNewDataProcessor {
+class QromaNewDataPbProcessor {
   public:
     // virtual void init();
     // virtual void uninit();
