@@ -28,15 +28,14 @@ void _doSerialCommandProcessingTask(void *pvParameters) {
 
 void QromaCommSerialPbRxBase::initPbRxBase(
   QromaCommMemBuffer * qromaCommMemBuffer, 
-  QromaNewDataPbProcessor * defaultQromaNewDataProcessor, 
+  QromaNewDataPbProcessor * qromaNewDataProcessor, 
   PbCommandsRegistry * pbCommandsRegistry,
   std::function<void(uint8_t*, uint32_t)> responseFn
 ) {
   _commSilenceDelayToClearBuffer = 3000;
   
   _qromaCommMemBuffer = qromaCommMemBuffer;
-  _defaultQromaNewDataProcessor = defaultQromaNewDataProcessor;
-  _activeQromaNewDataProcessor = defaultQromaNewDataProcessor;
+  _activeQromaNewDataProcessor = qromaNewDataProcessor;
 
   _pbCommandsRegistry = pbCommandsRegistry;
 
@@ -71,7 +70,6 @@ bool QromaCommSerialPbRxBase::processCommBuffer() {
   int bufferExpirationTime = _qromaCommMemBuffer->getLastTimeAddedToInMs() + _commSilenceDelayToClearBuffer;
   if (now > bufferExpirationTime) {
     logInfo("processCommBuffer EXPIRED");
-    _activeQromaNewDataProcessor = _defaultQromaNewDataProcessor;
     _qromaCommMemBuffer->reset();
     return false;
   }

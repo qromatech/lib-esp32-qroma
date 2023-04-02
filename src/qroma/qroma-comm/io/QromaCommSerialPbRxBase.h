@@ -10,7 +10,7 @@ class QromaCommSerialPbRxBase {
   public:
     void initPbRxBase(
       QromaCommMemBuffer * qromaCommMemBuffer, 
-      QromaNewDataPbProcessor * defaultQromaNewDataProcessor, 
+      QromaNewDataPbProcessor * qromaNewDataProcessor, 
       PbCommandsRegistry * pbCommandsRegistry,
       std::function<void(uint8_t*, uint32_t)> responseFn
     );
@@ -19,13 +19,10 @@ class QromaCommSerialPbRxBase {
 
     bool processCommBuffer();
 
-    // std::function<void(uint8_t*, uint32_t)> _responseFn;
-
   private:
     uint32_t _commSilenceDelayToClearBuffer;
     
     QromaCommMemBuffer * _qromaCommMemBuffer;
-    QromaNewDataPbProcessor * _defaultQromaNewDataProcessor;
     QromaNewDataPbProcessor * _activeQromaNewDataProcessor;
 
     PbCommandsRegistry * _pbCommandsRegistry;
