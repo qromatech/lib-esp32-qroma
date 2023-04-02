@@ -5,7 +5,8 @@
 #include <pb.h>
 #include <pb_decode.h>
 #include <functional>
-#include "commandTaskHandlers.h"
+#include "IPbCommandHandler.h"
+// #include "commandTaskHandlers.h"
 
 // #include "pbSerialComm.h"
 // #include "chunkedPrintBuffer.h"
@@ -21,14 +22,43 @@
 // } CommReadingMode;
 
 template<typename PbMessage, const pb_msgdesc_t *PbMessageFields>
-class PbCommandProcessor: public QromaBytesProcessor {
+class PbCommandHandler: public IPbCommandHandler {
 
   public:
-    PbCommandProcessor(std::function<void(PbMessage*)> handlerFunction) {
+    PbCommandHandler(std::function<void(PbMessage*)> handlerFunction) {
       _handlerFunction = handlerFunction;
     }
     
-    uint32_t processBytes(const uint8_t * bytes, uint32_t byteCount) {
+    // uint32_t processBytes(const uint8_t * bytes, uint32_t byteCount) {
+    //   PbMessage pbMessage;
+
+    //   for (int i=1; i <= byteCount; i++) {
+    //     pb_istream_t stream = pb_istream_from_buffer(bytes, i);
+    //     bool decoded = pb_decode(&stream, PbMessageFields, &pbMessage);
+
+    //     if (decoded) {
+    //       memcpy(&_pbMessage, &pbMessage, sizeof(PbMessage));
+
+    //       BaseType_t xTaskStatus = xTaskCreate(taskHandlePbCommandProcessorCommand,
+    //         "taskHandlePbCommandProcessorCommand", 12000, (void*)(QromaBytesProcessor*)this, 1, NULL);
+
+    //       if (xTaskStatus != pdPASS) {
+    //         logError("ERROR CREATING TASK: taskHandlePbCommandProcessorCommand");
+    //         logError(xTaskStatus);
+    //       }
+
+    //       logInfo("PROCESSED");
+    //       logInfo(i);
+
+    //       return i;
+    //     }
+    //   }
+
+    //   return 0;
+    // }
+
+    
+    uint32_t handleBytes(const uint8_t * bytes, uint32_t byteCount, std::function<void(uint8_t*, uint32_t)> responseFn) {
       PbMessage pbMessage;
 
       for (int i=1; i <= byteCount; i++) {
@@ -36,15 +66,19 @@ class PbCommandProcessor: public QromaBytesProcessor {
         bool decoded = pb_decode(&stream, PbMessageFields, &pbMessage);
 
         if (decoded) {
-          memcpy(&_pbMessage, &pbMessage, sizeof(PbMessage));
+          // memcpy(&_pbMessage, &pbMessage, sizeof(PbMessage));
+          _handlerFunction(&pbMessage);
 
-          BaseType_t xTaskStatus = xTaskCreate(taskHandlePbCommandProcessorCommand,
-            "taskHandlePbCommandProcessorCommand", 12000, (void*)(QromaBytesProcessor*)this, 1, NULL);
+          // BaseType_t xTaskStatus = xTaskCreate(taskHandlePbCommandProcessorCommand,
+          //   "taskHandlePbCommandProcessorCommand", 12000, (void*)(QromaBytesProcessor*)this, 1, NULL);
 
-          if (xTaskStatus != pdPASS) {
-            logError("ERROR CREATING TASK: taskHandlePbCommandProcessorCommand");
-            logError(xTaskStatus);
-          }
+          // if (xTaskStatus != pdPASS) {
+          //   logError("ERROR CREATING TASK: taskHandlePbCommandProcessorCommand");
+          //   logError(xTaskStatus);
+          // }
+
+          logInfo("PROCESSED");
+          logInfo(i);
 
           return i;
         }
@@ -53,9 +87,9 @@ class PbCommandProcessor: public QromaBytesProcessor {
       return 0;
     }
 
-    void executeHandler() {
-      _handlerFunction(&_pbMessage);
-    }
+    // void executeHandler() {
+    //   _handlerFunction(&_pbMessage);
+    // }
     
     // void doPbCommSetup();
 
@@ -81,7 +115,7 @@ class PbCommandProcessor: public QromaBytesProcessor {
     // void setPbBuildingMessage(bool building);
 
   private:
-    PbMessage _pbMessage;
+    // PbMessage _pbMessage;
 
     std::function<void(PbMessage*)> _handlerFunction;
     // CommReadingMode _commReadingMode;

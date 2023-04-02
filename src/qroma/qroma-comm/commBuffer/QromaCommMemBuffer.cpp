@@ -28,6 +28,7 @@ const uint8_t * QromaCommMemBuffer::getBufferContent() {
 
 
 void QromaCommMemBuffer::addByte(uint8_t incomingByte, int now) {
+  logInfo("ADDING BYTE");
   _bufferMemory[_bufferWriteIndex] = incomingByte;
   _bufferWriteIndex++;
   _lastTimeBufferAddedTo = now;

@@ -1,13 +1,13 @@
-#include "QromaAppConfig.h"
+// #include "QromaAppConfig.h"
 
-QromaAppConfig _gQromaAppConfig = QromaAppConfig();
-
-
-QromaAppConfig * getQromaAppConfig() {
-  return &_gQromaAppConfig;
-}
+// QromaAppConfig _gQromaAppConfig;
 
 
-bool QromaAppConfig::validate() {
-  return true;
-}
+// QromaAppConfig * getQromaAppConfig() {
+//   return &_gQromaAppConfig;
+// }
+
+
+// // bool QromaAppConfig::validate() {
+// //   return true;
+// // }

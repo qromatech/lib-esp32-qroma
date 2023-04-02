@@ -4,15 +4,19 @@
 #include <functional>
 
 #include "../qroma-comm/io/QromaCommSerialIoConfig.h"
+#include "../qroma-comm/pb-commands/PbCommandsRegistry.h"
 #include "../util/logger.h"
 
 
 class QromaAppConfig {
   public:
-    QromaCommSerialIoConfig serialIoConfig;
     QromaLoggerConfig loggerConfig;
 
-    bool validate();
+    // PbCommandsRegistry pbCommandsRegistry;
+
+    // QromaCommSerialIoConfig serialIoConfig;
+
+    // bool validate();
 
   
   // buffers
@@ -23,9 +27,9 @@ class QromaAppConfig {
 };
 
 
-QromaAppConfig * getQromaAppConfig();
+// QromaAppConfig * getQromaAppConfig();
 
-void initConfigWithDefaultValues(QromaAppConfig * config);
-void handleInvalidQromaAppConfig(QromaAppConfig * config);
+// void initConfigWithDefaultValues(QromaAppConfig * config);
+// void handleInvalidQromaAppConfig(QromaAppConfig * config);
 
 #endif
