@@ -6,7 +6,7 @@
 #include <string.h>
 
 
-class IQromaCommBuffer {
+class IQromaCommReadBuffer {
 
   public:
     // QromaCommBuffer(uint8_t * bufferMemory, uint32_t bufferSize);

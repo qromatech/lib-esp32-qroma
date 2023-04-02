@@ -57,8 +57,3 @@ uint32_t QromaBase64NewLineDelimitedPbProcessor::processBytes(const uint8_t * by
 
   return 0;
 }
-
-
-// void QromaBase64NewLineDelimitedPbProcessor::base64EncodeAndTx() {
-
-// }

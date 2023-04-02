@@ -1,9 +1,7 @@
 #ifndef QROMA_COMM_SERIAL_IO_CONFIG_H
 #define QROMA_COMM_SERIAL_IO_CONFIG_H
 
-#include "../commBuffer/QromaCommMemBuffer.h"
-#include "../pipeline/processors/QromaNewDataProcessor.h"
-
+#include <pb.h>
 
 class QromaCommSerialIoConfig {
   public:

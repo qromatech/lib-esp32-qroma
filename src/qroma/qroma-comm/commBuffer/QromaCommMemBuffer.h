@@ -2,10 +2,10 @@
 #define QROMA_COMM_MEM_BUFFER_H
 
 
-#include "IQromaCommBuffer.h"
+#include "IQromaCommReadBuffer.h"
 
 
-class QromaCommMemBuffer: public IQromaCommBuffer {
+class QromaCommMemBuffer: public IQromaCommReadBuffer {
 
   public:
     QromaCommMemBuffer(uint8_t * bufferMemory, uint32_t bufferSize);
@@ -29,4 +29,4 @@ class QromaCommMemBuffer: public IQromaCommBuffer {
 
 
 
-#endif  // QROMA_COMM_BUFFER_H
+#endif

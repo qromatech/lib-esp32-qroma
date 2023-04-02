@@ -4,7 +4,6 @@
 #include <pb.h>
 #include <functional>
 
-#include "../../qroma-app/QromaAppConfig.h"
 #include "../../qroma-comm/pb-commands/PbCommandHandler.h"
 #include "../../qroma-comm/pb-commands/PbCommandWithResponseHandler.h"
 
@@ -18,9 +17,8 @@ void registerPbCommandFunction(std::function<void(PbMessage*)> handlerFunction, 
     new PbCommandHandler<PbMessage, PbMessageFields>(handlerFunction);
 
   pbCommandsRegistry->addPbCommandProcessor(pbCommandHandler);
-  
-  // QromaAppConfig * appConfig = getQromaAppConfig();
 }
+
 
 template<
   typename PbMessage, 
@@ -34,14 +32,6 @@ void registerPbCommandFunction(std::function<void(PbMessage*, PbResponse*)> hand
     new PbCommandWithResponseHandler<PbMessage, PbMessageFields, PbResponse, PbResponseFields>(handlerFunction);
 
   pbCommandsRegistry->addPbCommandProcessor(pbCommandHandler);
-
-  // QromaAppConfig * appConfig = getQromaAppConfig();
-
-  
-
-  // config->serialIoConfig.qromaBytesProcessors = qromaBytesProcessors;
-  // config->serialIoConfig.qromaBytesProcessorsCount = sizeof(qromaBytesProcessors) / sizeof(QromaBytesProcessor*);
-
 }
 
 #endif
