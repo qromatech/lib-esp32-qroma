@@ -24,4 +24,14 @@ bool sendSerialPbMessage(PbMessage* message, std::function<void(uint8_t*, uint32
   return true;
 }
 
+
+template <typename PbMessage, const pb_msgdesc_t *PbMessageFields>
+bool sendSerialPbMessage(PbMessage* message, QromaSerialCommApp * app)
+{
+  return sendSerialPbMessage<PbMessage, PbMessageFields>(message, 
+    [app](const uint8_t * bytes, uint32_t byteCount) {
+      app->getSerialTx()->serialTxBytes(bytes, byteCount);
+    });
+}
+
 #endif

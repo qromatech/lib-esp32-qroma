@@ -3,6 +3,7 @@
 
 #include "QromaApp.h"
 #include "../qroma-comm/io/QromaCommSerialIo.h"
+#include "../qroma-comm/io/IQromaCommSerialTx.h"
 #include "../qroma-comm/pipeline/processors/QromaBase64NewLineDelimitedPbProcessor.h"
 
 
@@ -21,6 +22,8 @@ class QromaSerialCommAppBase: public QromaApp,
     }
     
     QromaCommSerialIoConfig * getSerialIoConfigRef() { return &_serialIoConfig; }
+    
+    IQromaCommSerialTx * getSerialTx() { return &_qromaCommSerialIo; }
 
   private:
     // QromaCommSerialIo<1000, QromaBase64BracketBoundedPbProcessor, &Serial> _qromaCommSerialIo;

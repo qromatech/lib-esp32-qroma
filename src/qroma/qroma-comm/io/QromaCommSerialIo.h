@@ -5,6 +5,7 @@
 #include "QromaCommSerialIoConfig.h"
 #include "QromaCommSerialPbRxBase.h"
 #include "../commBuffer/TQromaCommMemBuffer.h"
+#include "IQromaCommSerialTx.h"
 
 
 
@@ -13,7 +14,9 @@ template<
   typename DefaultNewDataProcessor, 
   HardwareSerial * _serial
 >
-class QromaCommSerialIo: public QromaCommSerialPbRxBase {
+class QromaCommSerialIo: public QromaCommSerialPbRxBase,
+                         public IQromaCommSerialTx
+{
   public:
 
     void init(QromaCommSerialIoConfig * config, PbCommandsRegistry * pbCommandsRegistry) {
