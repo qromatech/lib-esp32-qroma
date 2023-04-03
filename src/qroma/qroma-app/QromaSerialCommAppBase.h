@@ -2,9 +2,9 @@
 #define QROMA_SERIAL_COMM_APP_BASE_H
 
 #include "QromaApp.h"
+#include "IQromaSerialCommApp.h"
 #include "../qroma-comm/io/QromaCommSerialIo.h"
 #include "../qroma-comm/io/IQromaCommSerialTx.h"
-#include "../qroma-comm/pipeline/processors/QromaBase64NewLineDelimitedPbProcessor.h"
 
 
 template<
@@ -12,7 +12,8 @@ template<
   typename DefaultNewDataProcessor, 
   HardwareSerial * _serial
 >
-class QromaSerialCommAppBase: public QromaApp, 
+class QromaSerialCommAppBase: public QromaApp,
+                              public IQromaSerialCommApp,
                               public PbCommandsRegistry 
 {
   public:
@@ -27,7 +28,7 @@ class QromaSerialCommAppBase: public QromaApp,
 
   private:
     // QromaCommSerialIo<1000, QromaBase64BracketBoundedPbProcessor, &Serial> _qromaCommSerialIo;
-    QromaCommSerialIo<1000, QromaBase64NewLineDelimitedPbProcessor, &Serial> _qromaCommSerialIo;
+    QromaCommSerialIo<bufferSize, DefaultNewDataProcessor, _serial> _qromaCommSerialIo;
 
     QromaCommSerialIoConfig _serialIoConfig = {
       .baudRate = 115200,

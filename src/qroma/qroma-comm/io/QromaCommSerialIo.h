@@ -32,9 +32,15 @@ class QromaCommSerialIo: public QromaCommSerialPbRxBase,
     }
 
     void serialTxBytes(const uint8_t * bytes, uint32_t byteCount) { 
-      logInfo("QromaCommSerialIo - serialTxBytes");
-      logInfo(byteCount);
       _serial->write(bytes, byteCount); 
+    }
+
+    void print(const char * message) { 
+      _serial->print(message); 
+    }
+
+    void println(const char * message) { 
+      _serial->println(message); 
     }
 
     HardwareSerial * getSerial() { return _serial; };

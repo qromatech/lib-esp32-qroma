@@ -1,17 +1,14 @@
-#include "QromaBase64NewLineDelimitedPbProcessor.h"
-#include "../../pb-commands/IPbCommandHandler.h"
-#include "../../../util/logger.h"
-#include "../../../util/qbase64.h"
+#include "QromaPb64NewLineDelimitedProcessor.h"
+#include "../pb-commands/IPbCommandHandler.h"
+#include "../../util/logger.h"
+#include "../../util/qbase64.h"
 
 
-void QromaBase64NewLineDelimitedPbProcessor::reset() { }
+void QromaPb64NewLineDelimitedProcessor::reset() { }
 
 
-uint32_t QromaBase64NewLineDelimitedPbProcessor::processBytes(const uint8_t * bytes, uint32_t byteCount, PbCommandsRegistry * pbCommandsRegistry, std::function<void(uint8_t*, uint32_t)> txFn) {
+uint32_t QromaPb64NewLineDelimitedProcessor::processBytes(const uint8_t * bytes, uint32_t byteCount, PbCommandsRegistry * pbCommandsRegistry, std::function<void(uint8_t*, uint32_t)> txFn) {
   
-  
-  // logInfo("QromaBase64NewLineDelimitedPbProcessor - PROCESSING PB COMMANDS - NO BASE 64");
-
   bool scanComplete = false;
   bool newLineFound = false;
   uint32_t newLineIndex = 0;

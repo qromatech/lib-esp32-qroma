@@ -2,7 +2,7 @@
 #define QROMA_COMM_SERIAL_PB_RX_BASE_H
 
 #include "../commBuffer/QromaCommMemBuffer.h"
-#include "../pipeline/processors/QromaNewDataPbProcessor.h"
+#include "../processors/IQromaNewDataPbProcessor.h"
 
 
 class QromaCommSerialPbRxBase {
@@ -10,7 +10,7 @@ class QromaCommSerialPbRxBase {
   public:
     void initPbRxBase(
       QromaCommMemBuffer * qromaCommMemBuffer, 
-      QromaNewDataPbProcessor * qromaNewDataProcessor, 
+      IQromaNewDataPbProcessor * qromaNewDataProcessor, 
       PbCommandsRegistry * pbCommandsRegistry,
       std::function<void(uint8_t*, uint32_t)> responseFn
     );
@@ -23,7 +23,7 @@ class QromaCommSerialPbRxBase {
     uint32_t _commSilenceDelayToClearBuffer;
     
     QromaCommMemBuffer * _qromaCommMemBuffer;
-    QromaNewDataPbProcessor * _activeQromaNewDataProcessor;
+    IQromaNewDataPbProcessor * _activeQromaNewDataProcessor;
 
     PbCommandsRegistry * _pbCommandsRegistry;
 

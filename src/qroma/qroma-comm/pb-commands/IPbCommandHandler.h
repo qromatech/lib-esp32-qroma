@@ -7,7 +7,7 @@
 
 class IPbCommandHandler {
   public:
-    virtual uint32_t handleBytes(const uint8_t * bytes, uint32_t byteCount, std::function<void(uint8_t*, uint32_t)> responseFn);
+    virtual uint32_t handleBytes(const uint8_t * bytes, uint32_t byteCount, std::function<void(uint8_t*, uint32_t)> responseFn) = 0;
 };
 
 #endif

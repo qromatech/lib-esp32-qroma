@@ -28,7 +28,7 @@ void _doSerialCommandProcessingTask(void *pvParameters) {
 
 void QromaCommSerialPbRxBase::initPbRxBase(
   QromaCommMemBuffer * qromaCommMemBuffer, 
-  QromaNewDataPbProcessor * qromaNewDataProcessor, 
+  IQromaNewDataPbProcessor * qromaNewDataProcessor, 
   PbCommandsRegistry * pbCommandsRegistry,
   std::function<void(uint8_t*, uint32_t)> responseFn
 ) {

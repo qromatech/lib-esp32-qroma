@@ -6,6 +6,8 @@
 class IQromaCommSerialTx {
   public:
     virtual void serialTxBytes(const uint8_t * bytes, uint32_t byteCount) = 0;
+    virtual void print(const char * message) = 0;
+    virtual void println(const char * message) = 0;
 };
 
 
