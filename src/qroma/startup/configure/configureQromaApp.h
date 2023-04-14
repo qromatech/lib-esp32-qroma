@@ -8,9 +8,7 @@
 
 typedef std::function<void(QromaAppConfig * config)> QromaAppConfigFn;
 
-void configureQromaApp(QromaAppConfigFn configFn, QromaApp * app) {
-  configFn(app->getAppConfigRef());
-}
+void configureQromaApp(QromaAppConfigFn configFn, QromaApp * app);
 
 #endif
 
