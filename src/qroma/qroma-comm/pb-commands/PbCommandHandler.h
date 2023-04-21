@@ -38,7 +38,7 @@ class PbCommandHandler: public IPbCommandHandler {
 
       if (decoded) {
         _handlerFunction(&pbMessage);
-        return i;
+        return byteCount;
       }
 
       return 0;
