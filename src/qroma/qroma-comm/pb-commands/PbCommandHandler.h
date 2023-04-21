@@ -14,17 +14,31 @@ class PbCommandHandler: public IPbCommandHandler {
       _handlerFunction = handlerFunction;
     }
     
+    // uint32_t handleBytes(const uint8_t * bytes, uint32_t byteCount, std::function<void(uint8_t*, uint32_t)> responseFn) {
+    //   PbMessage pbMessage;
+
+    //   for (int i=1; i <= byteCount; i++) {
+    //     pb_istream_t stream = pb_istream_from_buffer(bytes, i);
+    //     bool decoded = pb_decode(&stream, PbMessageFields, &pbMessage);
+
+    //     if (decoded) {
+    //       _handlerFunction(&pbMessage);
+    //       return i;
+    //     }
+    //   }
+
+    //   return 0;
+    // }
+
     uint32_t handleBytes(const uint8_t * bytes, uint32_t byteCount, std::function<void(uint8_t*, uint32_t)> responseFn) {
       PbMessage pbMessage;
 
-      for (int i=1; i <= byteCount; i++) {
-        pb_istream_t stream = pb_istream_from_buffer(bytes, i);
-        bool decoded = pb_decode(&stream, PbMessageFields, &pbMessage);
+      pb_istream_t istream = pb_istream_from_buffer(bytes, byteCount);
+      bool decoded = pb_decode(&istream, PbMessageFields, &pbMessage);
 
-        if (decoded) {
-          _handlerFunction(&pbMessage);
-          return i;
-        }
+      if (decoded) {
+        _handlerFunction(&pbMessage);
+        return i;
       }
 
       return 0;

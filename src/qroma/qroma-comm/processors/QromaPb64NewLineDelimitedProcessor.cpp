@@ -34,6 +34,7 @@ uint32_t QromaPb64NewLineDelimitedProcessor::processBytes(const uint8_t * bytes,
   auto decodedBufferLength = q_decode_base64(bytes, newLineIndex, _base64DecodeBuffer);
 
   logInfo("FOUND NEWLINE DELIMITED MESSAGE");
+  logInfo(decodedBufferLength);
 
   auto base64EncodeAndTx = [this, txFn](uint8_t * bytes, uint32_t bytesLength) {
     logInfo("base64EncodeAndTx()");
