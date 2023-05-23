@@ -14,7 +14,7 @@ docker container run -it --name %CONTAINER_NAME% -v %LOCAL_SOURCE_DIR%:%DOCKER_S
 docker container rm %CONTAINER_NAME%
 
 
-set OUT_DIR=.\src\proto-nanopb
+set OUT_DIR=.\src\qroma-lib-proto
 set PYTHON_OUT_DIR=..\py-qroma-strip\qroma_pb
 
 rmdir /S /Q %OUT_DIR%

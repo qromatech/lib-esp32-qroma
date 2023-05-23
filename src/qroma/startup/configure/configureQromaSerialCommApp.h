@@ -8,8 +8,11 @@
 #include "../../qroma-app/QromaSerialCommApp.h"
 
 
-typedef std::function<void(QromaCommSerialIoConfig * config)> QromaCommSerialIoConfigFn;
+// typedef std::function<void(QromaCommSerialIoConfig * config)> QromaCommSerialIoConfigFn;
 
-void configureSerialCommIo(QromaCommSerialIoConfigFn serialIoConfigFn, QromaSerialCommApp * app);
+// template<
+//   typename A
+// >
+// void configureSerialCommIo(QromaCommSerialIoConfigFn serialIoConfigFn, QromaSerialCommApp<A> * app);
 
 #endif

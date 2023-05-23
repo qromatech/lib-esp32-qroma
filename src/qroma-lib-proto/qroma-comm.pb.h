@@ -5,37 +5,28 @@
 #define PB_QROMA_COMM_PB_H_INCLUDED
 #include <pb.h>
 #include "file-system-commands.pb.h"
+#include "qroma-comm-config-commands.pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.
 #endif
 
 /* Struct definitions */
-typedef struct _ClearToSendQuery { 
-    uint32_t ctsRandomValue; 
-} ClearToSendQuery;
-
-typedef struct _ClearToSendResponse { 
-    uint32_t ctsRandomValue; 
-} ClearToSendResponse;
-
-typedef struct _QromaCommHeader { 
-    int32_t messageSize; 
-} QromaCommHeader;
-
 typedef struct _QromaCommCommand { 
     pb_size_t which_command;
     union {
+        pb_callback_t appCommand;
         FileSystemCommand fsCommand;
-        ClearToSendQuery clearToSendQuery;
+        QromaCommConfigCommand commConfigCommand;
     } command; 
 } QromaCommCommand;
 
 typedef struct _QromaCommResponse { 
     pb_size_t which_response;
     union {
+        pb_callback_t appResponse;
         FileSystemResponse fsResponse;
-        ClearToSendResponse clearToSendResponse;
+        QromaCommConfigCommand commConfigResponse;
     } response; 
 } QromaCommResponse;
 
@@ -45,80 +36,48 @@ extern "C" {
 #endif
 
 /* Initializer values for message structs */
-#define ClearToSendQuery_init_default            {0}
-#define ClearToSendResponse_init_default         {0}
-#define QromaCommCommand_init_default            {0, {FileSystemCommand_init_default}}
-#define QromaCommResponse_init_default           {0, {FileSystemResponse_init_default}}
-#define QromaCommHeader_init_default             {0}
-#define ClearToSendQuery_init_zero               {0}
-#define ClearToSendResponse_init_zero            {0}
-#define QromaCommCommand_init_zero               {0, {FileSystemCommand_init_zero}}
-#define QromaCommResponse_init_zero              {0, {FileSystemResponse_init_zero}}
-#define QromaCommHeader_init_zero                {0}
+#define QromaCommCommand_init_default            {0, {{{NULL}, NULL}}}
+#define QromaCommResponse_init_default           {0, {{{NULL}, NULL}}}
+#define QromaCommCommand_init_zero               {0, {{{NULL}, NULL}}}
+#define QromaCommResponse_init_zero              {0, {{{NULL}, NULL}}}
 
 /* Field tags (for use in manual encoding/decoding) */
-#define ClearToSendQuery_ctsRandomValue_tag      1
-#define ClearToSendResponse_ctsRandomValue_tag   1
-#define QromaCommHeader_messageSize_tag          1
-#define QromaCommCommand_fsCommand_tag           1
-#define QromaCommCommand_clearToSendQuery_tag    5
-#define QromaCommResponse_fsResponse_tag         1
-#define QromaCommResponse_clearToSendResponse_tag 4
+#define QromaCommCommand_appCommand_tag          1
+#define QromaCommCommand_fsCommand_tag           2
+#define QromaCommCommand_commConfigCommand_tag   3
+#define QromaCommResponse_appResponse_tag        1
+#define QromaCommResponse_fsResponse_tag         2
+#define QromaCommResponse_commConfigResponse_tag 3
 
 /* Struct field encoding specification for nanopb */
-#define ClearToSendQuery_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   ctsRandomValue,    1)
-#define ClearToSendQuery_CALLBACK NULL
-#define ClearToSendQuery_DEFAULT NULL
-
-#define ClearToSendResponse_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   ctsRandomValue,    1)
-#define ClearToSendResponse_CALLBACK NULL
-#define ClearToSendResponse_DEFAULT NULL
-
 #define QromaCommCommand_FIELDLIST(X, a) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,fsCommand,command.fsCommand),   1) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,clearToSendQuery,command.clearToSendQuery),   5)
-#define QromaCommCommand_CALLBACK NULL
+X(a, CALLBACK, ONEOF,    BYTES,    (command,appCommand,command.appCommand),   1) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,fsCommand,command.fsCommand),   2) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,commConfigCommand,command.commConfigCommand),   3)
+#define QromaCommCommand_CALLBACK pb_default_field_callback
 #define QromaCommCommand_DEFAULT NULL
 #define QromaCommCommand_command_fsCommand_MSGTYPE FileSystemCommand
-#define QromaCommCommand_command_clearToSendQuery_MSGTYPE ClearToSendQuery
+#define QromaCommCommand_command_commConfigCommand_MSGTYPE QromaCommConfigCommand
 
 #define QromaCommResponse_FIELDLIST(X, a) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (response,fsResponse,response.fsResponse),   1) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (response,clearToSendResponse,response.clearToSendResponse),   4)
-#define QromaCommResponse_CALLBACK NULL
+X(a, CALLBACK, ONEOF,    BYTES,    (response,appResponse,response.appResponse),   1) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,fsResponse,response.fsResponse),   2) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,commConfigResponse,response.commConfigResponse),   3)
+#define QromaCommResponse_CALLBACK pb_default_field_callback
 #define QromaCommResponse_DEFAULT NULL
 #define QromaCommResponse_response_fsResponse_MSGTYPE FileSystemResponse
-#define QromaCommResponse_response_clearToSendResponse_MSGTYPE ClearToSendResponse
+#define QromaCommResponse_response_commConfigResponse_MSGTYPE QromaCommConfigCommand
 
-#define QromaCommHeader_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, INT32,    messageSize,       1)
-#define QromaCommHeader_CALLBACK NULL
-#define QromaCommHeader_DEFAULT NULL
-
-extern const pb_msgdesc_t ClearToSendQuery_msg;
-extern const pb_msgdesc_t ClearToSendResponse_msg;
 extern const pb_msgdesc_t QromaCommCommand_msg;
 extern const pb_msgdesc_t QromaCommResponse_msg;
-extern const pb_msgdesc_t QromaCommHeader_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
-#define ClearToSendQuery_fields &ClearToSendQuery_msg
-#define ClearToSendResponse_fields &ClearToSendResponse_msg
 #define QromaCommCommand_fields &QromaCommCommand_msg
 #define QromaCommResponse_fields &QromaCommResponse_msg
-#define QromaCommHeader_fields &QromaCommHeader_msg
 
 /* Maximum encoded size of messages (where known) */
-#define ClearToSendQuery_size                    6
-#define ClearToSendResponse_size                 6
-#define QromaCommCommand_size                    51
-#define QromaCommHeader_size                     11
-#if defined(FileSystemResponse_size)
-#define QromaCommResponse_size                   (0 + sizeof(union QromaCommResponse_response_size_union))
-union QromaCommResponse_response_size_union {char f0[8]; char f1[(6 + FileSystemResponse_size)];};
-#endif
+/* QromaCommCommand_size depends on runtime parameters */
+/* QromaCommResponse_size depends on runtime parameters */
 
 #ifdef __cplusplus
 } /* extern "C" */

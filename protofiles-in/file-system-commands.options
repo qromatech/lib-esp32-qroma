@@ -1,0 +1,13 @@
+FileData.filename  max_size:32  fixed_length:true
+DirItem.name  max_size:32  fixed_length:true
+
+ReportFileDataCommand.filename  max_size:32  fixed_length:true
+
+ListDirContentsCommand.dirPath  max_size:32  fixed_length:true
+ListDirContentsResponse.dirPath  max_size:32  fixed_length:true
+
+PrintDirContentsCommand.dirPath  max_size:32  fixed_length:true
+
+RmFileCommand.filePath  max_size:12  fixed_length:true
+
+PrintFileContentsCommand.filePath  max_size:32  fixed_length:true

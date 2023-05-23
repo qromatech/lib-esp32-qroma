@@ -40,7 +40,9 @@ void _startupQroma(QromaApp * qromaApp) {
   // logInfo("QROMA STARTUP COMPLETE");
 }
 
-
-void startupQroma(QromaSerialCommApp * app) {
-  _startupQroma(app);
-}
+// template<
+//   typename Abc
+// >
+// void startupQroma(QromaSerialCommApp<Abc> * app) {
+//   _startupQroma(app);
+// }

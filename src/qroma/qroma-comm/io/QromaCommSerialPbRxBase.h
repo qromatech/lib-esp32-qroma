@@ -11,8 +11,8 @@ class QromaCommSerialPbRxBase {
     void initPbRxBase(
       QromaCommMemBuffer * qromaCommMemBuffer, 
       IQromaNewDataPbProcessor * qromaNewDataProcessor, 
-      PbCommandsRegistry * pbCommandsRegistry,
-      std::function<void(uint8_t*, uint32_t)> responseFn
+      // PbCommandsRegistry * pbCommandsRegistry,
+      std::function<void(const uint8_t*, uint32_t)> responseFn
     );
 
     void serialRx();
@@ -25,9 +25,9 @@ class QromaCommSerialPbRxBase {
     QromaCommMemBuffer * _qromaCommMemBuffer;
     IQromaNewDataPbProcessor * _activeQromaNewDataProcessor;
 
-    PbCommandsRegistry * _pbCommandsRegistry;
+    // PbCommandsRegistry * _pbCommandsRegistry;
 
-    std::function<void(uint8_t*, uint32_t)> _responseFn;
+    std::function<void(const uint8_t*, uint32_t)> _responseFn;
 };
 
 #endif
