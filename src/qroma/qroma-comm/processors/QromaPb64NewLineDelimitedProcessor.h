@@ -194,13 +194,14 @@ class QromaPb64NewLineDelimitedProcessor: public IQromaNewDataPbProcessor {
       switch (qromaCommCommand.which_command) {
         case QromaCommCommand_appCommandBytes_tag: {
           PbMessage appCommand;
-          pb_istream_t appCommand_istream = pb_istream_from_buffer(bytes, bytesLength);
+          pb_istream_t appCommand_istream = pb_istream_from_buffer(qromaCommCommand.command.appCommandBytes.bytes, qromaCommCommand.command.appCommandBytes.size);
           bool appCommandDecoded = pb_decode(&appCommand_istream, PbMessageFields, &appCommand);
           if (!appCommandDecoded) {
             txFn((uint8_t *)"ERR APP COMMAND", 15);
             return 0;
           }
 
+          txFn((uint8_t *)"DO APP COMMAND", 14);
           PbResponse appResponse;
           handleAppCommand(&appCommand, &(qromaCommResponse));
         }
