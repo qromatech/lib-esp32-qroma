@@ -10,16 +10,16 @@
 #include <pb_encode.h>
 
 
-template<
-  const pb_msgdesc_t *PbMessageFields
->
-bool decodeAppCommand(pb_istream_t *istream, const pb_field_t *field, void **arg) {
-  logInfo("IN DECODE APP COMMAND");
-  // PbMessage pbMessage;
-  bool decoded = pb_decode(istream, PbMessageFields, arg);
+// template<
+//   const pb_msgdesc_t *PbMessageFields
+// >
+// bool decodeAppCommand(pb_istream_t *istream, const pb_field_t *field, void **arg) {
+//   logInfo("IN DECODE APP COMMAND");
+//   // PbMessage pbMessage;
+//   bool decoded = pb_decode(istream, PbMessageFields, arg);
 
-  return decoded;
-}
+//   return decoded;
+// }
 
 
 template<
@@ -236,6 +236,8 @@ class QromaPb64NewLineDelimitedProcessor: public IQromaNewDataPbProcessor {
 
       txFn(encodeBuffer, ostream.bytes_written);
       return bytesLength;
+    } else {
+      // unsuccessful decode after reading a newline
     }
 
     return 0;
@@ -292,10 +294,10 @@ class QromaPb64NewLineDelimitedProcessor: public IQromaNewDataPbProcessor {
   }
 
 
-  uint32_t handleQromaCommFileSystemCommand(FileSystemCommand * command, QromaCommResponse * response) {
-    return 0;
-  }
-
+  // uint32_t handleQromaCommFileSystemCommand(FileSystemCommand * command, QromaCommResponse * response) {
+  //   return 0;
+  // }
+  uint32_t handleQromaCommFileSystemCommand(FileSystemCommand * command, QromaCommResponse * response);
 
   uint32_t handleQromaCommConfigCommand(QromaCommConfigCommand * command, QromaCommResponse * response) {
     switch (command->which_command) {
