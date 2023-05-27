@@ -6,10 +6,10 @@
 #error Regenerate this file with the current version of nanopb generator.
 #endif
 
-PB_BIND(QromaCommCommand, QromaCommCommand, AUTO)
+PB_BIND(QromaCommCommand, QromaCommCommand, 2)
 
 
-PB_BIND(QromaCommResponse, QromaCommResponse, AUTO)
+PB_BIND(QromaCommResponse, QromaCommResponse, 2)
 
 
 

@@ -12,19 +12,21 @@
 #endif
 
 /* Struct definitions */
+typedef PB_BYTES_ARRAY_T(1000) QromaCommCommand_appCommandBytes_t;
 typedef struct _QromaCommCommand { 
     pb_size_t which_command;
     union {
-        pb_callback_t appCommand;
+        QromaCommCommand_appCommandBytes_t appCommandBytes;
         FileSystemCommand fsCommand;
         QromaCommConfigCommand commConfigCommand;
     } command; 
 } QromaCommCommand;
 
+typedef PB_BYTES_ARRAY_T(1000) QromaCommResponse_appResponseBytes_t;
 typedef struct _QromaCommResponse { 
     pb_size_t which_response;
     union {
-        pb_callback_t appResponse;
+        QromaCommResponse_appResponseBytes_t appResponseBytes;
         FileSystemResponse fsResponse;
         QromaCommConfigCommand commConfigResponse;
     } response; 
@@ -36,34 +38,34 @@ extern "C" {
 #endif
 
 /* Initializer values for message structs */
-#define QromaCommCommand_init_default            {0, {{{NULL}, NULL}}}
-#define QromaCommResponse_init_default           {0, {{{NULL}, NULL}}}
-#define QromaCommCommand_init_zero               {0, {{{NULL}, NULL}}}
-#define QromaCommResponse_init_zero              {0, {{{NULL}, NULL}}}
+#define QromaCommCommand_init_default            {0, {{0, {0}}}}
+#define QromaCommResponse_init_default           {0, {{0, {0}}}}
+#define QromaCommCommand_init_zero               {0, {{0, {0}}}}
+#define QromaCommResponse_init_zero              {0, {{0, {0}}}}
 
 /* Field tags (for use in manual encoding/decoding) */
-#define QromaCommCommand_appCommand_tag          1
+#define QromaCommCommand_appCommandBytes_tag     1
 #define QromaCommCommand_fsCommand_tag           2
 #define QromaCommCommand_commConfigCommand_tag   3
-#define QromaCommResponse_appResponse_tag        1
+#define QromaCommResponse_appResponseBytes_tag   1
 #define QromaCommResponse_fsResponse_tag         2
 #define QromaCommResponse_commConfigResponse_tag 3
 
 /* Struct field encoding specification for nanopb */
 #define QromaCommCommand_FIELDLIST(X, a) \
-X(a, CALLBACK, ONEOF,    BYTES,    (command,appCommand,command.appCommand),   1) \
+X(a, STATIC,   ONEOF,    BYTES,    (command,appCommandBytes,command.appCommandBytes),   1) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (command,fsCommand,command.fsCommand),   2) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (command,commConfigCommand,command.commConfigCommand),   3)
-#define QromaCommCommand_CALLBACK pb_default_field_callback
+#define QromaCommCommand_CALLBACK NULL
 #define QromaCommCommand_DEFAULT NULL
 #define QromaCommCommand_command_fsCommand_MSGTYPE FileSystemCommand
 #define QromaCommCommand_command_commConfigCommand_MSGTYPE QromaCommConfigCommand
 
 #define QromaCommResponse_FIELDLIST(X, a) \
-X(a, CALLBACK, ONEOF,    BYTES,    (response,appResponse,response.appResponse),   1) \
+X(a, STATIC,   ONEOF,    BYTES,    (response,appResponseBytes,response.appResponseBytes),   1) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (response,fsResponse,response.fsResponse),   2) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (response,commConfigResponse,response.commConfigResponse),   3)
-#define QromaCommResponse_CALLBACK pb_default_field_callback
+#define QromaCommResponse_CALLBACK NULL
 #define QromaCommResponse_DEFAULT NULL
 #define QromaCommResponse_response_fsResponse_MSGTYPE FileSystemResponse
 #define QromaCommResponse_response_commConfigResponse_MSGTYPE QromaCommConfigCommand
@@ -76,8 +78,11 @@ extern const pb_msgdesc_t QromaCommResponse_msg;
 #define QromaCommResponse_fields &QromaCommResponse_msg
 
 /* Maximum encoded size of messages (where known) */
-/* QromaCommCommand_size depends on runtime parameters */
-/* QromaCommResponse_size depends on runtime parameters */
+#define QromaCommCommand_size                    1003
+#if defined(FileSystemResponse_size)
+#define QromaCommResponse_size                   (0 + sizeof(union QromaCommResponse_response_size_union))
+union QromaCommResponse_response_size_union {char f0[1003]; char f2[(6 + FileSystemResponse_size)];};
+#endif
 
 #ifdef __cplusplus
 } /* extern "C" */
