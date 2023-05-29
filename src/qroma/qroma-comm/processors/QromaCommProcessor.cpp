@@ -3,6 +3,7 @@
 
 
 void QromaCommProcessor::init(IAppCommandProcessor * appCommandProcessor) {
+  _processingMode = QromaCommProcessingMode_QromaCommands;
   _appCommandProcessor = appCommandProcessor;
 }
 

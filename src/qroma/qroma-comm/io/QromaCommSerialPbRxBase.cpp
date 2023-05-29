@@ -28,13 +28,14 @@ void _doSerialCommandProcessingTask(void *pvParameters) {
 
 void QromaCommSerialPbRxBase::initPbRxBase(
   QromaCommMemBuffer * qromaCommMemBuffer, 
-  IAppCommandProcessor * qromaNewBytesProcessor, 
+  IAppCommandProcessor * appCommandProcessor, 
   // PbCommandsRegistry * pbCommandsRegistry,
   std::function<void(const uint8_t*, uint32_t)> responseFn
 ) {
   _commSilenceDelayToClearBuffer = 3000;
   
   _qromaCommMemBuffer = qromaCommMemBuffer;
+  _qromaCommProcessor.init(appCommandProcessor);
   // _activeQromaNewDataProcessor = qromaNewBytesProcessor;
 
   // _pbCommandsRegistry = pbCommandsRegistry;

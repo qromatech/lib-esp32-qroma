@@ -26,6 +26,8 @@ class AppCommandProcessor: public IAppCommandProcessor {
 
   uint32_t processBytes(const uint8_t * bytes, uint32_t byteCount, std::function<void(uint8_t*, uint32_t)> txFn, QromaCommResponse * qcResponse) {
 
+    txFn((uint8_t *)"DO APP COMMAND", 14);
+
     PbMessage appCommand;
     memset(&appCommand, 0, sizeof(appCommand));
 
@@ -38,9 +40,9 @@ class AppCommandProcessor: public IAppCommandProcessor {
 
     // txFn((uint8_t *)"DO APP COMMAND", 14);
 
-    PbMessage pbMessage;
+    // PbMessage pbMessage;
     PbResponse appCommandResponse;
-    _handlerFunction(&pbMessage, &appCommandResponse);
+    _handlerFunction(&appCommand, &appCommandResponse);
     
     memset(&(qcResponse->response.appResponseBytes), 0, sizeof(qcResponse->response.appResponseBytes));
 
