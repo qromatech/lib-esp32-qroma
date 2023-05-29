@@ -28,14 +28,14 @@ void _doSerialCommandProcessingTask(void *pvParameters) {
 
 void QromaCommSerialPbRxBase::initPbRxBase(
   QromaCommMemBuffer * qromaCommMemBuffer, 
-  IQromaNewDataPbProcessor * qromaNewDataProcessor, 
+  IAppCommandProcessor * qromaNewBytesProcessor, 
   // PbCommandsRegistry * pbCommandsRegistry,
   std::function<void(const uint8_t*, uint32_t)> responseFn
 ) {
   _commSilenceDelayToClearBuffer = 3000;
   
   _qromaCommMemBuffer = qromaCommMemBuffer;
-  _activeQromaNewDataProcessor = qromaNewDataProcessor;
+  // _activeQromaNewDataProcessor = qromaNewBytesProcessor;
 
   // _pbCommandsRegistry = pbCommandsRegistry;
 
@@ -81,7 +81,8 @@ bool QromaCommSerialPbRxBase::processCommBuffer() {
 
   logInfo("pre-processBytes");
   // numBytesProcessed = _activeQromaNewDataProcessor->processBytes(bytes, byteCount, _pbCommandsRegistry, _responseFn);
-  numBytesProcessed = _activeQromaNewDataProcessor->processBytes(bytes, byteCount, _responseFn);
+  // numBytesProcessed = _activeQromaNewDataProcessor->processBytes(bytes, byteCount, _responseFn);
+  numBytesProcessed = _qromaCommProcessor.processBytes(bytes, byteCount, _responseFn);
   logInfo("post-processBytes");
 
   if (numBytesProcessed > 0) {

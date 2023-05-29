@@ -2,12 +2,14 @@
 #define QROMA_SERIAL_COMM_APP_H
 
 #include "QromaSerialCommAppBase.h"
-#include "../qroma-comm/processors/QromaPb64NewLineDelimitedProcessor.h"
+// #include "../qroma-comm/processors/QromaPb64NewLineDelimitedProcessor.h"
 #include "QromaApp.h"
 #include "IQromaSerialCommApp.h"
 #include "../qroma-comm/io/QromaCommSerialIo.h"
 #include "../qroma-comm/io/IQromaCommSerialTx.h"
 // #include "../qroma-comm/processors/Qroma2BytesWithLengthAndPbProcessor.h"
+#include "../qroma-comm/processors/IAppCommandProcessor.h"
+
 
 typedef std::function<void(QromaCommSerialIoConfig * config)> QromaCommSerialIoConfigFn;
 
@@ -42,8 +44,8 @@ class QromaSerialCommApp: QromaApp
     // }
 
 
-    void setAppCommandProcessor(IQromaNewDataPbProcessor * processor) {
-      _qromaCommSerialIo.setNewDataProcessor(processor);
+    void setAppCommandProcessor(IAppCommandProcessor * processor) {
+      _qromaCommSerialIo.setAppCommandProcessor(processor);
     }
     
 

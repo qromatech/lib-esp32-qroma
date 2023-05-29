@@ -1,8 +1,9 @@
-#ifndef FS_COMM_HANDLERS_H_INCLUDED
-#define FS_COMM_HANDLERS_H_INCLUDED
+#ifndef QROMA_FS_COMMAND_PROCESSOR_INCLUDED
+#define QROMA_FS_COMMAND_PROCESSOR_INCLUDED
 
 // #include "../../proto-nanopb/file-system-commands.pb.h"
 // #include "pbBufferCommProcessor.h"
+#include "stdint.h"
 
 
 // void handleRmFileCommand(RmFileCommand * cmd);
@@ -16,5 +17,9 @@
 // void handlePrintDirContents(PrintDirContentsCommand * cmd, PbBufferCommProcessor * comm);
 // void handlePrintFileContents(PrintFileContentsCommand * cmd, PbBufferCommProcessor * comm);
 
+class QromaFsCommandProcessor {
+  public:
+    uint32_t processBytes(const uint8_t * bytes, uint32_t byteCount);
+};
 
 #endif

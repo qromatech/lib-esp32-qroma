@@ -6,6 +6,7 @@
 #include "QromaCommSerialPbRxBase.h"
 #include "../commBuffer/TQromaCommMemBuffer.h"
 #include "IQromaCommSerialTx.h"
+#include "../processors/IAppCommandProcessor.h"
 
 
 
@@ -23,7 +24,7 @@ class QromaCommSerialIo: public QromaCommSerialPbRxBase,
 
       // _serial = serial;
 
-      initPbRxBase(&_tQromaCommMemBuffer, _newDataProcessor, [this](const uint8_t * bytes, uint32_t byteCount) {
+      initPbRxBase(&_tQromaCommMemBuffer, _appCommandProcessor, [this](const uint8_t * bytes, uint32_t byteCount) {
         this->serialTxBytes(bytes, byteCount);
       });
 
@@ -47,14 +48,14 @@ class QromaCommSerialIo: public QromaCommSerialPbRxBase,
 
     HWCDC * getSerial() { return _serial; };
 
-    void setNewDataProcessor(IQromaNewDataPbProcessor * dataProcessor) {
-      _newDataProcessor = dataProcessor;
+    void setAppCommandProcessor(IAppCommandProcessor * appCommandProcessor) {
+      _appCommandProcessor = appCommandProcessor;
     }
 
   private:
     TQromaCommMemBuffer<bufferSize> _tQromaCommMemBuffer;
     // DefaultNewDataProcessor _newDataProcessor;
-    IQromaNewDataPbProcessor * _newDataProcessor;
+    IAppCommandProcessor * _appCommandProcessor;
 
     // HWCDC * _serial;
 };
