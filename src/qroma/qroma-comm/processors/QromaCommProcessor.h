@@ -39,7 +39,7 @@ class QromaCommProcessor: public IQromaNewBytesProcessor,
 
     uint32_t handleQromaCommCommand(uint8_t * bytes, uint32_t bytesLength, std::function<void(uint8_t*, uint32_t)> txFn);
 
-    void startFileReadingMode();
+    void startFileReadingMode(uint32_t silenceDelayTimeoutInMs, FileData * fileData);
     
     void endFileReadingMode();
 

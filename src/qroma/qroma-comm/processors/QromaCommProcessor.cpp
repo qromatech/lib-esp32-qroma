@@ -105,8 +105,22 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
 }
 
 
-void QromaCommProcessor::startFileReadingMode() {
+void QromaCommProcessor::startFileReadingMode(uint32_t silenceDelayTimeoutInMs, FileData * fileData) {
   _processingMode = QromaCommProcessingMode_FileReader;
+
+  logInfo("READING SERIAL TO FILE");
+  logInfo(fileData->filename);
+
+  // // setCommReadingMode(CommReadingMode_FILE_FROM_COMM);
+
+  // uint32_t now = millis();
+  // _lastCommReadTimeInMs = now;
+  // _silenceDelayTimeoutInMs = silenceDelayTimeoutInMs;
+  // _readToBufferTimeoutInMs = now + silenceDelayTimeoutInMs;
+  // _readToBufferCount = 0;
+  // _readToBufferSize = fileData->filesize;
+  // _expectedChecksum = fileData->checksum;
+  // strncpy(_readToFileName, fileData->filename, sizeof _readToFileName);
 }
     
 void QromaCommProcessor::endFileReadingMode() {

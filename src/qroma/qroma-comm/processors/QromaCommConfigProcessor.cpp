@@ -6,6 +6,7 @@ uint32_t QromaCommConfigProcessor::handleQromaCommConfigCommand(QromaCommConfigC
 {
   switch (command->which_command) {
     case QromaCommConfigCommand_setLogLevel_tag:
+      // Serial.println("SETTING COMM CONFIG - LOG LEVEL");
       setLogLevel(command->command.setLogLevel.logLevel);
       break;
   }

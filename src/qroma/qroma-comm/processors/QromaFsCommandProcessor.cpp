@@ -1,4 +1,33 @@
+#include "LittleFS.h"
 #include "QromaFsCommandProcessor.h"
+#include "../../util/logger.h"
+#include "../../util/fs.h"
+
+
+
+void pbSendLine(const char * msg, const char * value, std::function<void(uint8_t*, uint32_t)> txFn) {
+  char msgBuffer[200];
+  memset(msgBuffer, 0, sizeof msgBuffer);
+
+  strlcpy(msgBuffer, msg, sizeof msgBuffer);
+  strlcat(msgBuffer, value, sizeof msgBuffer);
+  size_t len = strlcat(msgBuffer, "\n", sizeof msgBuffer);
+  
+  txFn((uint8_t *)msgBuffer, len);
+}
+
+
+void pbSendMessage(const char * msg, std::function<void(uint8_t*, uint32_t)> txFn) {
+  pbSendLine(msg, "", txFn);
+}
+
+
+void pbSendIntMessageLine(const char * msg, int value, std::function<void(uint8_t*, uint32_t)> txFn) {
+  char vBuf[20];
+  sprintf(vBuf, "%d", value);
+  
+  pbSendLine(msg, vBuf, txFn);
+}
 
 
  uint32_t QromaFsCommandProcessor::processBytes(const uint8_t * bytes, uint32_t byteCount) {
@@ -6,12 +35,47 @@
  }
  
 
-void handleFileSystemCommand(FileSystemCommand * fsCommand,
+void QromaFsCommandProcessor::handleFileSystemCommand(FileSystemCommand * fsCommand,
   QromaCommResponse * qromaCommResponse,
   std::function<void(uint8_t*, uint32_t)> txFn,
   IQromaFsCommandProcessorListener * fsListener)
 {
+  logInfoIntWithDescription("handleFileSystemCommand - ", fsCommand->which_command);
   
+  switch (fsCommand->which_command)
+  {
+    case FileSystemCommand_rmFileCommand_tag:
+      handleRmFileCommand(&(fsCommand->command.rmFileCommand));
+      break;
+
+    case FileSystemCommand_resetFilesystemCommand_tag:
+      handleResetFilesystemCommand(&(fsCommand->command.resetFilesystemCommand));
+      break;
+
+    case FileSystemCommand_storeUpcomingFileDataCommand_tag:
+      logInfo("STORE UPCOMING FILE");
+      handleStoreUpcomingFileCommand(&(fsCommand->command.storeUpcomingFileDataCommand), fsListener);
+      break;
+
+    case FileSystemCommand_reportFileDataCommand_tag:
+      handleReportFileDataCommand(&(fsCommand->command.reportFileDataCommand), qromaCommResponse);
+      break;
+
+    // case FileSystemCommand_listDirContentsCommand_tag:
+    //   handleListDirContents(&(fsCommand->command.listDirContentsCommand));
+    //   break;
+
+    case FileSystemCommand_printDirContentsCommand_tag:
+      handlePrintDirContents(&(fsCommand->command.printDirContentsCommand), txFn);
+      break;
+
+    case FileSystemCommand_printFileContentsCommand_tag:
+      handlePrintFileContents(&(fsCommand->command.printFileContentsCommand), txFn);
+      break;
+
+    default:
+      break;
+  }
 }
 
 // void handleFileSystemCommand(FileSystemCommand * fsCommand, PbBufferCommProcessor * comm) {
@@ -55,59 +119,67 @@ void handleFileSystemCommand(FileSystemCommand * fsCommand,
 // }
 
 
-// void handleRmFileCommand(RmFileCommand * cmd) {
-//   SPIFFS.remove(cmd->filePath);
-//   logInfo("HANDLED RM FILE");
-//   logInfo(cmd->filePath);
-// }
+void QromaFsCommandProcessor::handleRmFileCommand(RmFileCommand * cmd) {
+  LittleFS.remove(cmd->filePath);
+  logInfo("HANDLED RM FILE");
+  logInfo(cmd->filePath);
+}
 
 
-// void handleResetFilesystemCommand(ResetFilesystemCommand * cmd) {
-//   resetFilesystem();
-// }
+void QromaFsCommandProcessor::handleResetFilesystemCommand(ResetFilesystemCommand * cmd) {
+  resetFilesystem();
+}
 
-// void handleStoreUpcomingFileCommand(StoreUpcomingFileDataCommand * cmd, PbBufferCommProcessor * comm) {
-//   logInfo("HANDLE STORE FILE");
-//   comm->readSerialToFile(5000, &(cmd->fileData));
-// }
+void QromaFsCommandProcessor::handleStoreUpcomingFileCommand(StoreUpcomingFileDataCommand * cmd, IQromaFsCommandProcessorListener * fsListener) {
+  logInfo("HANDLE STORE FILE");
+  fsListener->startFileReadingMode(5000, &(cmd->fileData));
+}
 
 
-// void handleReportFileDataCommand(ReportFileDataCommand * cmd, PbBufferCommProcessor * comm) {
-//   logInfo("REPORT FILE DATA: ");
-//   logInfo(cmd->filename);
+void QromaFsCommandProcessor::handleReportFileDataCommand(ReportFileDataCommand * cmd, QromaCommResponse * response) {
+  logInfo("REPORT FILE DATA: ");
+  logInfo(cmd->filename);
 
-//   bool isFile = true;
-//   File file = SPIFFS.open(cmd->filename);
-//   if (!file || file.isDirectory()){
-//     isFile = false;
-//     logInfo("− failed to open file for reading");
-//   }
+  bool isFile = true;
+  File file = LittleFS.open(cmd->filename);
+  if (!file || file.isDirectory()){
+    isFile = false;
+    logInfo("− failed to open file for reading");
+  }
 
-//   int fileSize = file.size();
-//   uint32_t checkSum = getFileChecksum(cmd->filename);
+  int fileSize = file.size();
+  uint32_t checkSum = getFileChecksum(cmd->filename);
 
-//   QromaCommResponse response;
-//   response.which_response = QromaCommResponse_fsResponse_tag;
-//   response.response.fsResponse.which_response = FileSystemResponse_reportFileDataResponse_tag;
-//   response.response.fsResponse.response.reportFileDataResponse.fileExists = isFile;
-//   response.response.fsResponse.response.reportFileDataResponse.fileData.filesize = fileSize;
-//   response.response.fsResponse.response.reportFileDataResponse.fileData.checksum = checkSum;
-//   strncpy(response.response.fsResponse.response.reportFileDataResponse.fileData.filename, cmd->filename, 
-//     sizeof(response.response.fsResponse.response.reportFileDataResponse.fileData.filename));
+  // QromaCommResponse response;
+  // response.which_response = QromaCommResponse_fsResponse_tag;
+  // response.response.fsResponse.which_response = FileSystemResponse_reportFileDataResponse_tag;
+  // response.response.fsResponse.response.reportFileDataResponse.fileExists = isFile;
+  // response.response.fsResponse.response.reportFileDataResponse.fileData.filesize = fileSize;
+  // response.response.fsResponse.response.reportFileDataResponse.fileData.checksum = checkSum;
+  // strncpy(response.response.fsResponse.response.reportFileDataResponse.fileData.filename, cmd->filename, 
+  //   sizeof(response.response.fsResponse.response.reportFileDataResponse.fileData.filename));
 
-//   uint8_t buffer[2000];
-//   memset(buffer, 0, sizeof buffer);
-//   pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
-//   bool status = pb_encode(&stream, QromaCommResponse_fields, &response);
+  response->which_response = QromaCommResponse_fsResponse_tag;
+  response->response.fsResponse.which_response = FileSystemResponse_reportFileDataResponse_tag;
+  response->response.fsResponse.response.reportFileDataResponse.fileExists = isFile;
+  response->response.fsResponse.response.reportFileDataResponse.fileData.filesize = fileSize;
+  response->response.fsResponse.response.reportFileDataResponse.fileData.checksum = checkSum;
+  strncpy(response->response.fsResponse.response.reportFileDataResponse.fileData.filename, cmd->filename, 
+    sizeof(response->response.fsResponse.response.reportFileDataResponse.fileData.filename));
 
-//   if (!status) {
-//     logInfo("UNABLE TO ENCODE ReportFileDataCommand RESPONSE");
-//   } else {
-//     logInfoIntWithDescription("REPORT FILE: ", stream.bytes_written);
-//   }
+  uint8_t buffer[2000];
+  memset(buffer, 0, sizeof buffer);
+  pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+  bool status = pb_encode(&stream, QromaCommResponse_fields, &response);
 
-//   comm->pbSendQromacommResponse(buffer, (uint32_t)stream.bytes_written);
-// }
+  if (!status) {
+    logInfo("UNABLE TO ENCODE ReportFileDataCommand RESPONSE");
+  } else {
+    logInfoIntWithDescription("REPORT FILE: ", stream.bytes_written);
+  }
+
+  // pbSendQromacommResponse(buffer, (uint32_t)stream.bytes_written);
+}
 
 
 // bool listDirContents_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
@@ -164,126 +236,127 @@ void handleFileSystemCommand(FileSystemCommand * fsCommand,
 // }
 
 
-// void doPrintDirPreamble(PrintDirContentsCommand * cmd, PbBufferCommProcessor * comm) {
-//   File root = SPIFFS.open(cmd->dirPath);
+void doPrintDirPreamble(PrintDirContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn) {
+  File root = LittleFS.open(cmd->dirPath);
 
-//   if (root == NULL) {
-//     logError("doPrintDirPreamble - failed to open directory");
-//     logError("FS ROOT IS NULL");
-//     return;
-//   }
+  if (root == NULL) {
+    logError("doPrintDirPreamble - failed to open directory");
+    logError("FS ROOT IS NULL");
+    return;
+  }
 
-//   File file = root.openNextFile();
+  File file = root.openNextFile();
 
-//   int fileCount = 0;
+  int fileCount = 0;
 
-//   while (file) {
-//     fileCount++;
-//     file = root.openNextFile();
-//   }
+  while (file) {
+    fileCount++;
+    file = root.openNextFile();
+  }
 
-//   root.close();
-//   comm->pbSendLine("DIR NAME: ", cmd->dirPath);
-//   comm->pbSendIntMessageLine("DIR SIZE: ", fileCount);
-// }
-
-
-// void doPrintDirFiles(PrintDirContentsCommand * cmd, PbBufferCommProcessor * comm) {
-//   File root = SPIFFS.open(cmd->dirPath);
-
-//   if (root == NULL) {
-//     logError("doPrintDirFiles - failed to open directory");
-//     logError("FS ROOT IS NULL");
-//     return;
-//   }
-
-//   File file = root.openNextFile();
-
-//   while (file) {
-//     comm->pbSendMessage(file.name());
-//     file = root.openNextFile();
-//   }
-
-//   root.close();
-// }
+  root.close();
+  pbSendLine("DIR NAME: ", cmd->dirPath, txFn);
+  pbSendIntMessageLine("DIR SIZE: ", fileCount, txFn);
+}
 
 
-// void handlePrintDirContents(PrintDirContentsCommand * cmd, PbBufferCommProcessor * comm) {
-//   comm->setPbBuildingMessage(true);
+void doPrintDirFiles(PrintDirContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn) {
+  File root = LittleFS.open(cmd->dirPath);
 
-//   doPrintDirPreamble(cmd, comm);
-//   doPrintDirFiles(cmd, comm);
+  if (root == NULL) {
+    logError("doPrintDirFiles - failed to open directory");
+    logError("FS ROOT IS NULL");
+    return;
+  }
 
-//   comm->setPbBuildingMessage(false);
-// }
+  File file = root.openNextFile();
 
+  while (file) {
+    pbSendMessage(file.name(), txFn);
+    file = root.openNextFile();
+  }
 
-// void doPrintFilePreamble(PrintFileContentsCommand * cmd, PbBufferCommProcessor * comm) {
-//   File file = SPIFFS.open(cmd->filePath);
-
-//   if (file == NULL) {
-//     logError("doPrintFilePreamble - failed to open file");
-//     logError(cmd->filePath);
-//     logError("FILE IS NULL");
-//     return;
-//   }
-
-//   if (file.isDirectory()) {
-//     logError("doPrintFilePreamble - not a file; it's a directory");
-//     logError(cmd->filePath);
-//     logError("GOT DIRECTORY");
-//     return;
-//   }
-
-//   int fileSize = file.size();
-
-//   file.close();
-
-//   comm->pbSendLine("FILE PATH: ", cmd->filePath);
-//   comm->pbSendIntMessageLine("FILE SIZE: ", fileSize);
-// }
+  root.close();
+}
 
 
-// void doPrintFileContents(PrintFileContentsCommand * cmd, PbBufferCommProcessor * comm) {
-//   File file = SPIFFS.open(cmd->filePath);
+void QromaFsCommandProcessor::handlePrintDirContents(PrintDirContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn) {
+  // comm->setPbBuildingMessage(true);
 
-//   if (file == NULL) {
-//     logError("doPrintFileContents - failed to open file");
-//     logError(cmd->filePath);
-//     logError("FILE IS NULL");
-//     return;
-//   }
+  doPrintDirPreamble(cmd, txFn);
+  doPrintDirFiles(cmd, txFn);
 
-//   const int FILE_BUFFER_SIZE = 250;
-//   char fileBuffer[FILE_BUFFER_SIZE];
-//   memset(fileBuffer, 0, sizeof fileBuffer);
-
-//   int fileSize = file.available();
-//   int bytesToPrint = fileSize;
-//   logInfoIntWithDescription("!BYTES REMAINING: ", bytesToPrint);
-
-//   while (bytesToPrint > 0) {
-//     int byteCount = file.readBytes(fileBuffer, sizeof fileBuffer);
-//     logInfoIntWithDescription("SENDING BYTES: ", byteCount);
-//     comm->pbSendBytes((uint8_t*)fileBuffer, byteCount);
-//     bytesToPrint -= byteCount;
-//     logInfoIntWithDescription("BYTES REMAINING: ", bytesToPrint);
-//   }
-
-//   file.close();
-// }
+  // comm->setPbBuildingMessage(false);
+}
 
 
-// void handlePrintFileContents(PrintFileContentsCommand * cmd, PbBufferCommProcessor * comm) {
-//   comm->setPbBuildingMessage(true);
+void doPrintFilePreamble(PrintFileContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn) {
+  File file = LittleFS.open(cmd->filePath);
 
-//   doPrintFilePreamble(cmd, comm);
-//   doPrintFileContents(cmd, comm);
+  if (file == NULL) {
+    logError("doPrintFilePreamble - failed to open file");
+    logError(cmd->filePath);
+    logError("FILE IS NULL");
+    return;
+  }
 
-//   comm->setPbBuildingMessage(false);
-// }
+  if (file.isDirectory()) {
+    logError("doPrintFilePreamble - not a file; it's a directory");
+    logError(cmd->filePath);
+    logError("GOT DIRECTORY");
+    return;
+  }
 
-// void handleListDirContents(ListDirContentsCommand * cmd, PbBufferCommProcessor * comm) {
+  int fileSize = file.size();
+
+  file.close();
+
+  pbSendLine("FILE PATH: ", cmd->filePath, txFn);
+  pbSendIntMessageLine("FILE SIZE: ", fileSize, txFn);
+}
+
+
+void doPrintFileContents(PrintFileContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn) {
+  File file = LittleFS.open(cmd->filePath);
+
+  if (file == NULL) {
+    logError("doPrintFileContents - failed to open file");
+    logError(cmd->filePath);
+    logError("FILE IS NULL");
+    return;
+  }
+
+  const int FILE_BUFFER_SIZE = 250;
+  char fileBuffer[FILE_BUFFER_SIZE];
+  memset(fileBuffer, 0, sizeof fileBuffer);
+
+  int fileSize = file.available();
+  int bytesToPrint = fileSize;
+  logInfoIntWithDescription("!BYTES REMAINING: ", bytesToPrint);
+
+  while (bytesToPrint > 0) {
+    int byteCount = file.readBytes(fileBuffer, sizeof fileBuffer);
+    logInfoIntWithDescription("SENDING BYTES: ", byteCount);
+    // comm->pbSendBytes((uint8_t*)fileBuffer, byteCount);
+    txFn((uint8_t*)fileBuffer, byteCount);
+    bytesToPrint -= byteCount;
+    logInfoIntWithDescription("BYTES REMAINING: ", bytesToPrint);
+  }
+
+  file.close();
+}
+
+
+void QromaFsCommandProcessor::handlePrintFileContents(PrintFileContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn) {
+  // comm->setPbBuildingMessage(true);
+
+  doPrintFilePreamble(cmd, txFn);
+  doPrintFileContents(cmd, txFn);
+
+  // comm->setPbBuildingMessage(false);
+}
+
+// void handleListDirContents(ListDirContentsCommand * cmd) {
 //   logInfo("LISTING DIR CONTENTS >> ");
 //   logInfo(cmd->dirPath);
 
@@ -314,3 +387,4 @@ void handleFileSystemCommand(FileSystemCommand * fsCommand,
 
 //   comm->pbSendQromacommResponse(buffer, (uint32_t)stream.bytes_written);
 // }
+
