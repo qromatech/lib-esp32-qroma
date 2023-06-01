@@ -67,6 +67,12 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
       case QromaCommCommand_fsCommand_tag:
         txFn((uint8_t *)"FS COMMAND", 10);
 
+        _qromaFsCommandProcessor.handleFileSystemCommand(
+            &(qromaCommCommand.command.fsCommand), 
+            &qromaCommResponse, 
+            txFn,
+            this);
+
         // handleFileSystemCommand(&(qromaCommCommand.command.fsCommand));
         // _qromaFsCommandProcessor.
         // handleQromaCommFileSystemCommand(&(qromaCommCommand.command.fsCommand), &qromaCommResponse);
@@ -75,7 +81,7 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
         // txFn((uint8_t *)"COMM COMMAND", 12);
 
         // handleQromaCommConfigCommand(&(qromaCommCommand.command.commConfigCommand), &qromaCommResponse);
-        _qromaCommConfigProcessor.handleQromaCommConfigCommand(&(qromaCommCommand.command.commConfigCommand), &qromaCommResponse);
+        _qromaCommConfigProcessor.handleQromaCommConfigCommand(&(qromaCommCommand.command.commConfigCommand), &qromaCommResponse, txFn);
         break;
     }
 
@@ -97,6 +103,16 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
 
   return 0;
 }
+
+
+void QromaCommProcessor::startFileReadingMode() {
+  _processingMode = QromaCommProcessingMode_FileReader;
+}
+    
+void QromaCommProcessor::endFileReadingMode() {
+  _processingMode = QromaCommProcessingMode_QromaCommands;
+}
+
 
 // uint32_t QromaCommProcessor::handleAppCommand(PbMessage * pbMessage, QromaCommResponse * qromaCommResponse) {
 

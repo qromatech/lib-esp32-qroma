@@ -27,7 +27,9 @@ enum QromaCommProcessingMode {
 //   typename PbResponse, 
 //   const pb_msgdesc_t *PbResponseFields
 // >
-class QromaCommProcessor: public IQromaNewBytesProcessor {
+class QromaCommProcessor: public IQromaNewBytesProcessor, 
+                                 IQromaFsCommandProcessorListener 
+{
   public:
     void init(IAppCommandProcessor * appCommandProcessor);
       
@@ -36,6 +38,11 @@ class QromaCommProcessor: public IQromaNewBytesProcessor {
     uint32_t processBytes(const uint8_t * bytes, uint32_t byteCount, std::function<void(const uint8_t*, uint32_t)> txFn);
 
     uint32_t handleQromaCommCommand(uint8_t * bytes, uint32_t bytesLength, std::function<void(uint8_t*, uint32_t)> txFn);
+
+    void startFileReadingMode();
+    
+    void endFileReadingMode();
+
 
   //   uint32_t handleAppCommand(PbMessage * pbMessage, QromaCommResponse * qromaCommResponse) {
 
