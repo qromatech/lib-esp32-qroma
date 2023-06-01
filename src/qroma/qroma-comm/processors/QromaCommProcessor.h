@@ -12,6 +12,7 @@
 #include "QromaFsCommandProcessor.h"
 #include "QromaCommConfigProcessor.h"
 #include "IAppCommandProcessor.h"
+#include "QromaCommFileReader.h"
 
 
 enum QromaCommProcessingMode {
@@ -91,8 +92,19 @@ class QromaCommProcessor: public IQromaNewBytesProcessor,
     IAppCommandProcessor * _appCommandProcessor;
     QromaFsCommandProcessor _qromaFsCommandProcessor;
     QromaCommConfigProcessor _qromaCommConfigProcessor;
+    QromaCommFileReader _qromaCommFileReader;
 
     QromaCommProcessingMode _processingMode;
+
+    // char _readToFileName[40];
+    // uint32_t _expectedChecksum;
+
+    // uint32_t _readToBufferCount;
+    // uint32_t _readToBufferSize;
+    // uint32_t _lastCommReadTimeInMs;
+    // uint32_t _silenceDelayTimeoutInMs;
+    // uint32_t _readToBufferTimeoutInMs;
+
     // IQromaNewBytesProcessor * _activeNewBytesProcessor;
     
     unsigned char _base64DecodeBuffer[1000];

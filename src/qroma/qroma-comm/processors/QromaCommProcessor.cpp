@@ -11,7 +11,7 @@ void QromaCommProcessor::init(IAppCommandProcessor * appCommandProcessor) {
 uint32_t QromaCommProcessor::processBytes(const uint8_t * bytes, uint32_t byteCount, std::function<void(const uint8_t*, uint32_t)> txFn) {
 
   if (_processingMode == QromaCommProcessingMode_FileReader) {
-    return _qromaFsCommandProcessor.processBytes(bytes, byteCount);
+    return _qromaCommFileReader.processBytes(bytes, byteCount);
   }
 
   bool newLineFound = false;
@@ -108,10 +108,10 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
 void QromaCommProcessor::startFileReadingMode(uint32_t silenceDelayTimeoutInMs, FileData * fileData) {
   _processingMode = QromaCommProcessingMode_FileReader;
 
-  logInfo("READING SERIAL TO FILE");
-  logInfo(fileData->filename);
+  // logInfo("READING SERIAL TO FILE");
+  // logInfo(fileData->filename);
 
-  // // setCommReadingMode(CommReadingMode_FILE_FROM_COMM);
+  // // // setCommReadingMode(CommReadingMode_FILE_FROM_COMM);
 
   // uint32_t now = millis();
   // _lastCommReadTimeInMs = now;
