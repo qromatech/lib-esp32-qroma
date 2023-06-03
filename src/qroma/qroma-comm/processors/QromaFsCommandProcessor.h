@@ -1,7 +1,7 @@
 #ifndef QROMA_FS_COMMAND_PROCESSOR_INCLUDED
 #define QROMA_FS_COMMAND_PROCESSOR_INCLUDED
 
-// #include "../../../qroma-lib-proto/file-system-commands.pb.h"
+
 #include <qroma-lib-proto/qroma-comm.pb.h>
 #include <qroma-lib-proto/file-system-commands.pb.h>
 #include "stdint.h"
@@ -20,7 +20,7 @@ class QromaFsCommandProcessor {
   public:
     uint32_t processBytes(const uint8_t * bytes, uint32_t byteCount);
 
-    void handleFileSystemCommand(FileSystemCommand * fsCommand,
+    bool handleFileSystemCommand(FileSystemCommand * fsCommand,
       QromaCommResponse * qromaCommResponse,
       std::function<void(uint8_t*, uint32_t)> txFn,
       IQromaFsCommandProcessorListener * fsListener);
@@ -29,7 +29,7 @@ class QromaFsCommandProcessor {
     void handleRmFileCommand(RmFileCommand * cmd);
     void handleResetFilesystemCommand(ResetFilesystemCommand * cmd);
 
-    void handleReportFileDataCommand(ReportFileDataCommand * cmd, QromaCommResponse * qromaCommResponse);
+    bool handleReportFileDataCommand(ReportFileDataCommand * cmd, QromaCommResponse * qromaCommResponse);
     void handleStoreUpcomingFileCommand(StoreUpcomingFileDataCommand * cmd, IQromaFsCommandProcessorListener * fsListener);
 
     // void handleListDirContents(ListDirContentsCommand * cmd);

@@ -35,7 +35,8 @@ void pbSendIntMessageLine(const char * msg, int value, std::function<void(uint8_
  }
  
 
-void QromaFsCommandProcessor::handleFileSystemCommand(FileSystemCommand * fsCommand,
+// return true if caller should return the populated QromaCommResponse
+bool QromaFsCommandProcessor::handleFileSystemCommand(FileSystemCommand * fsCommand,
   QromaCommResponse * qromaCommResponse,
   std::function<void(uint8_t*, uint32_t)> txFn,
   IQromaFsCommandProcessorListener * fsListener)
@@ -58,7 +59,7 @@ void QromaFsCommandProcessor::handleFileSystemCommand(FileSystemCommand * fsComm
       break;
 
     case FileSystemCommand_reportFileDataCommand_tag:
-      handleReportFileDataCommand(&(fsCommand->command.reportFileDataCommand), qromaCommResponse);
+      return handleReportFileDataCommand(&(fsCommand->command.reportFileDataCommand), qromaCommResponse);
       break;
 
     // case FileSystemCommand_listDirContentsCommand_tag:
@@ -136,7 +137,7 @@ void QromaFsCommandProcessor::handleStoreUpcomingFileCommand(StoreUpcomingFileDa
 }
 
 
-void QromaFsCommandProcessor::handleReportFileDataCommand(ReportFileDataCommand * cmd, QromaCommResponse * response) {
+bool QromaFsCommandProcessor::handleReportFileDataCommand(ReportFileDataCommand * cmd, QromaCommResponse * response) {
   logInfo("REPORT FILE DATA: ");
   logInfo(cmd->filename);
 
@@ -150,35 +151,19 @@ void QromaFsCommandProcessor::handleReportFileDataCommand(ReportFileDataCommand 
   int fileSize = file.size();
   uint32_t checkSum = getFileChecksum(cmd->filename);
 
-  // QromaCommResponse response;
-  // response.which_response = QromaCommResponse_fsResponse_tag;
-  // response.response.fsResponse.which_response = FileSystemResponse_reportFileDataResponse_tag;
-  // response.response.fsResponse.response.reportFileDataResponse.fileExists = isFile;
-  // response.response.fsResponse.response.reportFileDataResponse.fileData.filesize = fileSize;
-  // response.response.fsResponse.response.reportFileDataResponse.fileData.checksum = checkSum;
-  // strncpy(response.response.fsResponse.response.reportFileDataResponse.fileData.filename, cmd->filename, 
-  //   sizeof(response.response.fsResponse.response.reportFileDataResponse.fileData.filename));
-
+  logInfo("FILE CHECKED");
   response->which_response = QromaCommResponse_fsResponse_tag;
   response->response.fsResponse.which_response = FileSystemResponse_reportFileDataResponse_tag;
   response->response.fsResponse.response.reportFileDataResponse.fileExists = isFile;
+  response->response.fsResponse.response.reportFileDataResponse.has_fileData = true;
   response->response.fsResponse.response.reportFileDataResponse.fileData.filesize = fileSize;
   response->response.fsResponse.response.reportFileDataResponse.fileData.checksum = checkSum;
   strncpy(response->response.fsResponse.response.reportFileDataResponse.fileData.filename, cmd->filename, 
     sizeof(response->response.fsResponse.response.reportFileDataResponse.fileData.filename));
 
-  uint8_t buffer[2000];
-  memset(buffer, 0, sizeof buffer);
-  pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
-  bool status = pb_encode(&stream, QromaCommResponse_fields, &response);
+  logInfo("RESPONSE DONE");
 
-  if (!status) {
-    logInfo("UNABLE TO ENCODE ReportFileDataCommand RESPONSE");
-  } else {
-    logInfoIntWithDescription("REPORT FILE: ", stream.bytes_written);
-  }
-
-  // pbSendQromacommResponse(buffer, (uint32_t)stream.bytes_written);
+  return true;
 }
 
 

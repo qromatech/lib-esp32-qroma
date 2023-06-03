@@ -9,6 +9,8 @@
 #include "../qroma-comm/io/IQromaCommSerialTx.h"
 // #include "../qroma-comm/processors/Qroma2BytesWithLengthAndPbProcessor.h"
 #include "../qroma-comm/processors/IAppCommandProcessor.h"
+#include "../util/fs.h"
+
 
 
 typedef std::function<void(QromaCommSerialIoConfig * config)> QromaCommSerialIoConfigFn;
@@ -71,6 +73,7 @@ class QromaSerialCommApp: QromaApp
     }
 
     void init() {
+      initFileSystem();
       _qromaCommSerialIo.init(&_serialIoConfig);
       initApp();
     }

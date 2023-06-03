@@ -80,11 +80,11 @@ bool QromaCommSerialPbRxBase::processCommBuffer() {
 
   uint32_t numBytesProcessed = 0;
 
-  logInfo("pre-processBytes");
+  // logInfo("pre-processBytes");
   // numBytesProcessed = _activeQromaNewDataProcessor->processBytes(bytes, byteCount, _pbCommandsRegistry, _responseFn);
   // numBytesProcessed = _activeQromaNewDataProcessor->processBytes(bytes, byteCount, _responseFn);
   numBytesProcessed = _qromaCommProcessor.processBytes(bytes, byteCount, _responseFn);
-  logInfo("post-processBytes");
+  // logInfo("post-processBytes");
 
   if (numBytesProcessed > 0) {
     _qromaCommMemBuffer->removeFirstNFromBuffer(numBytesProcessed);

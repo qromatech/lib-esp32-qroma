@@ -1,4 +1,5 @@
 #include "QromaCommProcessor.h"
+#include "../../util/logger.h"
 
 
 
@@ -52,11 +53,14 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
   if (decoded) {
     QromaCommResponse qromaCommResponse = QromaCommResponse_init_zero;
 
+    bool sendQromaCommResponse = false;
+
     switch (qromaCommCommand.which_command) {
       case QromaCommCommand_appCommandBytes_tag: {
           // txFn((uint8_t *)"APP COMMAND", 12);
           _appCommandProcessor->processBytes(qromaCommCommand.command.appCommandBytes.bytes, qromaCommCommand.command.appCommandBytes.size, txFn, &qromaCommResponse);
           if (_appCommandProcessor->hasAppResponse()) {
+            sendQromaCommResponse = true;
             qromaCommResponse.which_response = QromaCommResponse_appResponseBytes_tag;
             // uint32_t responseBytesCount = _appCommandProcessor->setAppResponse(&(qromaCommResponse.response.appResponseBytes.bytes));
             // qromaCommResponse.response.appResponseBytes.size = responseBytesCount;
@@ -67,11 +71,13 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
       case QromaCommCommand_fsCommand_tag:
         txFn((uint8_t *)"FS COMMAND", 10);
 
-        _qromaFsCommandProcessor.handleFileSystemCommand(
+        sendQromaCommResponse = _qromaFsCommandProcessor.handleFileSystemCommand(
             &(qromaCommCommand.command.fsCommand), 
             &qromaCommResponse, 
             txFn,
             this);
+
+        txFn((uint8_t *)"DONE FS COMMAND\n", 16);
 
         // handleFileSystemCommand(&(qromaCommCommand.command.fsCommand));
         // _qromaFsCommandProcessor.
@@ -85,18 +91,31 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
         break;
     }
 
-    uint8_t encodeBuffer[2000];
-    memset(encodeBuffer, 0, sizeof(encodeBuffer));
+    if (sendQromaCommResponse) {
+      logInfo("SENDING QROMACOMM RESPONSE");
+      uint8_t encodeBuffer[1000];
+      memset(encodeBuffer, 0, sizeof(encodeBuffer));
 
-    pb_ostream_t ostream = pb_ostream_from_buffer(encodeBuffer, sizeof(encodeBuffer));
-    bool encoded = pb_encode(&ostream, QromaCommResponse_fields, &qromaCommResponse);
-    if (!encoded) {
-      logError("ERROR handleQromaCommCommand - handleBytes/encode");
-      return 0;
-    }
+      pb_ostream_t ostream = pb_ostream_from_buffer(encodeBuffer, sizeof(encodeBuffer));
+      bool encoded = pb_encode(&ostream, QromaCommResponse_fields, &qromaCommResponse);
+      if (!encoded) {
+        logError("ERROR handleQromaCommCommand - handleBytes/encode");
+          return bytesLength;
+        }
 
-    txFn(encodeBuffer, ostream.bytes_written);
-    return bytesLength;
+        logInfoIntWithDescription("FILESIZE: ", qromaCommResponse.response.fsResponse.response.reportFileDataResponse.fileData.filesize);
+        logInfoIntWithDescription("CHECKSUM: ", qromaCommResponse.response.fsResponse.response.reportFileDataResponse.fileData.checksum);
+
+        logInfoIntWithDescription("QROMACOMM RESPONSE ENCODED: ", ostream.bytes_written);
+        unsigned int b64EncodedBufferLength = q_encode_base64(encodeBuffer, ostream.bytes_written, _base64EncodeBuffer);
+        _base64EncodeBuffer[b64EncodedBufferLength] = '\n';
+        logInfo("PRE-TX B64");
+        txFn(_base64EncodeBuffer, b64EncodedBufferLength + 1);
+        // txFn((uint8_t *)"\n", 1);
+        logInfo("POST-TX B64");
+      }
+
+      return bytesLength;
   } else {
     // unsuccessful decode after reading a newline
   }

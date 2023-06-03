@@ -7,6 +7,7 @@
 class QromaCommFileReader {
   public:
     void startFileReadingMode(uint32_t silenceDelayTimeoutInMs, FileData * fileData);
+    uint32_t processBytes(const uint8_t * bytes, uint32_t byteCount);
 
   private:
     char _readToFileName[40];
