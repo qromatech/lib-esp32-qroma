@@ -107,8 +107,8 @@ class QromaCommProcessor: public IQromaNewBytesProcessor,
 
     // IQromaNewBytesProcessor * _activeNewBytesProcessor;
     
-    unsigned char _base64DecodeBuffer[1000];
-    unsigned char _base64EncodeBuffer[1000];
+    unsigned char _base64DecodeBuffer[10000];
+    unsigned char _base64EncodeBuffer[10000];
 };
 
 #endif

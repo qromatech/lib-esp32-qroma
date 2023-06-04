@@ -45,13 +45,24 @@ PB_BIND(ResetFilesystemCommand, ResetFilesystemCommand, AUTO)
 PB_BIND(ResetFilesystemResponse, ResetFilesystemResponse, AUTO)
 
 
-PB_BIND(PrintFileContentsCommand, PrintFileContentsCommand, AUTO)
+PB_BIND(GetFileContentsCommand, GetFileContentsCommand, AUTO)
 
 
-PB_BIND(FileSystemCommand, FileSystemCommand, AUTO)
+PB_BIND(GetFileContentsResponse, GetFileContentsResponse, 4)
 
 
-PB_BIND(FileSystemResponse, FileSystemResponse, AUTO)
+PB_BIND(WriteFileDataCommand, WriteFileDataCommand, 4)
+
+
+PB_BIND(WriteFileDataResponse, WriteFileDataResponse, AUTO)
+
+
+PB_BIND(FileSystemCommand, FileSystemCommand, 4)
+
+
+PB_BIND(FileSystemResponse, FileSystemResponse, 4)
+
+
 
 
 

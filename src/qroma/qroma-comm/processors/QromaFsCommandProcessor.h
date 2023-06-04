@@ -32,9 +32,11 @@ class QromaFsCommandProcessor {
     bool handleReportFileDataCommand(ReportFileDataCommand * cmd, QromaCommResponse * qromaCommResponse);
     void handleStoreUpcomingFileCommand(StoreUpcomingFileDataCommand * cmd, IQromaFsCommandProcessorListener * fsListener);
 
+    bool handleWriteFileDataCommand(WriteFileDataCommand * cmd, QromaCommResponse * qromaCommResponse);
+
     // void handleListDirContents(ListDirContentsCommand * cmd);
     void handlePrintDirContents(PrintDirContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn);
-    void handlePrintFileContents(PrintFileContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn);
+    bool handleGetFileContents(GetFileContentsCommand * cmd, QromaCommResponse * response);
 };
 
 #endif

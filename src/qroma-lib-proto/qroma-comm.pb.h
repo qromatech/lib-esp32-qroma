@@ -78,7 +78,7 @@ extern const pb_msgdesc_t QromaCommResponse_msg;
 #define QromaCommResponse_fields &QromaCommResponse_msg
 
 /* Maximum encoded size of messages (where known) */
-#define QromaCommCommand_size                    1003
+#define QromaCommCommand_size                    5056
 #if defined(FileSystemResponse_size)
 #define QromaCommResponse_size                   (0 + sizeof(union QromaCommResponse_response_size_union))
 union QromaCommResponse_response_size_union {char f0[1003]; char f2[(6 + FileSystemResponse_size)];};

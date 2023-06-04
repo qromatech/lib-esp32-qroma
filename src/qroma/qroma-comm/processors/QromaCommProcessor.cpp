@@ -79,21 +79,17 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
 
         txFn((uint8_t *)"DONE FS COMMAND\n", 16);
 
-        // handleFileSystemCommand(&(qromaCommCommand.command.fsCommand));
-        // _qromaFsCommandProcessor.
-        // handleQromaCommFileSystemCommand(&(qromaCommCommand.command.fsCommand), &qromaCommResponse);
         break;
       case QromaCommCommand_commConfigCommand_tag:
         // txFn((uint8_t *)"COMM COMMAND", 12);
 
-        // handleQromaCommConfigCommand(&(qromaCommCommand.command.commConfigCommand), &qromaCommResponse);
         _qromaCommConfigProcessor.handleQromaCommConfigCommand(&(qromaCommCommand.command.commConfigCommand), &qromaCommResponse, txFn);
         break;
     }
 
     if (sendQromaCommResponse) {
       logInfo("SENDING QROMACOMM RESPONSE");
-      uint8_t encodeBuffer[1000];
+      uint8_t encodeBuffer[6000];
       memset(encodeBuffer, 0, sizeof(encodeBuffer));
 
       pb_ostream_t ostream = pb_ostream_from_buffer(encodeBuffer, sizeof(encodeBuffer));
@@ -103,15 +99,11 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
           return bytesLength;
         }
 
-        logInfoIntWithDescription("FILESIZE: ", qromaCommResponse.response.fsResponse.response.reportFileDataResponse.fileData.filesize);
-        logInfoIntWithDescription("CHECKSUM: ", qromaCommResponse.response.fsResponse.response.reportFileDataResponse.fileData.checksum);
-
         logInfoIntWithDescription("QROMACOMM RESPONSE ENCODED: ", ostream.bytes_written);
         unsigned int b64EncodedBufferLength = q_encode_base64(encodeBuffer, ostream.bytes_written, _base64EncodeBuffer);
         _base64EncodeBuffer[b64EncodedBufferLength] = '\n';
         logInfo("PRE-TX B64");
         txFn(_base64EncodeBuffer, b64EncodedBufferLength + 1);
-        // txFn((uint8_t *)"\n", 1);
         logInfo("POST-TX B64");
       }
 
