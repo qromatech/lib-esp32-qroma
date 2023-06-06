@@ -24,6 +24,18 @@ PB_BIND(RmFileCommand, RmFileCommand, AUTO)
 PB_BIND(RmFileResponse, RmFileResponse, AUTO)
 
 
+PB_BIND(RmDirCommand, RmDirCommand, AUTO)
+
+
+PB_BIND(RmDirResponse, RmDirResponse, AUTO)
+
+
+PB_BIND(MkDirCommand, MkDirCommand, AUTO)
+
+
+PB_BIND(MkDirResponse, MkDirResponse, AUTO)
+
+
 PB_BIND(ReportFileDataCommand, ReportFileDataCommand, AUTO)
 
 
