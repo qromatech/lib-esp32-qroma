@@ -78,14 +78,8 @@ extern const pb_msgdesc_t QromaCommResponse_msg;
 #define QromaCommResponse_fields &QromaCommResponse_msg
 
 /* Maximum encoded size of messages (where known) */
-#if defined(FileSystemCommand_size)
-#define QromaCommCommand_size                    (0 + sizeof(union QromaCommCommand_command_size_union))
-union QromaCommCommand_command_size_union {char f0[1003]; char f2[(6 + FileSystemCommand_size)];};
-#endif
-#if defined(FileSystemResponse_size)
-#define QromaCommResponse_size                   (0 + sizeof(union QromaCommResponse_response_size_union))
-union QromaCommResponse_response_size_union {char f0[1003]; char f2[(6 + FileSystemResponse_size)];};
-#endif
+#define QromaCommCommand_size                    5056
+#define QromaCommResponse_size                   5058
 
 #ifdef __cplusplus
 } /* extern "C" */

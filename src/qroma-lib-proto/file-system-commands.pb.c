@@ -45,7 +45,7 @@ PB_BIND(ReportFileDataResponse, ReportFileDataResponse, AUTO)
 PB_BIND(ListDirContentsCommand, ListDirContentsCommand, AUTO)
 
 
-PB_BIND(ListDirContentsResponse, ListDirContentsResponse, AUTO)
+PB_BIND(ListDirContentsResponse, ListDirContentsResponse, 2)
 
 
 PB_BIND(PrintDirContentsCommand, PrintDirContentsCommand, AUTO)
