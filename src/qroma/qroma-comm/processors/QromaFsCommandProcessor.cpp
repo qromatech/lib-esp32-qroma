@@ -30,9 +30,9 @@ void pbSendIntMessageLine(const char * msg, int value, std::function<void(uint8_
 }
 
 
- uint32_t QromaFsCommandProcessor::processBytes(const uint8_t * bytes, uint32_t byteCount) {
+//  uint32_t QromaFsCommandProcessor::processBytes(const uint8_t * bytes, uint32_t byteCount) {
 
- }
+//  }
  
 
 // return true if caller should return the populated QromaCommResponse
@@ -53,10 +53,10 @@ bool QromaFsCommandProcessor::handleFileSystemCommand(FileSystemCommand * fsComm
       handleResetFilesystemCommand(&(fsCommand->command.resetFilesystemCommand));
       break;
 
-    case FileSystemCommand_storeUpcomingFileDataCommand_tag:
-      logInfo("STORE UPCOMING FILE");
-      handleStoreUpcomingFileCommand(&(fsCommand->command.storeUpcomingFileDataCommand), fsListener);
-      break;
+    // case FileSystemCommand_storeUpcomingFileDataCommand_tag:
+    //   logInfo("STORE UPCOMING FILE");
+    //   handleStoreUpcomingFileCommand(&(fsCommand->command.storeUpcomingFileDataCommand), fsListener);
+    //   break;
 
     case FileSystemCommand_writeFileDataCommand_tag:
       logInfo("WRITE FILE DATA");
@@ -70,39 +70,194 @@ bool QromaFsCommandProcessor::handleFileSystemCommand(FileSystemCommand * fsComm
     //   handleListDirContents(&(fsCommand->command.listDirContentsCommand));
     //   break;
 
-    case FileSystemCommand_printDirContentsCommand_tag:
-      handlePrintDirContents(&(fsCommand->command.printDirContentsCommand), txFn);
-      break;
+    // case FileSystemCommand_printDirContentsCommand_tag:
+    //   handlePrintDirContents(&(fsCommand->command.printDirContentsCommand), txFn);
+    //   break;
 
     case FileSystemCommand_getFileContentsCommand_tag:
       return handleGetFileContents(&(fsCommand->command.getFileContentsCommand), qromaCommResponse);
       break;
 
+    case FileSystemCommand_listDirContentsCommand_tag:
+      return handleListDirContentsCommand(&(fsCommand->command.listDirContentsCommand), qromaCommResponse);
+      break;
+    case FileSystemCommand_mkDirCommand_tag:
+      return handleMkDirCommand(&(fsCommand->command.mkDirCommand), qromaCommResponse);
+      break;
+    case FileSystemCommand_rmDirCommand_tag:
+      return handleRmDirCommand(&(fsCommand->command.rmDirCommand), qromaCommResponse);
+      break;
+
     default:
       break;
   }
+
+  return false;
 }
 
 
-void QromaFsCommandProcessor::handleRmFileCommand(RmFileCommand * cmd) {
+bool QromaFsCommandProcessor::handleListDirContentsCommand(ListDirContentsCommand * cmd, QromaCommResponse * response) {
+  response->which_response = QromaCommResponse_fsResponse_tag;
+  response->response.fsResponse.which_response = FileSystemResponse_listDirContentsResponse_tag;
+  response->response.fsResponse.response.listDirContentsResponse.success = false;
+
+  File root = LittleFS.open(cmd->dirPath);
+  if (root == NULL) {
+    logError("handleListDirContentsCommand - failed to open directory");
+    logError("FS ROOT IS NULL");
+    return true;
+  }
+
+  File file = root.openNextFile();
+
+  int fileIndex = 0;
+
+  int maxDirItemsAllowed = sizeof(response->response.fsResponse.response.listDirContentsResponse.dirItems) /
+    sizeof(response->response.fsResponse.response.listDirContentsResponse.dirItems[0]);
+
+  response->response.fsResponse.response.listDirContentsResponse.dirItems_count = 0;
+  while (file && fileIndex < maxDirItemsAllowed) {
+    bool fileMeetsConstraints = true;
+    if (strlen(cmd->startsWithConstraint) > 0) {
+      if (strncmp(file.name(), cmd->startsWithConstraint, strlen(cmd->startsWithConstraint)) != 0) {
+        fileMeetsConstraints = false;
+      }
+    }
+
+    if (strlen(cmd->endsWithConstraint) > 0) {
+      const char * fname = file.name();
+      char * x = strrchr(fname, cmd->endsWithConstraint[0]);
+      if (x == NULL) {
+        fileMeetsConstraints = false;
+      } else {
+      if (strncmp(fname, cmd->endsWithConstraint, strlen(cmd->endsWithConstraint)) != 0) {
+          fileMeetsConstraints = false;
+        }
+      }
+    }
+
+    if (fileMeetsConstraints) {
+        strncpy(response->response.fsResponse.response.listDirContentsResponse.dirItems[fileIndex].name, file.name(),
+          sizeof(response->response.fsResponse.response.listDirContentsResponse.dirItems[0].name));
+        if (file.isDirectory()) {
+          response->response.fsResponse.response.listDirContentsResponse.dirItems[fileIndex].dirItemType = DirItemType_DIT_DIR;
+        } else {
+          response->response.fsResponse.response.listDirContentsResponse.dirItems[fileIndex].dirItemType = DirItemType_DIT_FILE;
+        }
+        response->response.fsResponse.response.listDirContentsResponse.dirItems_count++;
+      fileIndex++;
+      }
+
+    file = root.openNextFile();
+  }
+
+  response->response.fsResponse.response.listDirContentsResponse.success = true;
+
+  return true;
+}
+
+// void doPrintDirPreamble(PrintDirContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn) {
+//   File root = LittleFS.open(cmd->dirPath);
+
+//   if (root == NULL) {
+//     logError("doPrintDirPreamble - failed to open directory");
+//     logError("FS ROOT IS NULL");
+//     return;
+//   }
+
+//   File file = root.openNextFile();
+
+//   int fileCount = 0;
+
+//   while (file) {
+//     fileCount++;
+//     file = root.openNextFile();
+//   }
+
+//   root.close();
+//   pbSendLine("DIR NAME: ", cmd->dirPath, txFn);
+//   pbSendIntMessageLine("DIR SIZE: ", fileCount, txFn);
+// }
+
+
+// void doPrintDirFiles(PrintDirContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn) {
+//   File root = LittleFS.open(cmd->dirPath);
+
+//   if (root == NULL) {
+//     logError("doPrintDirFiles - failed to open directory");
+//     logError("FS ROOT IS NULL");
+//     return;
+//   }
+
+//   File file = root.openNextFile();
+
+//   while (file) {
+//     pbSendMessage(file.name(), txFn);
+//     file = root.openNextFile();
+//   }
+
+//   root.close();
+// }
+
+
+
+bool QromaFsCommandProcessor::handleMkDirCommand(MkDirCommand * cmd, QromaCommResponse * response) {
+  bool success = LittleFS.mkdir(cmd->dirPath);
+
+  response->which_response = QromaCommResponse_fsResponse_tag;
+  response->response.fsResponse.which_response = FileSystemResponse_mkDirResponse_tag;
+  response->response.fsResponse.response.mkDirResponse.success = success;
+  response->response.fsResponse.response.mkDirResponse.has_mkDirCommand = true;
+  strncpy(response->response.fsResponse.response.mkDirResponse.mkDirCommand.dirPath, cmd->dirPath,
+    sizeof(response->response.fsResponse.response.mkDirResponse.mkDirCommand.dirPath));
+
+  logInfo("handleMkDirCommand");
+  logInfo(cmd->dirPath);
+  logInfo(response->response.fsResponse.response.mkDirResponse.mkDirCommand.dirPath);
+
+  return true;
+}
+
+
+bool QromaFsCommandProcessor::handleRmDirCommand(RmDirCommand * cmd, QromaCommResponse * response) {
+  bool success = LittleFS.rmdir(cmd->dirPath);
+
+  response->which_response = QromaCommResponse_fsResponse_tag;
+  response->response.fsResponse.which_response = FileSystemResponse_rmDirResponse_tag;
+  response->response.fsResponse.response.rmDirResponse.success = success;
+  response->response.fsResponse.response.rmDirResponse.has_rmDirCommand = true;
+  strncpy(response->response.fsResponse.response.rmDirResponse.rmDirCommand.dirPath, cmd->dirPath,
+    sizeof(response->response.fsResponse.response.rmDirResponse.rmDirCommand.dirPath));
+
+  logInfo("handleRmDirCommand");
+  logInfo(cmd->dirPath);
+  logInfo(response->response.fsResponse.response.rmDirResponse.rmDirCommand.dirPath);
+
+  return true;
+}
+
+
+bool QromaFsCommandProcessor::handleRmFileCommand(RmFileCommand * cmd) {
   LittleFS.remove(cmd->filePath);
   logInfo("HANDLED RM FILE");
   logInfo(cmd->filePath);
+  return true;
 }
 
 
-void QromaFsCommandProcessor::handleResetFilesystemCommand(ResetFilesystemCommand * cmd) {
-  resetFilesystem();
+bool QromaFsCommandProcessor::handleResetFilesystemCommand(ResetFilesystemCommand * cmd) {
+  return resetFilesystem();
 }
 
-void QromaFsCommandProcessor::handleStoreUpcomingFileCommand(StoreUpcomingFileDataCommand * cmd, IQromaFsCommandProcessorListener * fsListener) {
-  logInfo("HANDLE STORE FILE");
-  fsListener->startFileReadingMode(5000, &(cmd->fileData));
-}
+// void QromaFsCommandProcessor::handleStoreUpcomingFileCommand(StoreUpcomingFileDataCommand * cmd, IQromaFsCommandProcessorListener * fsListener) {
+//   logInfo("HANDLE STORE FILE");
+//   fsListener->startFileReadingMode(5000, &(cmd->fileData));
+// }
 
 
 bool QromaFsCommandProcessor::handleWriteFileDataCommand(WriteFileDataCommand * cmd, QromaCommResponse * response) {
 
+  response->which_response = QromaCommResponse_fsResponse_tag;
   response->response.fsResponse.which_response = FileSystemResponse_writeFileDataResponse_tag;
 
 

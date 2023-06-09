@@ -31,7 +31,7 @@ uint32_t getFileChecksum(const char * fname) {
 }
 
 
-void resetFilesystem() {
+bool resetFilesystem() {
   logInfo("INITIATING FILE SYSTEM RESET");
   logInfo("OPENING");
 

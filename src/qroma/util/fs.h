@@ -4,7 +4,7 @@
 #include <pb.h>
 
 void initFileSystem();
-void resetFilesystem();
+bool resetFilesystem();
 
 bool doesFileExist(const char * fname);
 uint32_t getFileChecksum(const char * fname);
