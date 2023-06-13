@@ -9,11 +9,23 @@
 #include "../processors/IAppCommandProcessor.h"
 
 
+// use the Arduino HardwareSerial by default; to set for ESP32 C3 (e.g. QT Py C3) in PlatformIO, add line
+//  build_flags= -DQROMA_SERIAL="HWCDC" in platformio.ini
+
+#ifdef QROMA_SERIAL
+  typedef QROMA_SERIAL QromaCommSerialType;
+#else
+  typedef HardwareSerial QromaCommSerialType;
+#endif
+
+
 
 template<
   uint32_t bufferSize,
   // typename DefaultNewDataProcessor, 
-  HWCDC * _serial
+  // HWCDC * _serial
+  QromaCommSerialType * _serial
+  // Serial * _serial
 >
 class QromaCommSerialIo: public QromaCommSerialPbRxBase,
                          public IQromaCommSerialTx
@@ -46,7 +58,8 @@ class QromaCommSerialIo: public QromaCommSerialPbRxBase,
       _serial->println(message); 
     }
 
-    HWCDC * getSerial() { return _serial; };
+    QromaCommSerialType * getSerial() { return _serial; };
+    // Serial * getSerial() { return _serial; };
 
     void setAppCommandProcessor(IAppCommandProcessor * appCommandProcessor) {
       _appCommandProcessor = appCommandProcessor;
