@@ -155,7 +155,7 @@ bool QromaFsCommandProcessor::handleListDirContentsCommand(ListDirContentsComman
   strncpy(response->response.fsResponse.response.listDirContentsResponse.dirPath,
           cmd->dirPath,
           sizeof(response->response.fsResponse.response.listDirContentsResponse.dirPath);
-  response->response.fsResponse.response.listDirContentsResponse.dirPath
+  response->response.fsResponse.response.listDirContentsResponse.dirPath;
 
   return true;
 }
