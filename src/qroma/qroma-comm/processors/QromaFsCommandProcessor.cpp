@@ -241,9 +241,14 @@ bool QromaFsCommandProcessor::handleRmDirCommand(RmDirCommand * cmd, QromaCommRe
 
 
 bool QromaFsCommandProcessor::handleRmFileCommand(RmFileCommand * cmd) {
+  logInfo("REMOVING FILE");
+  logInfo(cmd->filePath);
+
   LittleFS.remove(cmd->filePath);
+  
   logInfo("HANDLED RM FILE");
   logInfo(cmd->filePath);
+  
   return true;
 }
 

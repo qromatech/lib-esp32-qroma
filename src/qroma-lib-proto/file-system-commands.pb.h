@@ -78,7 +78,7 @@ typedef struct _RmDirCommand {
 } RmDirCommand;
 
 typedef struct _RmFileCommand { 
-    char filePath[12]; 
+    char filePath[32]; 
 } RmFileCommand;
 
 typedef PB_BYTES_ARRAY_T(5000) GetFileContentsResponse_fileBytes_t;
@@ -538,8 +538,8 @@ extern const pb_msgdesc_t FileSystemResponse_msg;
 #define ResetFilesystemResponse_size             2
 #define RmDirCommand_size                        33
 #define RmDirResponse_size                       37
-#define RmFileCommand_size                       13
-#define RmFileResponse_size                      17
+#define RmFileCommand_size                       33
+#define RmFileResponse_size                      37
 #define StoreUpcomingFileDataCommand_size        47
 #define StoreUpcomingFileDataResponse_size       55
 #define WriteFileDataCommand_size                5050
