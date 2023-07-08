@@ -22,10 +22,7 @@
 
 template<
   uint32_t bufferSize,
-  // typename DefaultNewDataProcessor, 
-  // HWCDC * _serial
   QromaCommSerialType * _serial
-  // Serial * _serial
 >
 class QromaCommSerialIo: public QromaCommSerialPbRxBase,
                          public IQromaCommSerialTx
@@ -33,8 +30,6 @@ class QromaCommSerialIo: public QromaCommSerialPbRxBase,
   public:
 
     void init(QromaCommSerialIoConfig * config) {
-
-      // _serial = serial;
 
       initPbRxBase(&_tQromaCommMemBuffer, _appCommandProcessor, [this](const uint8_t * bytes, uint32_t byteCount) {
         this->serialTxBytes(bytes, byteCount);
@@ -59,7 +54,6 @@ class QromaCommSerialIo: public QromaCommSerialPbRxBase,
     }
 
     QromaCommSerialType * getSerial() { return _serial; };
-    // Serial * getSerial() { return _serial; };
 
     void setAppCommandProcessor(IAppCommandProcessor * appCommandProcessor) {
       _appCommandProcessor = appCommandProcessor;
@@ -67,10 +61,7 @@ class QromaCommSerialIo: public QromaCommSerialPbRxBase,
 
   private:
     TQromaCommMemBuffer<bufferSize> _tQromaCommMemBuffer;
-    // DefaultNewDataProcessor _newDataProcessor;
     IAppCommandProcessor * _appCommandProcessor;
-
-    // HWCDC * _serial;
 };
 
 #endif

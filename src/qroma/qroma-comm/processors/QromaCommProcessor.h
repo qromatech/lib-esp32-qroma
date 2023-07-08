@@ -8,7 +8,6 @@
 #include "../../util/qbase64.h"
 #include <pb_decode.h>
 #include <pb_encode.h>
-// #include "fs_comm_handlers.h"
 #include "QromaFsCommandProcessor.h"
 #include "QromaCommConfigProcessor.h"
 #include "IAppCommandProcessor.h"
@@ -43,6 +42,30 @@ class QromaCommProcessor: public IQromaNewBytesProcessor,
     void startFileReadingMode(uint32_t silenceDelayTimeoutInMs, FileData * fileData);
     
     void endFileReadingMode();
+
+    bool sendQromaCommResponse(QromaCommResponse * qromaCommResponse, std::function<void(uint8_t*, uint32_t)> txFn);
+
+    template<typename PbMessage, const pb_msgdesc_t *PbMessageFields>
+    bool sendQromaAppResponse(PbMessage * qromaAppResponse, std::function<void(uint8_t*, uint32_t)> txFn) {
+      QromaCommResponse qcResponse = QromaCommResponse_init_zero;
+
+      pb_ostream_t ostream = pb_ostream_from_buffer(
+        qcResponse.response.appResponseBytes.bytes,
+        sizeof(qcResponse.response.appResponseBytes.bytes)
+      );
+
+      bool encoded = pb_encode(&ostream, PbMessageFields, qromaAppResponse);
+      if (!encoded) {
+        logError("ERROR sendQromaAppResponse - handleBytes/encode");
+        return false;
+      }
+
+      qcResponse.response.appResponseBytes.size = ostream.bytes_written;
+      qcResponse.which_response = QromaCommResponse_appResponseBytes_tag;
+
+      return sendQromaCommResponse(&qcResponse, txFn);
+    }
+
 
 
   //   uint32_t handleAppCommand(PbMessage * pbMessage, QromaCommResponse * qromaCommResponse) {

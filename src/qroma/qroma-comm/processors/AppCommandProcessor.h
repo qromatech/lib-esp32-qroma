@@ -9,7 +9,6 @@
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include "IAppCommandProcessor.h"
-// #include "fs_comm_handlers.h"
 
 
 template<
@@ -38,9 +37,6 @@ class AppCommandProcessor: public IAppCommandProcessor {
       return 0;
     }
 
-    // txFn((uint8_t *)"DO APP COMMAND", 14);
-
-    // PbMessage pbMessage;
     PbResponse appCommandResponse;
     _handlerFunction(&appCommand, &appCommandResponse);
     

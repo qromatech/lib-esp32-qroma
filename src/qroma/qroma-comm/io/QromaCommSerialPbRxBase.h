@@ -13,7 +13,6 @@ class QromaCommSerialPbRxBase {
     void initPbRxBase(
       QromaCommMemBuffer * qromaCommMemBuffer, 
       IAppCommandProcessor * qromaNewBytesProcessor, 
-      // PbCommandsRegistry * pbCommandsRegistry,
       std::function<void(const uint8_t*, uint32_t)> responseFn
     );
 
@@ -21,14 +20,21 @@ class QromaCommSerialPbRxBase {
 
     bool processCommBuffer();
 
+    // template<typename PbMessage, const pb_msgdesc_t *PbMessageFields>
+    // bool sendQromaAppResponse(PbMessage * qromaAppResponse);
+    
+    template<typename PbMessage, const pb_msgdesc_t *PbMessageFields>
+    bool sendQromaAppResponse(PbMessage * qromaAppResponse) {
+      return _qromaCommProcessor.sendQromaAppResponse<PbMessage, PbMessageFields>(qromaAppResponse, _responseFn);
+    }
+
+
+
   private:
     uint32_t _commSilenceDelayToClearBuffer;
     
     QromaCommMemBuffer * _qromaCommMemBuffer;
-    // IQromaNewDataPbProcessor * _activeQromaNewDataProcessor;
     QromaCommProcessor _qromaCommProcessor;
-
-    // PbCommandsRegistry * _pbCommandsRegistry;
 
     std::function<void(const uint8_t*, uint32_t)> _responseFn;
 };

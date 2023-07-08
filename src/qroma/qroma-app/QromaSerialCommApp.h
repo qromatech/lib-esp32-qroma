@@ -2,15 +2,12 @@
 #define QROMA_SERIAL_COMM_APP_H
 
 #include "QromaSerialCommAppBase.h"
-// #include "../qroma-comm/processors/QromaPb64NewLineDelimitedProcessor.h"
 #include "QromaApp.h"
 #include "IQromaSerialCommApp.h"
 #include "../qroma-comm/io/QromaCommSerialIo.h"
 #include "../qroma-comm/io/IQromaCommSerialTx.h"
-// #include "../qroma-comm/processors/Qroma2BytesWithLengthAndPbProcessor.h"
 #include "../qroma-comm/processors/IAppCommandProcessor.h"
 #include "../util/fs.h"
-
 
 
 typedef std::function<void(QromaCommSerialIoConfig * config)> QromaCommSerialIoConfigFn;
@@ -18,58 +15,39 @@ typedef std::function<void(QromaCommSerialIoConfig * config)> QromaCommSerialIoC
 typedef std::function<void(QromaAppConfig * config)> QromaAppConfigFn;
 
 
-
-// template<
-//   typename PbMessage, 
-//   const pb_msgdesc_t *PbMessageFields,
-//   typename PbResponse, 
-//   const pb_msgdesc_t *PbResponseFields
-// >
-// class QromaSerialCommApp: public QromaSerialCommAppBase<1000, &Serial, QromaPb64NewLineDelimitedProcessor<PbMessage, PbMessageFields, PbResponse, PbResponseFields>>
-// class QromaSerialCommApp: public QromaSerialCommAppBase<1000, &Serial>
 class QromaSerialCommApp: QromaApp
-// class QromaSerialCommApp: public QromaSerialCommAppBase<1000, Qroma2BytesWithLengthAndPbProcessor, &Serial>
 {
   public:
     QromaSerialCommApp() {
       // command processor
       // membuffer
-      // 
     }
 
-    // // void registerPbCommandFunction(std::function<void(PbMessage*)> handlerFunction, PbCommandsRegistry * pbCommandsRegistry) {
-    // void registerPbCommandFunction(std::function<void(PbMessage*, PbResponse*)> handlerFunction) {
-    //   // PbCommandHandler<PbMessage, PbMessageFields> * pbCommandHandler = 
-    //   //   new PbCommandHandler<PbMessage, PbMessageFields>(handlerFunction);
 
-    //   // pbCommandsRegistry->setAppCommandProcessor(pbCommandHandler);
-    // }
-
+    void startupQroma() {
+      setQromaApp(this);
+      init();
+    }
 
     void setAppCommandProcessor(IAppCommandProcessor * processor) {
       _qromaCommSerialIo.setAppCommandProcessor(processor);
     }
     
-
-    void startupQroma() {
-      // _startupQroma(app);
-      setQromaApp(this);
-      // qromaApp->init();
-      init();
-    }
-
     void configureSerialCommIo(QromaCommSerialIoConfigFn serialIoConfigFn) {
-      // QromaCommSerialIoConfig * r = getSerialIoConfigRef();
       serialIoConfigFn(&_serialIoConfig);
     }
 
     void configureQromaApp(QromaAppConfigFn configFn) {
-      // configFn(app->getAppConfigRef());
       configFn(this->getAppConfigRef());
     }
 
     IQromaCommSerialTx * getQromaCommSerialTxRef() {
       return &_qromaCommSerialIo;
+    }
+
+    template<typename PbMessage, const pb_msgdesc_t *PbMessageFields>
+    bool sendQromaAppResponse(PbMessage * response) {
+      return _qromaCommSerialIo.sendQromaAppResponse<PbMessage, PbMessageFields>(response);
     }
 
     void init() {
@@ -92,18 +70,6 @@ class QromaSerialCommApp: QromaApp
     };
 
 };
-
-
-// template<
-//   typename PbMessage, 
-//   const pb_msgdesc_t *PbMessageFields,
-//   typename PbResponse, 
-//   const pb_msgdesc_t *PbResponseFields
-//   >
-// void registerPbCommandFunction(std::function<void(PbMessage*, PbResponse*)> handlerFunction, PbCommandsRegistry * pbCommandsRegistry)
-// {
-//   PbCommandWithResponseHandler<PbMessage, P
-// };
 
 
 #endif
