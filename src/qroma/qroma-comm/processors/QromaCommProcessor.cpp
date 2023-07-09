@@ -142,7 +142,7 @@ void QromaCommProcessor::endFileReadingMode() {
 
 bool QromaCommProcessor::sendQromaCommResponse(QromaCommResponse * qromaCommResponse, std::function<void(uint8_t*, uint32_t)> txFn) {
   logInfo("SENDING QROMACOMM RESPONSE");
-  uint8_t encodeBuffer[6000];
+  uint8_t encodeBuffer[2000];
   memset(encodeBuffer, 0, sizeof(encodeBuffer));
 
   pb_ostream_t ostream = pb_ostream_from_buffer(encodeBuffer, sizeof(encodeBuffer));

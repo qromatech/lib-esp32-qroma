@@ -63,73 +63,22 @@ class QromaCommProcessor: public IQromaNewBytesProcessor,
       qcResponse.response.appResponseBytes.size = ostream.bytes_written;
       qcResponse.which_response = QromaCommResponse_appResponseBytes_tag;
 
-      return sendQromaCommResponse(&qcResponse, txFn);
+      bool success = sendQromaCommResponse(&qcResponse, txFn);
+
+      logInfo("QromaCommProcessor::sendQromaAppResponse() complete");
+
+      return success;
     }
 
 
-
-  //   uint32_t handleAppCommand(PbMessage * pbMessage, QromaCommResponse * qromaCommResponse) {
-
-  //     PbResponse appCommandResponse;
-  //     _handlerFunction(pbMessage, &appCommandResponse);
-      
-  //     memset(&(qromaCommResponse->response.appResponseBytes), 0, sizeof(qromaCommResponse->response.appResponseBytes));
-
-  //     pb_ostream_t ostream = pb_ostream_from_buffer(
-  //       qromaCommResponse->response.appResponseBytes.bytes,
-  //       sizeof(qromaCommResponse->response.appResponseBytes.bytes)
-  //     );
-  //     bool encoded = pb_encode(&ostream, PbResponseFields, &appCommandResponse);
-  //     if (!encoded) {
-  //       logError("ERROR handleAppCommand - handleBytes/encode");
-  //       return false;
-  //     }
-
-  //     qromaCommResponse->response.appResponseBytes.size = ostream.bytes_written;
-  //     qromaCommResponse->which_response = QromaCommResponse_appResponseBytes_tag;
-
-  //     return 0;
-  //   }
-
-
-  // // uint32_t handleQromaCommFileSystemCommand(FileSystemCommand * command, QromaCommResponse * response) {
-
-  // //   return 0;
-  // // }
-  // // uint32_t handleQromaCommFileSystemCommand(FileSystemCommand * command, QromaCommResponse * response);
-
-  // uint32_t handleQromaCommConfigCommand(QromaCommConfigCommand * command, QromaCommResponse * response) {
-  //   switch (command->which_command) {
-  //     case QromaCommConfigCommand_setLogLevel_tag:
-  //       setLogLevel(command->command.setLogLevel.logLevel);
-  //       break;
-  //   }
-  //   return 0;
-  // }
-
-
   private:
-    // std::function<void(PbMessage*, PbResponse*)> _handlerFunction;
-    // IQromaNewBytesProcessor * _appCommandProcessor;
-    // QromaCommandProcessor _qromaCommandProcessor;
+    QromaCommProcessingMode _processingMode;
+
     IAppCommandProcessor * _appCommandProcessor;
     QromaFsCommandProcessor _qromaFsCommandProcessor;
     QromaCommConfigProcessor _qromaCommConfigProcessor;
     QromaCommFileReader _qromaCommFileReader;
-
-    QromaCommProcessingMode _processingMode;
-
-    // char _readToFileName[40];
-    // uint32_t _expectedChecksum;
-
-    // uint32_t _readToBufferCount;
-    // uint32_t _readToBufferSize;
-    // uint32_t _lastCommReadTimeInMs;
-    // uint32_t _silenceDelayTimeoutInMs;
-    // uint32_t _readToBufferTimeoutInMs;
-
-    // IQromaNewBytesProcessor * _activeNewBytesProcessor;
-    
+   
     unsigned char _base64DecodeBuffer[10000];
     unsigned char _base64EncodeBuffer[10000];
 };
