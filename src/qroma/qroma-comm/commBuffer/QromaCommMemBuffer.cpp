@@ -1,5 +1,5 @@
 #include "QromaCommMemBuffer.h"
-#include "../../util/logger.h"
+#include <qroma/util/logger.h>
 
 
 QromaCommMemBuffer::QromaCommMemBuffer(uint8_t * bufferMemory, uint32_t bufferSize) {

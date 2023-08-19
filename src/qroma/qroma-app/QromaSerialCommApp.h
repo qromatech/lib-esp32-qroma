@@ -1,13 +1,13 @@
 #ifndef QROMA_SERIAL_COMM_APP_H
 #define QROMA_SERIAL_COMM_APP_H
 
-#include "QromaSerialCommAppBase.h"
+// #include "QromaSerialCommAppBase.h"
 #include "QromaApp.h"
 #include "IQromaSerialCommApp.h"
-#include "../qroma-comm/io/QromaCommSerialIo.h"
-#include "../qroma-comm/io/IQromaCommSerialTx.h"
-#include "../qroma-comm/processors/IAppCommandProcessor.h"
-#include "../util/fs.h"
+#include <qroma/qroma-comm/io/QromaCommSerialIo.h>
+#include <qroma/qroma-comm/io/IQromaCommSerialTx.h>
+#include <qroma/qroma-comm/processors/IAppCommandProcessor.h>
+#include <qroma/util/fs.h>
 
 
 typedef std::function<void(QromaCommSerialIoConfig * config)> QromaCommSerialIoConfigFn;

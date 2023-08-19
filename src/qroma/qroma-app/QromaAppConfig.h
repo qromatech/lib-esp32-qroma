@@ -2,7 +2,7 @@
 #define QROMA_APP_SERIAL_IO_CONFIG_H
 
 
-#include "../util/logger.h"
+#include <qroma/util/logger.h>
 
 
 class QromaAppConfig {

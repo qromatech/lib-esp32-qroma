@@ -1,6 +1,6 @@
 #include "LittleFS.h"
 #include "QromaCommFileReader.h"
-#include "../../util/logger.h"
+#include <qroma/util/logger.h>
 
 
 void QromaCommFileReader::startFileReadingMode(uint32_t silenceDelayTimeoutInMs, FileData * fileData) {

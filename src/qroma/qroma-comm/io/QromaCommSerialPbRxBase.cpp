@@ -2,8 +2,8 @@
 #include <Arduino.h>
 
 #include "QromaCommSerialPbRxBase.h"
-#include "../../util/logger.h"
-#include "../../util/constants.h"
+#include <qroma/util/logger.h>
+#include <qroma/util/constants.h>
 
 
 void _doSerialCommandProcessingTask(void *pvParameters) {

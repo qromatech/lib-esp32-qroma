@@ -1,5 +1,5 @@
 #include "QromaCommProcessor.h"
-#include "../../util/logger.h"
+#include <qroma/util/logger.h>
 
 
 

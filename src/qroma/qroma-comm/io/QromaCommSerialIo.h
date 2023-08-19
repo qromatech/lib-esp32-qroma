@@ -4,9 +4,9 @@
 #include <Arduino.h>
 #include "QromaCommSerialIoConfig.h"
 #include "QromaCommSerialPbRxBase.h"
-#include "../commBuffer/TQromaCommMemBuffer.h"
 #include "IQromaCommSerialTx.h"
-#include "../processors/IAppCommandProcessor.h"
+#include <qroma/qroma-comm/commBuffer/TQromaCommMemBuffer.h>
+#include <qroma/qroma-comm/processors/IAppCommandProcessor.h>
 
 
 // use the Arduino HardwareSerial by default; to set for ESP32 C3 (e.g. QT Py C3) in PlatformIO, add line
