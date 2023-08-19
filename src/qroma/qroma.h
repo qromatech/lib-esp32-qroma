@@ -7,10 +7,10 @@
 #include "qroma-comm/commBuffer/QromaCommMemBuffer.h"
 #include "qroma-comm/pb-commands/PbCommandHandler.h"
 #include "qroma-comm/pb-commands/PbCommandWithResponseHandler.h"
+#include "qroma-comm/processors/AppCommandProcessor.h"
 #include "qroma-comm/qroma-comm.h"
 
 #include "startup/qroma_startup.h"
-#include "startup/register/registerPbCommandHandlers.h"
 #include "startup/configure/configureQromaApp.h"
 #include "startup/configure/configureQromaSerialCommApp.h"
 

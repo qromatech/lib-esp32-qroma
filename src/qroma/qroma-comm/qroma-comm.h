@@ -4,9 +4,9 @@
 #include <pb.h>
 #include <pb_encode.h>
 #include <functional>
-#include "../util/qbase64.h"
-#include "../util/logger.h"
-#include "../qroma-app/IQromaSerialCommApp.h"
+#include <qroma/util/qbase64.h>
+#include <qroma/util/logger.h>
+#include <qroma/qroma-app/IQromaSerialCommApp.h>
 
 
 template <typename PbMessage, const pb_msgdesc_t *PbMessageFields>

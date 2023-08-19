@@ -1,6 +1,9 @@
 #include "configureQromaSerialCommApp.h"
 
 
-void configureSerialCommIo(QromaCommSerialIoConfigFn serialIoConfigFn, QromaSerialCommApp * app) {
-  serialIoConfigFn(app->getSerialIoConfigRef());
-}
+// template<
+//   typename A
+// >
+// void configureSerialCommIo(QromaCommSerialIoConfigFn serialIoConfigFn, QromaSerialCommApp<A> * app) {
+//   serialIoConfigFn(app->getSerialIoConfigRef());
+// }

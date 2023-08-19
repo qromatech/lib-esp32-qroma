@@ -2,8 +2,8 @@
 #include <Arduino.h>
 
 #include "QromaCommSerialPbRxBase.h"
-#include "../../util/logger.h"
-#include "../../util/constants.h"
+#include <qroma/util/logger.h>
+#include <qroma/util/constants.h>
 
 
 void _doSerialCommandProcessingTask(void *pvParameters) {
@@ -28,16 +28,13 @@ void _doSerialCommandProcessingTask(void *pvParameters) {
 
 void QromaCommSerialPbRxBase::initPbRxBase(
   QromaCommMemBuffer * qromaCommMemBuffer, 
-  IQromaNewDataPbProcessor * qromaNewDataProcessor, 
-  PbCommandsRegistry * pbCommandsRegistry,
-  std::function<void(uint8_t*, uint32_t)> responseFn
+  IAppCommandProcessor * appCommandProcessor, 
+  std::function<void(const uint8_t*, uint32_t)> responseFn
 ) {
   _commSilenceDelayToClearBuffer = 3000;
   
   _qromaCommMemBuffer = qromaCommMemBuffer;
-  _activeQromaNewDataProcessor = qromaNewDataProcessor;
-
-  _pbCommandsRegistry = pbCommandsRegistry;
+  _qromaCommProcessor.init(appCommandProcessor);
 
   _responseFn = responseFn;
 
@@ -79,9 +76,7 @@ bool QromaCommSerialPbRxBase::processCommBuffer() {
 
   uint32_t numBytesProcessed = 0;
 
-  logInfo("pre-processBytes");
-  numBytesProcessed = _activeQromaNewDataProcessor->processBytes(bytes, byteCount, _pbCommandsRegistry, _responseFn);
-  logInfo("post-processBytes");
+  numBytesProcessed = _qromaCommProcessor.processBytes(bytes, byteCount, _responseFn);
 
   if (numBytesProcessed > 0) {
     _qromaCommMemBuffer->removeFirstNFromBuffer(numBytesProcessed);
@@ -90,3 +85,9 @@ bool QromaCommSerialPbRxBase::processCommBuffer() {
 
   return false;
 }
+
+
+// template<typename PbMessage, const pb_msgdesc_t *PbMessageFields>
+// bool QromaCommSerialPbRxBase::sendQromaAppResponse(PbMessage * qromaAppResponse) {
+//   return _qromaCommProcessor.sendQromaAppResponse<PbMessage, PbMessageFields>(qromaAppResponse, _responseFn);
+// }

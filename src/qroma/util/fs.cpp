@@ -1,5 +1,5 @@
 #include "fs.h"
-#include "SPIFFS.h"
+#include "LittleFS.h"
 #include "logger.h"
 #include <CRC32.h>
 
@@ -7,7 +7,7 @@
 void initFileSystem() {
   logInfo("INIT FILE SYS");
 
-  if (!SPIFFS.begin(true)) {
+  if (!LittleFS.begin(true)) {
     logError("An Error has occurred while mounting SPIFFS");
     return;
   }
@@ -19,7 +19,7 @@ void initFileSystem() {
 uint32_t getFileChecksum(const char * fname) {
   CRC32 crc;
   
-  File file = SPIFFS.open(fname);
+  File file = LittleFS.open(fname);
   for (int i = 0; i < file.size(); i++) {
     char c = file.read();
     crc.update(c);
@@ -31,11 +31,11 @@ uint32_t getFileChecksum(const char * fname) {
 }
 
 
-void resetFilesystem() {
+bool resetFilesystem() {
   logInfo("INITIATING FILE SYSTEM RESET");
   logInfo("OPENING");
 
-  File root = SPIFFS.open("/");
+  File root = LittleFS.open("/");
   logInfo("ROOT OPEN");
   if (root == NULL) {
     logError("ROOT NULL");
@@ -54,7 +54,7 @@ void resetFilesystem() {
   while(file) {  
     logInfo("FILE: ");
     logInfo(file.name());
-    SPIFFS.remove(file.name());
+    LittleFS.remove(file.name());
 
     file = root.openNextFile();
   }
@@ -63,5 +63,5 @@ void resetFilesystem() {
 
 
 bool doesFileExist(const char * fname) {
-  return SPIFFS.exists(fname);
+  return LittleFS.exists(fname);
 }

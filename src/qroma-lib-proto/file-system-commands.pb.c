@@ -24,6 +24,18 @@ PB_BIND(RmFileCommand, RmFileCommand, AUTO)
 PB_BIND(RmFileResponse, RmFileResponse, AUTO)
 
 
+PB_BIND(RmDirCommand, RmDirCommand, AUTO)
+
+
+PB_BIND(RmDirResponse, RmDirResponse, AUTO)
+
+
+PB_BIND(MkDirCommand, MkDirCommand, AUTO)
+
+
+PB_BIND(MkDirResponse, MkDirResponse, AUTO)
+
+
 PB_BIND(ReportFileDataCommand, ReportFileDataCommand, AUTO)
 
 
@@ -33,7 +45,7 @@ PB_BIND(ReportFileDataResponse, ReportFileDataResponse, AUTO)
 PB_BIND(ListDirContentsCommand, ListDirContentsCommand, AUTO)
 
 
-PB_BIND(ListDirContentsResponse, ListDirContentsResponse, AUTO)
+PB_BIND(ListDirContentsResponse, ListDirContentsResponse, 2)
 
 
 PB_BIND(PrintDirContentsCommand, PrintDirContentsCommand, AUTO)
@@ -45,13 +57,24 @@ PB_BIND(ResetFilesystemCommand, ResetFilesystemCommand, AUTO)
 PB_BIND(ResetFilesystemResponse, ResetFilesystemResponse, AUTO)
 
 
-PB_BIND(PrintFileContentsCommand, PrintFileContentsCommand, AUTO)
+PB_BIND(GetFileContentsCommand, GetFileContentsCommand, AUTO)
 
 
-PB_BIND(FileSystemCommand, FileSystemCommand, AUTO)
+PB_BIND(GetFileContentsResponse, GetFileContentsResponse, 4)
 
 
-PB_BIND(FileSystemResponse, FileSystemResponse, AUTO)
+PB_BIND(WriteFileDataCommand, WriteFileDataCommand, 4)
+
+
+PB_BIND(WriteFileDataResponse, WriteFileDataResponse, AUTO)
+
+
+PB_BIND(FileSystemCommand, FileSystemCommand, 4)
+
+
+PB_BIND(FileSystemResponse, FileSystemResponse, 4)
+
+
 
 
 

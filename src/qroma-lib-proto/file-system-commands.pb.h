@@ -16,6 +16,20 @@ typedef enum _DirItemType {
     DirItemType_DIT_DIR = 2 
 } DirItemType;
 
+typedef enum _GetFileStatusCode { 
+    GetFileStatusCode_GFSC_NOT_SET = 0, 
+    GetFileStatusCode_GFSC_SUCCESS = 1, 
+    GetFileStatusCode_GFSC_ERR_OPEN_FILE = 2, 
+    GetFileStatusCode_GFSC_ERR_INVALID_FILE = 3 
+} GetFileStatusCode;
+
+typedef enum _WriteFileDataStatusCode { 
+    WriteFileDataStatusCode_WFDSC_NOT_SET = 0, 
+    WriteFileDataStatusCode_WFDSC_SUCCESS = 1, 
+    WriteFileDataStatusCode_WFDSC_ERR_OPEN_FILE = 2, 
+    WriteFileDataStatusCode_WFDSC_ERR_CRC_MISMATCH = 3 
+} WriteFileDataStatusCode;
+
 /* Struct definitions */
 typedef struct _DirItem { 
     char name[32]; 
@@ -29,22 +43,23 @@ typedef struct _FileData {
     uint32_t checksum; 
 } FileData;
 
+typedef struct _GetFileContentsCommand { 
+    char filePath[32]; 
+} GetFileContentsCommand;
+
 typedef struct _ListDirContentsCommand { 
     char dirPath[32]; 
+    char startsWithConstraint[10]; 
+    char endsWithConstraint[10]; 
 } ListDirContentsCommand;
 
-typedef struct _ListDirContentsResponse { 
+typedef struct _MkDirCommand { 
     char dirPath[32]; 
-    pb_callback_t dirItems; 
-} ListDirContentsResponse;
+} MkDirCommand;
 
 typedef struct _PrintDirContentsCommand { 
     char dirPath[32]; 
 } PrintDirContentsCommand;
-
-typedef struct _PrintFileContentsCommand { 
-    char filePath[32]; 
-} PrintFileContentsCommand;
 
 typedef struct _ReportFileDataCommand { 
     char filename[32]; 
@@ -58,9 +73,34 @@ typedef struct _ResetFilesystemResponse {
     bool success; 
 } ResetFilesystemResponse;
 
+typedef struct _RmDirCommand { 
+    char dirPath[32]; 
+} RmDirCommand;
+
 typedef struct _RmFileCommand { 
-    char filePath[12]; 
+    char filePath[32]; 
 } RmFileCommand;
+
+typedef PB_BYTES_ARRAY_T(5000) GetFileContentsResponse_fileBytes_t;
+typedef struct _GetFileContentsResponse { 
+    GetFileStatusCode statusCode; 
+    bool has_fileData;
+    FileData fileData; 
+    GetFileContentsResponse_fileBytes_t fileBytes; 
+} GetFileContentsResponse;
+
+typedef struct _ListDirContentsResponse { 
+    char dirPath[32]; 
+    bool success; 
+    pb_size_t dirItems_count;
+    DirItem dirItems[50]; 
+} ListDirContentsResponse;
+
+typedef struct _MkDirResponse { 
+    bool success; 
+    bool has_mkDirCommand;
+    MkDirCommand mkDirCommand; 
+} MkDirResponse;
 
 typedef struct _ReportFileDataResponse { 
     bool fileExists; 
@@ -68,10 +108,16 @@ typedef struct _ReportFileDataResponse {
     FileData fileData; 
 } ReportFileDataResponse;
 
-typedef struct _RmFileResponse { 
+typedef struct _RmDirResponse { 
     bool success; 
     bool has_rmDirCommand;
-    RmFileCommand rmDirCommand; 
+    RmDirCommand rmDirCommand; 
+} RmDirResponse;
+
+typedef struct _RmFileResponse { 
+    bool success; 
+    bool has_rmFileCommand;
+    RmFileCommand rmFileCommand; 
 } RmFileResponse;
 
 typedef struct _StoreUpcomingFileDataCommand { 
@@ -86,28 +132,43 @@ typedef struct _StoreUpcomingFileDataResponse {
     FileData command; 
 } StoreUpcomingFileDataResponse;
 
+typedef PB_BYTES_ARRAY_T(5000) WriteFileDataCommand_fileBytes_t;
+typedef struct _WriteFileDataCommand { 
+    bool has_fileData;
+    FileData fileData; 
+    WriteFileDataCommand_fileBytes_t fileBytes; 
+} WriteFileDataCommand;
+
+typedef struct _WriteFileDataResponse { 
+    WriteFileDataStatusCode statusCode; 
+    bool has_command;
+    FileData command; 
+} WriteFileDataResponse;
+
 typedef struct _FileSystemCommand { 
-    /* MkDirCommand mkDirCommand = 1; */
     pb_size_t which_command;
     union {
-        PrintDirContentsCommand printDirContentsCommand;
-        PrintFileContentsCommand printFileContentsCommand;
-        RmFileCommand rmFileCommand;
-        StoreUpcomingFileDataCommand storeUpcomingFileDataCommand;
+        GetFileContentsCommand getFileContentsCommand;
+        WriteFileDataCommand writeFileDataCommand;
         ReportFileDataCommand reportFileDataCommand;
+        RmFileCommand rmFileCommand;
         ListDirContentsCommand listDirContentsCommand;
+        MkDirCommand mkDirCommand;
+        RmDirCommand rmDirCommand;
         ResetFilesystemCommand resetFilesystemCommand;
     } command; 
 } FileSystemCommand;
 
 typedef struct _FileSystemResponse { 
-    /* MkDirResponse mkDirCommand = 1; */
     pb_size_t which_response;
     union {
-        RmFileResponse rmFileCommand;
-        StoreUpcomingFileDataResponse storeUpcomingFileDataResponse;
+        GetFileContentsResponse getFileContentsResponse;
+        WriteFileDataResponse writeFileDataResponse;
         ReportFileDataResponse reportFileDataResponse;
+        RmFileResponse rmFileCommand;
         ListDirContentsResponse listDirContentsResponse;
+        MkDirResponse mkDirResponse;
+        RmDirResponse rmDirResponse;
         ResetFilesystemResponse resetFilesystemResponse;
     } response; 
 } FileSystemResponse;
@@ -117,6 +178,14 @@ typedef struct _FileSystemResponse {
 #define _DirItemType_MIN DirItemType_DIT_NOT_SET
 #define _DirItemType_MAX DirItemType_DIT_DIR
 #define _DirItemType_ARRAYSIZE ((DirItemType)(DirItemType_DIT_DIR+1))
+
+#define _GetFileStatusCode_MIN GetFileStatusCode_GFSC_NOT_SET
+#define _GetFileStatusCode_MAX GetFileStatusCode_GFSC_ERR_INVALID_FILE
+#define _GetFileStatusCode_ARRAYSIZE ((GetFileStatusCode)(GetFileStatusCode_GFSC_ERR_INVALID_FILE+1))
+
+#define _WriteFileDataStatusCode_MIN WriteFileDataStatusCode_WFDSC_NOT_SET
+#define _WriteFileDataStatusCode_MAX WriteFileDataStatusCode_WFDSC_ERR_CRC_MISMATCH
+#define _WriteFileDataStatusCode_ARRAYSIZE ((WriteFileDataStatusCode)(WriteFileDataStatusCode_WFDSC_ERR_CRC_MISMATCH+1))
 
 
 #ifdef __cplusplus
@@ -130,32 +199,46 @@ extern "C" {
 #define StoreUpcomingFileDataResponse_init_default {0, 0, false, FileData_init_default}
 #define RmFileCommand_init_default               {""}
 #define RmFileResponse_init_default              {0, false, RmFileCommand_init_default}
+#define RmDirCommand_init_default                {""}
+#define RmDirResponse_init_default               {0, false, RmDirCommand_init_default}
+#define MkDirCommand_init_default                {""}
+#define MkDirResponse_init_default               {0, false, MkDirCommand_init_default}
 #define ReportFileDataCommand_init_default       {""}
 #define ReportFileDataResponse_init_default      {0, false, FileData_init_default}
-#define ListDirContentsCommand_init_default      {""}
-#define ListDirContentsResponse_init_default     {"", {{NULL}, NULL}}
+#define ListDirContentsCommand_init_default      {"", "", ""}
+#define ListDirContentsResponse_init_default     {"", 0, 0, {DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default}}
 #define PrintDirContentsCommand_init_default     {""}
 #define ResetFilesystemCommand_init_default      {0}
 #define ResetFilesystemResponse_init_default     {0}
-#define PrintFileContentsCommand_init_default    {""}
-#define FileSystemCommand_init_default           {0, {PrintDirContentsCommand_init_default}}
-#define FileSystemResponse_init_default          {0, {RmFileResponse_init_default}}
+#define GetFileContentsCommand_init_default      {""}
+#define GetFileContentsResponse_init_default     {_GetFileStatusCode_MIN, false, FileData_init_default, {0, {0}}}
+#define WriteFileDataCommand_init_default        {false, FileData_init_default, {0, {0}}}
+#define WriteFileDataResponse_init_default       {_WriteFileDataStatusCode_MIN, false, FileData_init_default}
+#define FileSystemCommand_init_default           {0, {GetFileContentsCommand_init_default}}
+#define FileSystemResponse_init_default          {0, {GetFileContentsResponse_init_default}}
 #define DirItem_init_zero                        {"", _DirItemType_MIN, 0}
 #define FileData_init_zero                       {"", 0, 0}
 #define StoreUpcomingFileDataCommand_init_zero   {false, FileData_init_zero}
 #define StoreUpcomingFileDataResponse_init_zero  {0, 0, false, FileData_init_zero}
 #define RmFileCommand_init_zero                  {""}
 #define RmFileResponse_init_zero                 {0, false, RmFileCommand_init_zero}
+#define RmDirCommand_init_zero                   {""}
+#define RmDirResponse_init_zero                  {0, false, RmDirCommand_init_zero}
+#define MkDirCommand_init_zero                   {""}
+#define MkDirResponse_init_zero                  {0, false, MkDirCommand_init_zero}
 #define ReportFileDataCommand_init_zero          {""}
 #define ReportFileDataResponse_init_zero         {0, false, FileData_init_zero}
-#define ListDirContentsCommand_init_zero         {""}
-#define ListDirContentsResponse_init_zero        {"", {{NULL}, NULL}}
+#define ListDirContentsCommand_init_zero         {"", "", ""}
+#define ListDirContentsResponse_init_zero        {"", 0, 0, {DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero}}
 #define PrintDirContentsCommand_init_zero        {""}
 #define ResetFilesystemCommand_init_zero         {0}
 #define ResetFilesystemResponse_init_zero        {0}
-#define PrintFileContentsCommand_init_zero       {""}
-#define FileSystemCommand_init_zero              {0, {PrintDirContentsCommand_init_zero}}
-#define FileSystemResponse_init_zero             {0, {RmFileResponse_init_zero}}
+#define GetFileContentsCommand_init_zero         {""}
+#define GetFileContentsResponse_init_zero        {_GetFileStatusCode_MIN, false, FileData_init_zero, {0, {0}}}
+#define WriteFileDataCommand_init_zero           {false, FileData_init_zero, {0, {0}}}
+#define WriteFileDataResponse_init_zero          {_WriteFileDataStatusCode_MIN, false, FileData_init_zero}
+#define FileSystemCommand_init_zero              {0, {GetFileContentsCommand_init_zero}}
+#define FileSystemResponse_init_zero             {0, {GetFileContentsResponse_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define DirItem_name_tag                         1
@@ -164,35 +247,55 @@ extern "C" {
 #define FileData_filename_tag                    1
 #define FileData_filesize_tag                    2
 #define FileData_checksum_tag                    3
+#define GetFileContentsCommand_filePath_tag      1
 #define ListDirContentsCommand_dirPath_tag       1
-#define ListDirContentsResponse_dirPath_tag      1
-#define ListDirContentsResponse_dirItems_tag     2
+#define ListDirContentsCommand_startsWithConstraint_tag 2
+#define ListDirContentsCommand_endsWithConstraint_tag 3
+#define MkDirCommand_dirPath_tag                 1
 #define PrintDirContentsCommand_dirPath_tag      1
-#define PrintFileContentsCommand_filePath_tag    1
 #define ReportFileDataCommand_filename_tag       1
 #define ResetFilesystemCommand_dummy_tag         1
 #define ResetFilesystemResponse_success_tag      1
+#define RmDirCommand_dirPath_tag                 1
 #define RmFileCommand_filePath_tag               1
+#define GetFileContentsResponse_statusCode_tag   1
+#define GetFileContentsResponse_fileData_tag     2
+#define GetFileContentsResponse_fileBytes_tag    3
+#define ListDirContentsResponse_dirPath_tag      1
+#define ListDirContentsResponse_success_tag      2
+#define ListDirContentsResponse_dirItems_tag     3
+#define MkDirResponse_success_tag                1
+#define MkDirResponse_mkDirCommand_tag           2
 #define ReportFileDataResponse_fileExists_tag    1
 #define ReportFileDataResponse_fileData_tag      2
+#define RmDirResponse_success_tag                1
+#define RmDirResponse_rmDirCommand_tag           2
 #define RmFileResponse_success_tag               1
-#define RmFileResponse_rmDirCommand_tag          2
+#define RmFileResponse_rmFileCommand_tag         2
 #define StoreUpcomingFileDataCommand_fileData_tag 1
 #define StoreUpcomingFileDataResponse_success_tag 1
 #define StoreUpcomingFileDataResponse_bytesWritten_tag 2
 #define StoreUpcomingFileDataResponse_command_tag 3
-#define FileSystemCommand_printDirContentsCommand_tag 1
-#define FileSystemCommand_printFileContentsCommand_tag 2
-#define FileSystemCommand_rmFileCommand_tag      3
-#define FileSystemCommand_storeUpcomingFileDataCommand_tag 6
-#define FileSystemCommand_reportFileDataCommand_tag 7
-#define FileSystemCommand_listDirContentsCommand_tag 8
-#define FileSystemCommand_resetFilesystemCommand_tag 9
-#define FileSystemResponse_rmFileCommand_tag     2
-#define FileSystemResponse_storeUpcomingFileDataResponse_tag 6
-#define FileSystemResponse_reportFileDataResponse_tag 7
-#define FileSystemResponse_listDirContentsResponse_tag 8
-#define FileSystemResponse_resetFilesystemResponse_tag 9
+#define WriteFileDataCommand_fileData_tag        1
+#define WriteFileDataCommand_fileBytes_tag       2
+#define WriteFileDataResponse_statusCode_tag     1
+#define WriteFileDataResponse_command_tag        2
+#define FileSystemCommand_getFileContentsCommand_tag 1
+#define FileSystemCommand_writeFileDataCommand_tag 2
+#define FileSystemCommand_reportFileDataCommand_tag 4
+#define FileSystemCommand_rmFileCommand_tag      5
+#define FileSystemCommand_listDirContentsCommand_tag 9
+#define FileSystemCommand_mkDirCommand_tag       10
+#define FileSystemCommand_rmDirCommand_tag       11
+#define FileSystemCommand_resetFilesystemCommand_tag 15
+#define FileSystemResponse_getFileContentsResponse_tag 1
+#define FileSystemResponse_writeFileDataResponse_tag 2
+#define FileSystemResponse_reportFileDataResponse_tag 4
+#define FileSystemResponse_rmFileCommand_tag     5
+#define FileSystemResponse_listDirContentsResponse_tag 9
+#define FileSystemResponse_mkDirResponse_tag     10
+#define FileSystemResponse_rmDirResponse_tag     11
+#define FileSystemResponse_resetFilesystemResponse_tag 15
 
 /* Struct field encoding specification for nanopb */
 #define DirItem_FIELDLIST(X, a) \
@@ -230,10 +333,34 @@ X(a, STATIC,   SINGULAR, STRING,   filePath,          1)
 
 #define RmFileResponse_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, BOOL,     success,           1) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  rmDirCommand,      2)
+X(a, STATIC,   OPTIONAL, MESSAGE,  rmFileCommand,     2)
 #define RmFileResponse_CALLBACK NULL
 #define RmFileResponse_DEFAULT NULL
-#define RmFileResponse_rmDirCommand_MSGTYPE RmFileCommand
+#define RmFileResponse_rmFileCommand_MSGTYPE RmFileCommand
+
+#define RmDirCommand_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, STRING,   dirPath,           1)
+#define RmDirCommand_CALLBACK NULL
+#define RmDirCommand_DEFAULT NULL
+
+#define RmDirResponse_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, BOOL,     success,           1) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  rmDirCommand,      2)
+#define RmDirResponse_CALLBACK NULL
+#define RmDirResponse_DEFAULT NULL
+#define RmDirResponse_rmDirCommand_MSGTYPE RmDirCommand
+
+#define MkDirCommand_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, STRING,   dirPath,           1)
+#define MkDirCommand_CALLBACK NULL
+#define MkDirCommand_DEFAULT NULL
+
+#define MkDirResponse_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, BOOL,     success,           1) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  mkDirCommand,      2)
+#define MkDirResponse_CALLBACK NULL
+#define MkDirResponse_DEFAULT NULL
+#define MkDirResponse_mkDirCommand_MSGTYPE MkDirCommand
 
 #define ReportFileDataCommand_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, STRING,   filename,          1)
@@ -248,14 +375,17 @@ X(a, STATIC,   OPTIONAL, MESSAGE,  fileData,          2)
 #define ReportFileDataResponse_fileData_MSGTYPE FileData
 
 #define ListDirContentsCommand_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, STRING,   dirPath,           1)
+X(a, STATIC,   SINGULAR, STRING,   dirPath,           1) \
+X(a, STATIC,   SINGULAR, STRING,   startsWithConstraint,   2) \
+X(a, STATIC,   SINGULAR, STRING,   endsWithConstraint,   3)
 #define ListDirContentsCommand_CALLBACK NULL
 #define ListDirContentsCommand_DEFAULT NULL
 
 #define ListDirContentsResponse_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, STRING,   dirPath,           1) \
-X(a, CALLBACK, REPEATED, MESSAGE,  dirItems,          2)
-#define ListDirContentsResponse_CALLBACK pb_default_field_callback
+X(a, STATIC,   SINGULAR, BOOL,     success,           2) \
+X(a, STATIC,   REPEATED, MESSAGE,  dirItems,          3)
+#define ListDirContentsResponse_CALLBACK NULL
 #define ListDirContentsResponse_DEFAULT NULL
 #define ListDirContentsResponse_dirItems_MSGTYPE DirItem
 
@@ -274,41 +404,71 @@ X(a, STATIC,   SINGULAR, BOOL,     success,           1)
 #define ResetFilesystemResponse_CALLBACK NULL
 #define ResetFilesystemResponse_DEFAULT NULL
 
-#define PrintFileContentsCommand_FIELDLIST(X, a) \
+#define GetFileContentsCommand_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, STRING,   filePath,          1)
-#define PrintFileContentsCommand_CALLBACK NULL
-#define PrintFileContentsCommand_DEFAULT NULL
+#define GetFileContentsCommand_CALLBACK NULL
+#define GetFileContentsCommand_DEFAULT NULL
+
+#define GetFileContentsResponse_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UENUM,    statusCode,        1) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  fileData,          2) \
+X(a, STATIC,   SINGULAR, BYTES,    fileBytes,         3)
+#define GetFileContentsResponse_CALLBACK NULL
+#define GetFileContentsResponse_DEFAULT NULL
+#define GetFileContentsResponse_fileData_MSGTYPE FileData
+
+#define WriteFileDataCommand_FIELDLIST(X, a) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  fileData,          1) \
+X(a, STATIC,   SINGULAR, BYTES,    fileBytes,         2)
+#define WriteFileDataCommand_CALLBACK NULL
+#define WriteFileDataCommand_DEFAULT NULL
+#define WriteFileDataCommand_fileData_MSGTYPE FileData
+
+#define WriteFileDataResponse_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UENUM,    statusCode,        1) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  command,           2)
+#define WriteFileDataResponse_CALLBACK NULL
+#define WriteFileDataResponse_DEFAULT NULL
+#define WriteFileDataResponse_command_MSGTYPE FileData
 
 #define FileSystemCommand_FIELDLIST(X, a) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,printDirContentsCommand,command.printDirContentsCommand),   1) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,printFileContentsCommand,command.printFileContentsCommand),   2) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,rmFileCommand,command.rmFileCommand),   3) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,storeUpcomingFileDataCommand,command.storeUpcomingFileDataCommand),   6) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,reportFileDataCommand,command.reportFileDataCommand),   7) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,listDirContentsCommand,command.listDirContentsCommand),   8) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,resetFilesystemCommand,command.resetFilesystemCommand),   9)
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,getFileContentsCommand,command.getFileContentsCommand),   1) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,writeFileDataCommand,command.writeFileDataCommand),   2) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,reportFileDataCommand,command.reportFileDataCommand),   4) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,rmFileCommand,command.rmFileCommand),   5) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,listDirContentsCommand,command.listDirContentsCommand),   9) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,mkDirCommand,command.mkDirCommand),  10) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,rmDirCommand,command.rmDirCommand),  11) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,resetFilesystemCommand,command.resetFilesystemCommand),  15)
 #define FileSystemCommand_CALLBACK NULL
 #define FileSystemCommand_DEFAULT NULL
-#define FileSystemCommand_command_printDirContentsCommand_MSGTYPE PrintDirContentsCommand
-#define FileSystemCommand_command_printFileContentsCommand_MSGTYPE PrintFileContentsCommand
-#define FileSystemCommand_command_rmFileCommand_MSGTYPE RmFileCommand
-#define FileSystemCommand_command_storeUpcomingFileDataCommand_MSGTYPE StoreUpcomingFileDataCommand
+#define FileSystemCommand_command_getFileContentsCommand_MSGTYPE GetFileContentsCommand
+#define FileSystemCommand_command_writeFileDataCommand_MSGTYPE WriteFileDataCommand
 #define FileSystemCommand_command_reportFileDataCommand_MSGTYPE ReportFileDataCommand
+#define FileSystemCommand_command_rmFileCommand_MSGTYPE RmFileCommand
 #define FileSystemCommand_command_listDirContentsCommand_MSGTYPE ListDirContentsCommand
+#define FileSystemCommand_command_mkDirCommand_MSGTYPE MkDirCommand
+#define FileSystemCommand_command_rmDirCommand_MSGTYPE RmDirCommand
 #define FileSystemCommand_command_resetFilesystemCommand_MSGTYPE ResetFilesystemCommand
 
 #define FileSystemResponse_FIELDLIST(X, a) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (response,rmFileCommand,response.rmFileCommand),   2) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (response,storeUpcomingFileDataResponse,response.storeUpcomingFileDataResponse),   6) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (response,reportFileDataResponse,response.reportFileDataResponse),   7) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (response,listDirContentsResponse,response.listDirContentsResponse),   8) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (response,resetFilesystemResponse,response.resetFilesystemResponse),   9)
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,getFileContentsResponse,response.getFileContentsResponse),   1) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,writeFileDataResponse,response.writeFileDataResponse),   2) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,reportFileDataResponse,response.reportFileDataResponse),   4) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,rmFileCommand,response.rmFileCommand),   5) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,listDirContentsResponse,response.listDirContentsResponse),   9) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,mkDirResponse,response.mkDirResponse),  10) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,rmDirResponse,response.rmDirResponse),  11) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,resetFilesystemResponse,response.resetFilesystemResponse),  15)
 #define FileSystemResponse_CALLBACK NULL
 #define FileSystemResponse_DEFAULT NULL
-#define FileSystemResponse_response_rmFileCommand_MSGTYPE RmFileResponse
-#define FileSystemResponse_response_storeUpcomingFileDataResponse_MSGTYPE StoreUpcomingFileDataResponse
+#define FileSystemResponse_response_getFileContentsResponse_MSGTYPE GetFileContentsResponse
+#define FileSystemResponse_response_writeFileDataResponse_MSGTYPE WriteFileDataResponse
 #define FileSystemResponse_response_reportFileDataResponse_MSGTYPE ReportFileDataResponse
+#define FileSystemResponse_response_rmFileCommand_MSGTYPE RmFileResponse
 #define FileSystemResponse_response_listDirContentsResponse_MSGTYPE ListDirContentsResponse
+#define FileSystemResponse_response_mkDirResponse_MSGTYPE MkDirResponse
+#define FileSystemResponse_response_rmDirResponse_MSGTYPE RmDirResponse
 #define FileSystemResponse_response_resetFilesystemResponse_MSGTYPE ResetFilesystemResponse
 
 extern const pb_msgdesc_t DirItem_msg;
@@ -317,6 +477,10 @@ extern const pb_msgdesc_t StoreUpcomingFileDataCommand_msg;
 extern const pb_msgdesc_t StoreUpcomingFileDataResponse_msg;
 extern const pb_msgdesc_t RmFileCommand_msg;
 extern const pb_msgdesc_t RmFileResponse_msg;
+extern const pb_msgdesc_t RmDirCommand_msg;
+extern const pb_msgdesc_t RmDirResponse_msg;
+extern const pb_msgdesc_t MkDirCommand_msg;
+extern const pb_msgdesc_t MkDirResponse_msg;
 extern const pb_msgdesc_t ReportFileDataCommand_msg;
 extern const pb_msgdesc_t ReportFileDataResponse_msg;
 extern const pb_msgdesc_t ListDirContentsCommand_msg;
@@ -324,7 +488,10 @@ extern const pb_msgdesc_t ListDirContentsResponse_msg;
 extern const pb_msgdesc_t PrintDirContentsCommand_msg;
 extern const pb_msgdesc_t ResetFilesystemCommand_msg;
 extern const pb_msgdesc_t ResetFilesystemResponse_msg;
-extern const pb_msgdesc_t PrintFileContentsCommand_msg;
+extern const pb_msgdesc_t GetFileContentsCommand_msg;
+extern const pb_msgdesc_t GetFileContentsResponse_msg;
+extern const pb_msgdesc_t WriteFileDataCommand_msg;
+extern const pb_msgdesc_t WriteFileDataResponse_msg;
 extern const pb_msgdesc_t FileSystemCommand_msg;
 extern const pb_msgdesc_t FileSystemResponse_msg;
 
@@ -335,6 +502,10 @@ extern const pb_msgdesc_t FileSystemResponse_msg;
 #define StoreUpcomingFileDataResponse_fields &StoreUpcomingFileDataResponse_msg
 #define RmFileCommand_fields &RmFileCommand_msg
 #define RmFileResponse_fields &RmFileResponse_msg
+#define RmDirCommand_fields &RmDirCommand_msg
+#define RmDirResponse_fields &RmDirResponse_msg
+#define MkDirCommand_fields &MkDirCommand_msg
+#define MkDirResponse_fields &MkDirResponse_msg
 #define ReportFileDataCommand_fields &ReportFileDataCommand_msg
 #define ReportFileDataResponse_fields &ReportFileDataResponse_msg
 #define ListDirContentsCommand_fields &ListDirContentsCommand_msg
@@ -342,27 +513,37 @@ extern const pb_msgdesc_t FileSystemResponse_msg;
 #define PrintDirContentsCommand_fields &PrintDirContentsCommand_msg
 #define ResetFilesystemCommand_fields &ResetFilesystemCommand_msg
 #define ResetFilesystemResponse_fields &ResetFilesystemResponse_msg
-#define PrintFileContentsCommand_fields &PrintFileContentsCommand_msg
+#define GetFileContentsCommand_fields &GetFileContentsCommand_msg
+#define GetFileContentsResponse_fields &GetFileContentsResponse_msg
+#define WriteFileDataCommand_fields &WriteFileDataCommand_msg
+#define WriteFileDataResponse_fields &WriteFileDataResponse_msg
 #define FileSystemCommand_fields &FileSystemCommand_msg
 #define FileSystemResponse_fields &FileSystemResponse_msg
 
 /* Maximum encoded size of messages (where known) */
-/* ListDirContentsResponse_size depends on runtime parameters */
-/* FileSystemResponse_size depends on runtime parameters */
 #define DirItem_size                             41
 #define FileData_size                            45
-#define FileSystemCommand_size                   49
-#define ListDirContentsCommand_size              33
+#define FileSystemCommand_size                   5053
+#define FileSystemResponse_size                  5055
+#define GetFileContentsCommand_size              33
+#define GetFileContentsResponse_size             5052
+#define ListDirContentsCommand_size              55
+#define ListDirContentsResponse_size             2185
+#define MkDirCommand_size                        33
+#define MkDirResponse_size                       37
 #define PrintDirContentsCommand_size             33
-#define PrintFileContentsCommand_size            33
 #define ReportFileDataCommand_size               33
 #define ReportFileDataResponse_size              49
 #define ResetFilesystemCommand_size              2
 #define ResetFilesystemResponse_size             2
-#define RmFileCommand_size                       13
-#define RmFileResponse_size                      17
+#define RmDirCommand_size                        33
+#define RmDirResponse_size                       37
+#define RmFileCommand_size                       33
+#define RmFileResponse_size                      37
 #define StoreUpcomingFileDataCommand_size        47
 #define StoreUpcomingFileDataResponse_size       55
+#define WriteFileDataCommand_size                5050
+#define WriteFileDataResponse_size               49
 
 #ifdef __cplusplus
 } /* extern "C" */
