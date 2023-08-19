@@ -2,7 +2,6 @@
 #define IQROMA_NEW_DATA_PB_PROCESSOR_H
 
 #include <pb.h>
-#include "../pb-commands/PbCommandsRegistry.h"
 #include <functional>
 
 
