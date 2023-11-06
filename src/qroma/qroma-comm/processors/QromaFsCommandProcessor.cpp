@@ -28,11 +28,6 @@ void pbSendIntMessageLine(const char * msg, int value, std::function<void(uint8_
   
   pbSendLine(msg, vBuf, txFn);
 }
-
-
-//  uint32_t QromaFsCommandProcessor::processBytes(const uint8_t * bytes, uint32_t byteCount) {
-
-//  }
  
 
 // return true if caller should return the populated QromaCommResponse
@@ -53,11 +48,6 @@ bool QromaFsCommandProcessor::handleFileSystemCommand(FileSystemCommand * fsComm
       handleResetFilesystemCommand(&(fsCommand->command.resetFilesystemCommand));
       break;
 
-    // case FileSystemCommand_storeUpcomingFileDataCommand_tag:
-    //   logInfo("STORE UPCOMING FILE");
-    //   handleStoreUpcomingFileCommand(&(fsCommand->command.storeUpcomingFileDataCommand), fsListener);
-    //   break;
-
     case FileSystemCommand_writeFileDataCommand_tag:
       logInfo("WRITE FILE DATA");
       return handleWriteFileDataCommand(&(fsCommand->command.writeFileDataCommand), qromaCommResponse);
@@ -65,14 +55,6 @@ bool QromaFsCommandProcessor::handleFileSystemCommand(FileSystemCommand * fsComm
     case FileSystemCommand_reportFileDataCommand_tag:
       return handleReportFileDataCommand(&(fsCommand->command.reportFileDataCommand), qromaCommResponse);
       break;
-
-    // case FileSystemCommand_listDirContentsCommand_tag:
-    //   handleListDirContents(&(fsCommand->command.listDirContentsCommand));
-    //   break;
-
-    // case FileSystemCommand_printDirContentsCommand_tag:
-    //   handlePrintDirContents(&(fsCommand->command.printDirContentsCommand), txFn);
-    //   break;
 
     case FileSystemCommand_getFileContentsCommand_tag:
       return handleGetFileContents(&(fsCommand->command.getFileContentsCommand), qromaCommResponse);
@@ -159,50 +141,6 @@ bool QromaFsCommandProcessor::handleListDirContentsCommand(ListDirContentsComman
   return true;
 }
 
-// void doPrintDirPreamble(PrintDirContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn) {
-//   File root = LittleFS.open(cmd->dirPath);
-
-//   if (root == NULL) {
-//     logError("doPrintDirPreamble - failed to open directory");
-//     logError("FS ROOT IS NULL");
-//     return;
-//   }
-
-//   File file = root.openNextFile();
-
-//   int fileCount = 0;
-
-//   while (file) {
-//     fileCount++;
-//     file = root.openNextFile();
-//   }
-
-//   root.close();
-//   pbSendLine("DIR NAME: ", cmd->dirPath, txFn);
-//   pbSendIntMessageLine("DIR SIZE: ", fileCount, txFn);
-// }
-
-
-// void doPrintDirFiles(PrintDirContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn) {
-//   File root = LittleFS.open(cmd->dirPath);
-
-//   if (root == NULL) {
-//     logError("doPrintDirFiles - failed to open directory");
-//     logError("FS ROOT IS NULL");
-//     return;
-//   }
-
-//   File file = root.openNextFile();
-
-//   while (file) {
-//     pbSendMessage(file.name(), txFn);
-//     file = root.openNextFile();
-//   }
-
-//   root.close();
-// }
-
-
 
 bool QromaFsCommandProcessor::handleMkDirCommand(MkDirCommand * cmd, QromaCommResponse * response) {
   bool success = LittleFS.mkdir(cmd->dirPath);
@@ -257,11 +195,6 @@ bool QromaFsCommandProcessor::handleResetFilesystemCommand(ResetFilesystemComman
   return resetFilesystem();
 }
 
-// void QromaFsCommandProcessor::handleStoreUpcomingFileCommand(StoreUpcomingFileDataCommand * cmd, IQromaFsCommandProcessorListener * fsListener) {
-//   logInfo("HANDLE STORE FILE");
-//   fsListener->startFileReadingMode(5000, &(cmd->fileData));
-// }
-
 
 bool QromaFsCommandProcessor::handleWriteFileDataCommand(WriteFileDataCommand * cmd, QromaCommResponse * response) {
 
@@ -289,47 +222,6 @@ bool QromaFsCommandProcessor::handleWriteFileDataCommand(WriteFileDataCommand * 
 
   response->response.fsResponse.response.writeFileDataResponse.statusCode = WriteFileDataStatusCode_WFDSC_SUCCESS;
   return true;
-
-
-
-// bool QromaCommFileReader::finalizeReadToFileContents() {
-//   const uint8_t * commBuffer = cbGetCommBuffer();
-
-//   logInfo("ADD TO FILE");
-//   File file = LittleFS.open(_readToFileName, FILE_WRITE);
-//   if (!file) {
-//     logInfo("NO FILE OPENED");
-//     logInfo(_readToFileName);
-//     sendReadSerialToFileResponse(false, 0);
-//     return true;
-//   }
-
-//   bool writeSuccess = file.write(commBuffer, _readToBufferSize);
-//   file.close();
-
-//   logInfoIntWithDescription("FILE WRITE COMPLETE: ", writeSuccess);
-
-//   if (writeSuccess) {
-//     logInfo("WROTE FILE - COMM BUFFER");
-//     logInfo(_readToFileName);
-//   } else {
-//     logInfo("ERR WRITE FILE");
-//     logInfo(_readToFileName);
-
-//     sendReadSerialToFileResponse(false, 0);
-//     return true;
-//   }
-
-//   uint32_t crc = getFileChecksum(_readToFileName);
-
-//   sendReadSerialToFileResponse(writeSuccess, crc);
-  
-//   cbRemoveFirstNFromBuffer(_readToBufferSize);
-//   setCommReadingMode(CommReadingMode_PB_COMMANDS);  
-
-//   return true;
-// }
-
 }
 
 
@@ -361,60 +253,6 @@ bool QromaFsCommandProcessor::handleReportFileDataCommand(ReportFileDataCommand 
 
   return true;
 }
-
-
-// bool listDirContents_callback(pb_ostream_t *stream, const pb_field_t *field, void * const *arg)
-// {
-//   char * dirName = (char*)*arg;
-//   File root = SPIFFS.open(dirName, FILE_READ);
-
-//   if (root == NULL) {
-//     logInfo("FS ROOT IS NULL");
-//   } else {
-//     logInfo("SPIFFS OPEN");
-//   }
-
-//   File file = root.openNextFile();
-
-//   while (file) {
-//     logInfoIntWithDescription("F: ", strlen(file.name()));
-
-//     DirItem dirItem = DirItem_init_zero;
-//     strncpy(dirItem.name, file.name(), sizeof(dirItem.name));
-//     dirItem.name[sizeof(dirItem.name) - 1] = '\0';
-
-//     logInfo("D: ");
-
-//     if (file.isDirectory()) {
-//       dirItem.dirItemType = DirItemType_DIT_DIR;
-//       dirItem.filesize = 0;
-//     } else {
-//       dirItem.dirItemType = DirItemType_DIT_FILE;
-//       dirItem.filesize = file.size();
-//     }
-    
-//     /* This encodes the header for the field, based on the constant info
-//       * from pb_field_t. */
-//     if (!pb_encode_tag_for_field(stream, field)) {
-//       return false;
-//     }
-    
-//     /* This encodes the data for the field, based on our DirItem structure. */
-//     if (!pb_encode_submessage(stream, DirItem_fields, &dirItem)) {
-//       return false;
-//     }
-
-//     file.close();
-
-//     file = root.openNextFile();
-//   }
-
-//   logInfo("ROOT C");
-//   root.close();
-//   logInfo("DONE DIR CB");
-
-//   return true;
-// }
 
 
 void doPrintDirPreamble(PrintDirContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn) {
@@ -462,71 +300,11 @@ void doPrintDirFiles(PrintDirContentsCommand * cmd, std::function<void(uint8_t*,
 
 
 void QromaFsCommandProcessor::handlePrintDirContents(PrintDirContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn) {
-  // comm->setPbBuildingMessage(true);
   logInfo("PRINT DIR CONTENTS");
 
   doPrintDirPreamble(cmd, txFn);
   doPrintDirFiles(cmd, txFn);
-
-  // comm->setPbBuildingMessage(false);
 }
-
-
-// void doPrintFilePreamble(PrintFileContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn) {
-//   File file = LittleFS.open(cmd->filePath);
-
-//   if (file == NULL) {
-//     logError("doPrintFilePreamble - failed to open file");
-//     logError(cmd->filePath);
-//     logError("FILE IS NULL");
-//     return;
-//   }
-
-//   if (file.isDirectory()) {
-//     logError("doPrintFilePreamble - not a file; it's a directory");
-//     logError(cmd->filePath);
-//     logError("GOT DIRECTORY");
-//     return;
-//   }
-
-//   int fileSize = file.size();
-
-//   file.close();
-
-//   pbSendLine("FILE PATH: ", cmd->filePath, txFn);
-//   pbSendIntMessageLine("FILE SIZE: ", fileSize, txFn);
-// }
-
-
-// void doPrintFileContents(PrintFileContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn) {
-//   File file = LittleFS.open(cmd->filePath);
-
-//   if (file == NULL) {
-//     logError("doPrintFileContents - failed to open file");
-//     logError(cmd->filePath);
-//     logError("FILE IS NULL");
-//     return;
-//   }
-
-//   const int FILE_BUFFER_SIZE = 250;
-//   char fileBuffer[FILE_BUFFER_SIZE];
-//   memset(fileBuffer, 0, sizeof fileBuffer);
-
-//   int fileSize = file.available();
-//   int bytesToPrint = fileSize;
-//   logInfoIntWithDescription("!BYTES REMAINING: ", bytesToPrint);
-
-//   while (bytesToPrint > 0) {
-//     int byteCount = file.readBytes(fileBuffer, sizeof fileBuffer);
-//     logInfoIntWithDescription("SENDING BYTES: ", byteCount);
-//     // comm->pbSendBytes((uint8_t*)fileBuffer, byteCount);
-//     txFn((uint8_t*)fileBuffer, byteCount);
-//     bytesToPrint -= byteCount;
-//     logInfoIntWithDescription("BYTES REMAINING: ", bytesToPrint);
-//   }
-
-//   file.close();
-// }
 
 
 bool QromaFsCommandProcessor::handleGetFileContents(GetFileContentsCommand * cmd, QromaCommResponse * response) {
@@ -569,36 +347,3 @@ bool QromaFsCommandProcessor::handleGetFileContents(GetFileContentsCommand * cmd
 
   return true;
 }
-
-// void handleListDirContents(ListDirContentsCommand * cmd) {
-//   logInfo("LISTING DIR CONTENTS >> ");
-//   logInfo(cmd->dirPath);
-
-//   QromaCommResponse response = QromaCommResponse_init_zero;
-//   response.which_response = QromaCommResponse_fsResponse_tag;
-//   response.response.fsResponse.which_response = FileSystemResponse_listDirContentsResponse_tag;
-//   strncpy(response.response.fsResponse.response.listDirContentsResponse.dirPath, cmd->dirPath, 
-//     sizeof(response.response.fsResponse.response.listDirContentsResponse.dirPath));
-//   response.response.fsResponse.response.listDirContentsResponse.dirItems.funcs.encode = &listDirContents_callback;
-//   response.response.fsResponse.response.listDirContentsResponse.dirItems.arg = &(cmd->dirPath);
-
-//   logInfo("PRE DIR ENCODE");
-//   uint8_t buffer[10000];
-//   memset(buffer, 0, sizeof buffer);
-//   pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
-
-//   logInfo("MID DIR ENCODE");
-
-//   bool status = pb_encode(&stream, QromaCommResponse_fields, &response);
-
-//   logInfo("POST DIR ENCODE");
-
-//   if (!status) {
-//     logError("ERR LISTING DIR CONTENTS");
-//   } else {
-//     logInfo("DONE LISTING DIR CONTENTS");
-//   }
-
-//   comm->pbSendQromacommResponse(buffer, (uint32_t)stream.bytes_written);
-// }
-

@@ -18,11 +18,6 @@ typedef std::function<void(QromaAppConfig * config)> QromaAppConfigFn;
 class QromaSerialCommApp: QromaApp
 {
   public:
-    QromaSerialCommApp() {
-      // command processor
-      // membuffer
-    }
-
 
     void startupQroma() {
       setQromaApp(this);
@@ -58,9 +53,6 @@ class QromaSerialCommApp: QromaApp
 
   
   private:
-    // QromaCommSerialIo 
-    // QromaCommSerialIo Config
-    // Comm/new data Processor
 
     QromaCommSerialIo<1000, &Serial> _qromaCommSerialIo;
 

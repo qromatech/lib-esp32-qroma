@@ -8,23 +8,4 @@
 typedef std::function<void(QromaAppConfig * config)> QromaAppConfigFn;
 
 
-// void startupQroma(QromaCommMemBuffer * memBuffer);
-
-// void startupQroma(QromaCommMemBuffer * memBuffer, QromaAppConfigFn myQromaAppConfigFn);
-
-// void startupQroma(QromaSerialCommApp * app, QromaAppConfigFn myQromaAppConfigFn);
-
-// void startupQroma(QromaSerialCommApp * app);
-
-// template<
-//   typename Abc
-// >
-// void startupQroma(QromaSerialCommApp<Abc> * qromaApp) {
-//   // _startupQroma(app);
-//   setQromaApp(qromaApp);
-//   qromaApp->init();
-// }
-
-
-
 #endif

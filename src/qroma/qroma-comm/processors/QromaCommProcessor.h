@@ -21,12 +21,6 @@ enum QromaCommProcessingMode {
 };
 
 
-// template<
-//   typename PbMessage, 
-//   const pb_msgdesc_t *PbMessageFields,
-//   typename PbResponse, 
-//   const pb_msgdesc_t *PbResponseFields
-// >
 class QromaCommProcessor: public IQromaNewBytesProcessor, 
                                  IQromaFsCommandProcessorListener 
 {

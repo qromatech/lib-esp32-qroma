@@ -64,10 +64,6 @@ class AppCommandProcessor: public IAppCommandProcessor {
     return sizeof(PbResponse);
   }
 
-  // const bytes * getAppResponseBytes() {
-  //   return 
-  // }
-
   private:
     std::function<void(PbMessage*, PbResponse*)> _handlerFunction;
 

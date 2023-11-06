@@ -12,6 +12,7 @@
 
 #include "startup/qroma_startup.h"
 #include "startup/configure/configureQromaApp.h"
-#include "startup/configure/configureQromaSerialCommApp.h"
+
+#include "util/qroma-persist.h"
 
 #endif
