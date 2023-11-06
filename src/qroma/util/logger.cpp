@@ -1,15 +1,8 @@
 #include "logger.h"
-// #include "../bluetooth/bluetooth.h"
-// #include "../bluetooth/qroma_device_logger.h"
 #include <HardwareSerial.h>
-// #include "../qroma-point/QromaDevice.h"
 
 
-// Qroma_DebugCommMode _commMode = DebugCommMode_None;
 Qroma_DebugCommMode _commMode = Qroma_DebugCommMode_DebugCommMode_SerialOnly;
-// Qroma_DebugCommMode _commMode = DebugCommMode_BluetoothOnly;
-// Qroma_DebugCommMode _commMode = DebugCommMode_SerialAndBluetooth;
-
 Qroma_LogLevel _logLevel = Qroma_LogLevel_LogLevel_Info;
 
 

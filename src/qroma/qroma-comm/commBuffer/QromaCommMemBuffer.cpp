@@ -40,10 +40,6 @@ uint32_t QromaCommMemBuffer::getLastTimeAddedToInMs() {
 
 
 void QromaCommMemBuffer::removeFirstNFromBuffer(uint32_t n) {
-  // logInfo("removeFirstNFromBuffer");
-  // logInfo(_bufferWriteIndex);
-  // logInfo(n);
-  // logInfo((const char*)_bufferMemory);
 
   if (n >= _bufferWriteIndex) {
     reset();

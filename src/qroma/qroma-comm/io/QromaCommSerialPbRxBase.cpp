@@ -85,9 +85,3 @@ bool QromaCommSerialPbRxBase::processCommBuffer() {
 
   return false;
 }
-
-
-// template<typename PbMessage, const pb_msgdesc_t *PbMessageFields>
-// bool QromaCommSerialPbRxBase::sendQromaAppResponse(PbMessage * qromaAppResponse) {
-//   return _qromaCommProcessor.sendQromaAppResponse<PbMessage, PbMessageFields>(qromaAppResponse, _responseFn);
-// }
