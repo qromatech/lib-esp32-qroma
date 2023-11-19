@@ -9,10 +9,19 @@
 PB_BIND(RequestQromaCommConfig, RequestQromaCommConfig, AUTO)
 
 
-PB_BIND(SetLogLevel, SetLogLevel, AUTO)
+PB_BIND(QromaCommConfig, QromaCommConfig, AUTO)
 
 
-PB_BIND(SetHeartbeatInterval, SetHeartbeatInterval, AUTO)
+PB_BIND(SetLogLevelRequest, SetLogLevelRequest, AUTO)
+
+
+PB_BIND(SetLogLevelResponse, SetLogLevelResponse, AUTO)
+
+
+PB_BIND(SetHeartbeatIntervalRequest, SetHeartbeatIntervalRequest, AUTO)
+
+
+PB_BIND(SetHeartbeatIntervalResponse, SetHeartbeatIntervalResponse, AUTO)
 
 
 PB_BIND(QromaCommConfigCommand, QromaCommConfigCommand, AUTO)
