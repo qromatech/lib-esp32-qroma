@@ -4,6 +4,7 @@
 #include <pb.h>
 #include <qroma-lib-proto/qroma-comm.pb.h>
 #include <qroma/util/logger.h>
+#include <qroma/util/heartbeat.h>
 #include <qroma/util/qbase64.h>
 #include <pb_decode.h>
 #include <pb_encode.h>

@@ -16,6 +16,11 @@ void setLogLevel(Qroma_LogLevel level) {
 }
 
 
+Qroma_LogLevel getLogLevel() {
+  return _logLevel;
+}
+
+
 void initLogger() {
   Serial.begin(115200);
   Serial.setRxBufferSize(10000);

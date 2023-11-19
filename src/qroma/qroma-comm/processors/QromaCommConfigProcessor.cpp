@@ -4,20 +4,23 @@
 uint32_t QromaCommConfigProcessor::handleQromaCommConfigCommand(QromaCommConfigCommand * command, 
   QromaCommResponse * response, std::function<void(uint8_t*, uint32_t)> txFn)
 {
-//   #define QromaCommConfigCommand_requestQromaCommConfig_tag 1
-// #define QromaCommConfigCommand_setLogLevel_tag   2
-// #define QromaCommConfigCommand_setHeartbeatInterval_tag 3
-
   switch (command->which_command) {
     case QromaCommConfigCommand_requestQromaCommConfig_tag:
-
+      response->response.commConfigResponse.which_response = QromaCommConfigResponse_qromaCommConfig_tag;
+      response->response.commConfigResponse.response.qromaCommConfig.logLevel = getLogLevel();
+      response->response.commConfigResponse.response.qromaCommConfig.heartbeatIntervalInMs = getHeartbeatIntervalInMs();
       break;
+
     case QromaCommConfigCommand_setLogLevel_tag:
-      // Serial.println("SETTING COMM CONFIG - LOG LEVEL");
       setLogLevel(command->command.setLogLevel.logLevel);
+      response->response.commConfigResponse.which_response = QromaCommConfigResponse_setLogLevel_tag;
+      response->response.commConfigResponse.response.setLogLevel.logLevel = getLogLevel();
       break;
-    case QromaCommConfigCommand_setHeartbeatInterval_tag:
 
+    case QromaCommConfigCommand_setHeartbeatInterval_tag:
+      setHeartbeatIntervalInMs(command->command.setHeartbeatInterval.heartbeatIntervalInMs);
+      response->response.commConfigResponse.which_response = QromaCommConfigResponse_setHeartbeatInterval_tag;
+      response->response.commConfigResponse.response.setHeartbeatInterval.heartbeatIntervalInMs = getHeartbeatIntervalInMs();
       break;
   }
   return 0;

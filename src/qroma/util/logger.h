@@ -26,6 +26,7 @@ void debugCommIntWithDescription(const char * intDescription, int value, Qroma_D
 
 void setDebugCommMode(Qroma_DebugCommMode mode);
 void setLogLevel(Qroma_LogLevel level);
+Qroma_LogLevel getLogLevel();
 
 
 extern Qroma_DebugCommMode _commMode;

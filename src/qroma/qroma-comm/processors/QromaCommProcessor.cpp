@@ -74,7 +74,12 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
 
         break;
       case QromaCommCommand_commConfigCommand_tag:
-        _qromaCommConfigProcessor.handleQromaCommConfigCommand(&(qromaCommCommand.command.commConfigCommand), &qromaCommResponse, txFn);
+        _qromaCommConfigProcessor.handleQromaCommConfigCommand(
+          &(qromaCommCommand.command.commConfigCommand), 
+          &qromaCommResponse, 
+          txFn);
+        shouldSendQromaCommResponse = true;
+        qromaCommResponse.which_response = QromaCommResponse_commConfigResponse_tag;
         break;
     }
 

@@ -25,6 +25,8 @@ class QromaCommSerialPbRxBase {
       return _qromaCommProcessor.sendQromaAppResponse<PbMessage, PbMessageFields>(qromaAppResponse, _responseFn);
     }
 
+    bool sendQromaCommResponse(QromaCommResponse * qromaCommResponse);
+
 
 
   private:
