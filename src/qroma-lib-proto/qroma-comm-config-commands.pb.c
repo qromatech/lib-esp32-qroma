@@ -6,10 +6,19 @@
 #error Regenerate this file with the current version of nanopb generator.
 #endif
 
+PB_BIND(RequestQromaCommConfig, RequestQromaCommConfig, AUTO)
+
+
 PB_BIND(SetLogLevel, SetLogLevel, AUTO)
 
 
+PB_BIND(SetHeartbeatInterval, SetHeartbeatInterval, AUTO)
+
+
 PB_BIND(QromaCommConfigCommand, QromaCommConfigCommand, AUTO)
+
+
+PB_BIND(QromaCommConfigResponse, QromaCommConfigResponse, AUTO)
 
 
 
