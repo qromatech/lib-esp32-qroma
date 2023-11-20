@@ -2,7 +2,7 @@
 #include "../../qroma-lib-proto/qroma-comm.pb.h"
 
 
-uint32_t _heartbeatIntervalInMs = 1000;
+uint32_t _heartbeatIntervalInMs = 0;
 
 
 void setHeartbeatIntervalInMs(uint32_t interval) {
