@@ -7,25 +7,29 @@ uint32_t QromaCommConfigProcessor::handleQromaCommConfigCommand(QromaCommConfigC
 {
   switch (command->which_command) {
     case QromaCommConfigCommand_requestQromaCommConfig_tag:
+    {
       response->response.commConfigResponse.which_response = QromaCommConfigResponse_qromaCommConfig_tag;
       
       response->response.commConfigResponse.response.qromaCommConfig.has_serialIoConfig = true;
-      QromaSerialCommApp * serialCommApp1 = getQromaSerialCommApp();
-      if (serialCommApp1 != NULL) {
-        serialCommApp1->copySerialIoConfig(&(response->response.commConfigResponse.response.qromaCommSerialIoConfig));
+      QromaSerialCommApp * serialCommApp = getQromaSerialCommApp();
+      if (serialCommApp != NULL) {
+        serialCommApp->copySerialIoConfig(&(response->response.commConfigResponse.response.qromaCommSerialIoConfig));
       }
 
       response->response.commConfigResponse.response.qromaCommConfig.has_reportingConfig = true;
       response->response.commConfigResponse.response.qromaCommConfig.reportingConfig.logLevel = getLogLevel();
       response->response.commConfigResponse.response.qromaCommConfig.reportingConfig.heartbeatIntervalInMs = getHeartbeatIntervalInMs();
+    }
       break;
 
     case QromaCommConfigCommand_requestQromaCommSerialIoConfig_tag:
+    {
       response->response.commConfigResponse.which_response = QromaCommConfigResponse_qromaCommSerialIoConfig_tag;
-      QromaSerialCommApp * serialCommApp2 = getQromaSerialCommApp();
-      if (serialCommApp2 != NULL) {
-        serialCommApp2->copySerialIoConfig(&(response->response.commConfigResponse.response.qromaCommSerialIoConfig));
+      QromaSerialCommApp * serialCommApp = getQromaSerialCommApp();
+      if (serialCommApp != NULL) {
+        serialCommApp->copySerialIoConfig(&(response->response.commConfigResponse.response.qromaCommSerialIoConfig));
       }
+    }
       break;
 
     case QromaCommConfigCommand_requestQromaCommReportingConfig_tag:
