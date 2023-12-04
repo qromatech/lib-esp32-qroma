@@ -18,12 +18,7 @@ class QromaSerialCommApp: QromaApp
 {
   public:
 
-    void startupQroma() {
-      setQromaApp(this);
-      init();
-      _whenHeartbeatLastSentInMs = 0;
-      _numHeartbeatTicks = 0;
-    }
+    void startupQroma();
 
     void setAppCommandProcessor(IAppCommandProcessor * processor) {
       _qromaCommSerialIo.setAppCommandProcessor(processor);
@@ -39,6 +34,12 @@ class QromaSerialCommApp: QromaApp
 
     IQromaCommSerialTx * getQromaCommSerialTxRef() {
       return &_qromaCommSerialIo;
+    }
+
+    void copySerialIoConfig(QromaCommSerialIoConfig * config) {
+      config->baudRate = _serialIoConfig.baudRate;
+      config->rxBufferSize = _serialIoConfig.rxBufferSize;
+      config->txBufferSize = _serialIoConfig.txBufferSize;
     }
 
     template<typename PbMessage, const pb_msgdesc_t *PbMessageFields>
@@ -87,6 +88,10 @@ class QromaSerialCommApp: QromaApp
     };
 
 };
+
+
+void setQromaSerialCommApp(QromaSerialCommApp * app);
+QromaSerialCommApp * getQromaSerialCommApp();
 
 
 #endif

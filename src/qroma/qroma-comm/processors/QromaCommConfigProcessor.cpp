@@ -1,4 +1,5 @@
 #include "QromaCommConfigProcessor.h"
+#include "../../qroma-app/QromaSerialCommApp.h"
 
 
 uint32_t QromaCommConfigProcessor::handleQromaCommConfigCommand(QromaCommConfigCommand * command, 
@@ -7,8 +8,26 @@ uint32_t QromaCommConfigProcessor::handleQromaCommConfigCommand(QromaCommConfigC
   switch (command->which_command) {
     case QromaCommConfigCommand_requestQromaCommConfig_tag:
       response->response.commConfigResponse.which_response = QromaCommConfigResponse_qromaCommConfig_tag;
-      response->response.commConfigResponse.response.qromaCommConfig.logLevel = getLogLevel();
-      response->response.commConfigResponse.response.qromaCommConfig.heartbeatIntervalInMs = getHeartbeatIntervalInMs();
+      
+      response->response.commConfigResponse.response.qromaCommConfig.has_serialIoConfig = true;
+      QromaSerialCommApp * serialCommApp = getQromaSerialCommApp();
+      serialCommApp->copySerialIoConfig(&(response->response.commConfigResponse.response.qromaCommSerialIoConfig));
+
+      response->response.commConfigResponse.response.qromaCommConfig.has_reportingConfig = true;
+      response->response.commConfigResponse.response.qromaCommConfig.reportingConfig.logLevel = getLogLevel();
+      response->response.commConfigResponse.response.qromaCommConfig.reportingConfig.heartbeatIntervalInMs = getHeartbeatIntervalInMs();
+      break;
+
+    case QromaCommConfigCommand_requestQromaCommSerialIoConfig_tag:
+      response->response.commConfigResponse.which_response = QromaCommConfigResponse_qromaCommSerialIoConfig_tag;
+      QromaSerialCommApp * serialCommApp = getQromaSerialCommApp();
+      serialCommApp->copySerialIoConfig(&(response->response.commConfigResponse.response.qromaCommSerialIoConfig));
+      break;
+
+    case QromaCommConfigCommand_requestQromaCommReportingConfig_tag:
+      response->response.commConfigResponse.which_response = QromaCommConfigResponse_qromaCommReportingConfig_tag;
+      response->response.commConfigResponse.response.qromaCommReportingConfig.logLevel = getLogLevel();
+      response->response.commConfigResponse.response.qromaCommReportingConfig.heartbeatIntervalInMs = getHeartbeatIntervalInMs();
       break;
 
     case QromaCommConfigCommand_setLogLevel_tag:

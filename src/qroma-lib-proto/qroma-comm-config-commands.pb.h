@@ -5,20 +5,24 @@
 #define PB_QROMA_COMM_CONFIG_COMMANDS_PB_H_INCLUDED
 #include <pb.h>
 #include "qroma-types.pb.h"
+#include "qroma-config.pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.
 #endif
 
 /* Struct definitions */
-typedef struct _QromaCommConfig { 
-    Qroma_LogLevel logLevel; 
-    uint32_t heartbeatIntervalInMs; 
-} QromaCommConfig;
-
 typedef struct _RequestQromaCommConfig { 
     uint32_t ignoreThis; 
 } RequestQromaCommConfig;
+
+typedef struct _RequestQromaCommReportingConfig { 
+    uint32_t ignoreThis; 
+} RequestQromaCommReportingConfig;
+
+typedef struct _RequestQromaCommSerialIoConfig { 
+    uint32_t ignoreThis; 
+} RequestQromaCommSerialIoConfig;
 
 typedef struct _SetHeartbeatIntervalRequest { 
     uint32_t heartbeatIntervalInMs; 
@@ -40,6 +44,8 @@ typedef struct _QromaCommConfigCommand {
     pb_size_t which_command;
     union {
         RequestQromaCommConfig requestQromaCommConfig;
+        RequestQromaCommSerialIoConfig requestQromaCommSerialIoConfig;
+        RequestQromaCommReportingConfig requestQromaCommReportingConfig;
         SetLogLevelRequest setLogLevel;
         SetHeartbeatIntervalRequest setHeartbeatInterval;
     } command; 
@@ -49,6 +55,8 @@ typedef struct _QromaCommConfigResponse {
     pb_size_t which_response;
     union {
         QromaCommConfig qromaCommConfig;
+        QromaCommSerialIoConfig qromaCommSerialIoConfig;
+        QromaCommReportingConfig qromaCommReportingConfig;
         SetLogLevelResponse setLogLevel;
         SetHeartbeatIntervalResponse setHeartbeatInterval;
     } response; 
@@ -61,7 +69,8 @@ extern "C" {
 
 /* Initializer values for message structs */
 #define RequestQromaCommConfig_init_default      {0}
-#define QromaCommConfig_init_default             {_Qroma_LogLevel_MIN, 0}
+#define RequestQromaCommSerialIoConfig_init_default {0}
+#define RequestQromaCommReportingConfig_init_default {0}
 #define SetLogLevelRequest_init_default          {_Qroma_LogLevel_MIN}
 #define SetLogLevelResponse_init_default         {_Qroma_LogLevel_MIN}
 #define SetHeartbeatIntervalRequest_init_default {0}
@@ -69,7 +78,8 @@ extern "C" {
 #define QromaCommConfigCommand_init_default      {0, {RequestQromaCommConfig_init_default}}
 #define QromaCommConfigResponse_init_default     {0, {QromaCommConfig_init_default}}
 #define RequestQromaCommConfig_init_zero         {0}
-#define QromaCommConfig_init_zero                {_Qroma_LogLevel_MIN, 0}
+#define RequestQromaCommSerialIoConfig_init_zero {0}
+#define RequestQromaCommReportingConfig_init_zero {0}
 #define SetLogLevelRequest_init_zero             {_Qroma_LogLevel_MIN}
 #define SetLogLevelResponse_init_zero            {_Qroma_LogLevel_MIN}
 #define SetHeartbeatIntervalRequest_init_zero    {0}
@@ -78,19 +88,23 @@ extern "C" {
 #define QromaCommConfigResponse_init_zero        {0, {QromaCommConfig_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
-#define QromaCommConfig_logLevel_tag             1
-#define QromaCommConfig_heartbeatIntervalInMs_tag 2
 #define RequestQromaCommConfig_ignoreThis_tag    1
+#define RequestQromaCommReportingConfig_ignoreThis_tag 1
+#define RequestQromaCommSerialIoConfig_ignoreThis_tag 1
 #define SetHeartbeatIntervalRequest_heartbeatIntervalInMs_tag 1
 #define SetHeartbeatIntervalResponse_heartbeatIntervalInMs_tag 1
 #define SetLogLevelRequest_logLevel_tag          1
 #define SetLogLevelResponse_logLevel_tag         1
 #define QromaCommConfigCommand_requestQromaCommConfig_tag 1
-#define QromaCommConfigCommand_setLogLevel_tag   2
-#define QromaCommConfigCommand_setHeartbeatInterval_tag 3
+#define QromaCommConfigCommand_requestQromaCommSerialIoConfig_tag 2
+#define QromaCommConfigCommand_requestQromaCommReportingConfig_tag 3
+#define QromaCommConfigCommand_setLogLevel_tag   4
+#define QromaCommConfigCommand_setHeartbeatInterval_tag 5
 #define QromaCommConfigResponse_qromaCommConfig_tag 1
-#define QromaCommConfigResponse_setLogLevel_tag  2
-#define QromaCommConfigResponse_setHeartbeatInterval_tag 3
+#define QromaCommConfigResponse_qromaCommSerialIoConfig_tag 2
+#define QromaCommConfigResponse_qromaCommReportingConfig_tag 3
+#define QromaCommConfigResponse_setLogLevel_tag  4
+#define QromaCommConfigResponse_setHeartbeatInterval_tag 5
 
 /* Struct field encoding specification for nanopb */
 #define RequestQromaCommConfig_FIELDLIST(X, a) \
@@ -98,11 +112,15 @@ X(a, STATIC,   SINGULAR, UINT32,   ignoreThis,        1)
 #define RequestQromaCommConfig_CALLBACK NULL
 #define RequestQromaCommConfig_DEFAULT NULL
 
-#define QromaCommConfig_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UENUM,    logLevel,          1) \
-X(a, STATIC,   SINGULAR, UINT32,   heartbeatIntervalInMs,   2)
-#define QromaCommConfig_CALLBACK NULL
-#define QromaCommConfig_DEFAULT NULL
+#define RequestQromaCommSerialIoConfig_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   ignoreThis,        1)
+#define RequestQromaCommSerialIoConfig_CALLBACK NULL
+#define RequestQromaCommSerialIoConfig_DEFAULT NULL
+
+#define RequestQromaCommReportingConfig_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   ignoreThis,        1)
+#define RequestQromaCommReportingConfig_CALLBACK NULL
+#define RequestQromaCommReportingConfig_DEFAULT NULL
 
 #define SetLogLevelRequest_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UENUM,    logLevel,          1)
@@ -126,26 +144,35 @@ X(a, STATIC,   SINGULAR, UINT32,   heartbeatIntervalInMs,   1)
 
 #define QromaCommConfigCommand_FIELDLIST(X, a) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (command,requestQromaCommConfig,command.requestQromaCommConfig),   1) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,setLogLevel,command.setLogLevel),   2) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,setHeartbeatInterval,command.setHeartbeatInterval),   3)
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,requestQromaCommSerialIoConfig,command.requestQromaCommSerialIoConfig),   2) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,requestQromaCommReportingConfig,command.requestQromaCommReportingConfig),   3) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,setLogLevel,command.setLogLevel),   4) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,setHeartbeatInterval,command.setHeartbeatInterval),   5)
 #define QromaCommConfigCommand_CALLBACK NULL
 #define QromaCommConfigCommand_DEFAULT NULL
 #define QromaCommConfigCommand_command_requestQromaCommConfig_MSGTYPE RequestQromaCommConfig
+#define QromaCommConfigCommand_command_requestQromaCommSerialIoConfig_MSGTYPE RequestQromaCommSerialIoConfig
+#define QromaCommConfigCommand_command_requestQromaCommReportingConfig_MSGTYPE RequestQromaCommReportingConfig
 #define QromaCommConfigCommand_command_setLogLevel_MSGTYPE SetLogLevelRequest
 #define QromaCommConfigCommand_command_setHeartbeatInterval_MSGTYPE SetHeartbeatIntervalRequest
 
 #define QromaCommConfigResponse_FIELDLIST(X, a) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (response,qromaCommConfig,response.qromaCommConfig),   1) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (response,setLogLevel,response.setLogLevel),   2) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (response,setHeartbeatInterval,response.setHeartbeatInterval),   3)
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,qromaCommSerialIoConfig,response.qromaCommSerialIoConfig),   2) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,qromaCommReportingConfig,response.qromaCommReportingConfig),   3) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,setLogLevel,response.setLogLevel),   4) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,setHeartbeatInterval,response.setHeartbeatInterval),   5)
 #define QromaCommConfigResponse_CALLBACK NULL
 #define QromaCommConfigResponse_DEFAULT NULL
 #define QromaCommConfigResponse_response_qromaCommConfig_MSGTYPE QromaCommConfig
+#define QromaCommConfigResponse_response_qromaCommSerialIoConfig_MSGTYPE QromaCommSerialIoConfig
+#define QromaCommConfigResponse_response_qromaCommReportingConfig_MSGTYPE QromaCommReportingConfig
 #define QromaCommConfigResponse_response_setLogLevel_MSGTYPE SetLogLevelResponse
 #define QromaCommConfigResponse_response_setHeartbeatInterval_MSGTYPE SetHeartbeatIntervalResponse
 
 extern const pb_msgdesc_t RequestQromaCommConfig_msg;
-extern const pb_msgdesc_t QromaCommConfig_msg;
+extern const pb_msgdesc_t RequestQromaCommSerialIoConfig_msg;
+extern const pb_msgdesc_t RequestQromaCommReportingConfig_msg;
 extern const pb_msgdesc_t SetLogLevelRequest_msg;
 extern const pb_msgdesc_t SetLogLevelResponse_msg;
 extern const pb_msgdesc_t SetHeartbeatIntervalRequest_msg;
@@ -155,7 +182,8 @@ extern const pb_msgdesc_t QromaCommConfigResponse_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define RequestQromaCommConfig_fields &RequestQromaCommConfig_msg
-#define QromaCommConfig_fields &QromaCommConfig_msg
+#define RequestQromaCommSerialIoConfig_fields &RequestQromaCommSerialIoConfig_msg
+#define RequestQromaCommReportingConfig_fields &RequestQromaCommReportingConfig_msg
 #define SetLogLevelRequest_fields &SetLogLevelRequest_msg
 #define SetLogLevelResponse_fields &SetLogLevelResponse_msg
 #define SetHeartbeatIntervalRequest_fields &SetHeartbeatIntervalRequest_msg
@@ -165,9 +193,10 @@ extern const pb_msgdesc_t QromaCommConfigResponse_msg;
 
 /* Maximum encoded size of messages (where known) */
 #define QromaCommConfigCommand_size              8
-#define QromaCommConfigResponse_size             11
-#define QromaCommConfig_size                     9
+#define QromaCommConfigResponse_size             33
 #define RequestQromaCommConfig_size              6
+#define RequestQromaCommReportingConfig_size     6
+#define RequestQromaCommSerialIoConfig_size      6
 #define SetHeartbeatIntervalRequest_size         6
 #define SetHeartbeatIntervalResponse_size        6
 #define SetLogLevelRequest_size                  3

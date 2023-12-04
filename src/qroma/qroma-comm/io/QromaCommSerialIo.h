@@ -2,7 +2,6 @@
 #define QROMA_COMM_SERIAL_IO_H
 
 #include <Arduino.h>
-#include "QromaCommSerialIoConfig.h"
 #include "QromaCommSerialPbRxBase.h"
 #include "IQromaCommSerialTx.h"
 #include <qroma/qroma-comm/commBuffer/TQromaCommMemBuffer.h>

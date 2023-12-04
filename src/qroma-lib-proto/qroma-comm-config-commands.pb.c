@@ -9,7 +9,10 @@
 PB_BIND(RequestQromaCommConfig, RequestQromaCommConfig, AUTO)
 
 
-PB_BIND(QromaCommConfig, QromaCommConfig, AUTO)
+PB_BIND(RequestQromaCommSerialIoConfig, RequestQromaCommSerialIoConfig, AUTO)
+
+
+PB_BIND(RequestQromaCommReportingConfig, RequestQromaCommReportingConfig, AUTO)
 
 
 PB_BIND(SetLogLevelRequest, SetLogLevelRequest, AUTO)
