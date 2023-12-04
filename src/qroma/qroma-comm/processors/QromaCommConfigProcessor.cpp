@@ -10,8 +10,10 @@ uint32_t QromaCommConfigProcessor::handleQromaCommConfigCommand(QromaCommConfigC
       response->response.commConfigResponse.which_response = QromaCommConfigResponse_qromaCommConfig_tag;
       
       response->response.commConfigResponse.response.qromaCommConfig.has_serialIoConfig = true;
-      QromaSerialCommApp * serialCommApp = getQromaSerialCommApp();
-      serialCommApp->copySerialIoConfig(&(response->response.commConfigResponse.response.qromaCommSerialIoConfig));
+      QromaSerialCommApp * serialCommApp1 = getQromaSerialCommApp();
+      if (serialCommApp1 != NULL) {
+        serialCommApp1->copySerialIoConfig(&(response->response.commConfigResponse.response.qromaCommSerialIoConfig));
+      }
 
       response->response.commConfigResponse.response.qromaCommConfig.has_reportingConfig = true;
       response->response.commConfigResponse.response.qromaCommConfig.reportingConfig.logLevel = getLogLevel();
@@ -20,8 +22,10 @@ uint32_t QromaCommConfigProcessor::handleQromaCommConfigCommand(QromaCommConfigC
 
     case QromaCommConfigCommand_requestQromaCommSerialIoConfig_tag:
       response->response.commConfigResponse.which_response = QromaCommConfigResponse_qromaCommSerialIoConfig_tag;
-      QromaSerialCommApp * serialCommApp = getQromaSerialCommApp();
-      serialCommApp->copySerialIoConfig(&(response->response.commConfigResponse.response.qromaCommSerialIoConfig));
+      QromaSerialCommApp * serialCommApp2 = getQromaSerialCommApp();
+      if (serialCommApp2 != NULL) {
+        serialCommApp->copySerialIoConfig(&(response->response.commConfigResponse.response.qromaCommSerialIoConfig));
+      }
       break;
 
     case QromaCommConfigCommand_requestQromaCommReportingConfig_tag:
