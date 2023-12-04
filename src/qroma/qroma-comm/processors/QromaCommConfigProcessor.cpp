@@ -24,7 +24,7 @@ uint32_t QromaCommConfigProcessor::handleQromaCommConfigCommand(QromaCommConfigC
       response->response.commConfigResponse.which_response = QromaCommConfigResponse_qromaCommSerialIoConfig_tag;
       QromaSerialCommApp * serialCommApp2 = getQromaSerialCommApp();
       if (serialCommApp2 != NULL) {
-        serialCommApp->copySerialIoConfig(&(response->response.commConfigResponse.response.qromaCommSerialIoConfig));
+        serialCommApp2->copySerialIoConfig(&(response->response.commConfigResponse.response.qromaCommSerialIoConfig));
       }
       break;
 
