@@ -11,7 +11,6 @@
 #include <functional>
 
 
-
 class QromaCommConfigProcessor {
   public:
     uint32_t handleQromaCommConfigCommand(QromaCommConfigCommand * command, QromaCommResponse * response,

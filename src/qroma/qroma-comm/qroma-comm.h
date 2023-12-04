@@ -78,4 +78,7 @@ void qromaAppSerialPrint(const char * msg, IQromaSerialCommApp * app);
 void qromaAppSerialPrintln(const char * msg, IQromaSerialCommApp * app);
 
 
+bool saveQromaCommConfig();
+
+
 #endif
