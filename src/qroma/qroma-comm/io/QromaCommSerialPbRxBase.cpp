@@ -12,12 +12,13 @@ void _doSerialCommandProcessingTask(void *pvParameters) {
   QromaCommSerialPbRxBase * qcSerialRx = (QromaCommSerialPbRxBase*)pvParameters;
 
   while (true) {
-    qcSerialRx->serialRx();
-    bool wasProcessed = qcSerialRx->processCommBuffer();
-    if (!wasProcessed) {
+    qcSerialRx->processCommBuffer();
+
+    bool rxNeedsDelay = qcSerialRx->serialRx();
+    if (rxNeedsDelay) {
       vTaskDelay(MS_10);
     } else {
-      logInfo("PROCESSING");
+      // logInfo("PROCESSING");
     }
   }
 
@@ -47,16 +48,34 @@ void QromaCommSerialPbRxBase::initPbRxBase(
 }
 
 
-void QromaCommSerialPbRxBase::serialRx() {
+// return whether or not we need a delay
+bool QromaCommSerialPbRxBase::serialRx() {
   int now = millis();
 
-  while (Serial.available()) {
-    char incomingByte = Serial.read();
-    _qromaCommMemBuffer->addByte(incomingByte, now);
+  uint32_t remainingBufferByteCount = _qromaCommMemBuffer->getRemainingBufferByteCount();
+
+  if (remainingBufferByteCount < 1) {
+    logInfo("QromaCommSerialPbRxBase::serialRx() START - BUFFER FULL");
+    return true;
   }
+
+  while (Serial.available() &&
+         remainingBufferByteCount > 0) 
+  {
+    char incomingByte = Serial.read();
+    remainingBufferByteCount = _qromaCommMemBuffer->addByte(incomingByte, now);
+  }
+
+  if (remainingBufferByteCount < 1) {
+    logInfo("QromaCommSerialPbRxBase::serialRx() END - BUFFER FULL");
+    return true;
+  }
+
+  return false;
 }
 
 
+// TODO: return number of bytes processed?
 bool QromaCommSerialPbRxBase::processCommBuffer() {
   int commBufferWriteIndex = _qromaCommMemBuffer->getBufferWriteIndex();
   if (commBufferWriteIndex == 0) {
@@ -68,6 +87,7 @@ bool QromaCommSerialPbRxBase::processCommBuffer() {
   if (now > bufferExpirationTime) {
     logInfo("processCommBuffer EXPIRED");
     _qromaCommMemBuffer->reset();
+    _qromaCommProcessor.reset();
     return false;
   }
 
@@ -80,6 +100,7 @@ bool QromaCommSerialPbRxBase::processCommBuffer() {
 
   if (numBytesProcessed > 0) {
     _qromaCommMemBuffer->removeFirstNFromBuffer(numBytesProcessed);
+    // logInfoIntWithDescription("QromaCommSerialPbRxBase::processCommBuffer() PROCESSED BYTES: ", numBytesProcessed);
     return true;
   }
 

@@ -9,6 +9,9 @@
 PB_BIND(Qroma_LogMessage, Qroma_LogMessage, AUTO)
 
 
+PB_BIND(FileData, FileData, AUTO)
+
+
 
 
 

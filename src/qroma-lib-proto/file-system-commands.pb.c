@@ -9,15 +9,6 @@
 PB_BIND(DirItem, DirItem, AUTO)
 
 
-PB_BIND(FileData, FileData, AUTO)
-
-
-PB_BIND(StoreUpcomingFileDataCommand, StoreUpcomingFileDataCommand, AUTO)
-
-
-PB_BIND(StoreUpcomingFileDataResponse, StoreUpcomingFileDataResponse, AUTO)
-
-
 PB_BIND(RmFileCommand, RmFileCommand, AUTO)
 
 

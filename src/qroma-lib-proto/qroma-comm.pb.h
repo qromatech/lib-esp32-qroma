@@ -6,6 +6,7 @@
 #include <pb.h>
 #include "file-system-commands.pb.h"
 #include "qroma-comm-config-commands.pb.h"
+#include "qroma-streams.pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.
@@ -19,6 +20,7 @@ typedef struct _QromaCommCommand {
         QromaCommCommand_appCommandBytes_t appCommandBytes;
         FileSystemCommand fsCommand;
         QromaCommConfigCommand commConfigCommand;
+        QromaStreamCommand streamCommand;
     } command; 
 } QromaCommCommand;
 
@@ -35,6 +37,7 @@ typedef struct _QromaCommResponse {
         FileSystemResponse fsResponse;
         QromaCommConfigResponse commConfigResponse;
         QromaCommHeartbeatResponse heartbeatResponse;
+        QromaStreamResponse streamResponse;
     } response; 
 } QromaCommResponse;
 
@@ -55,22 +58,26 @@ extern "C" {
 #define QromaCommCommand_appCommandBytes_tag     1
 #define QromaCommCommand_fsCommand_tag           2
 #define QromaCommCommand_commConfigCommand_tag   3
+#define QromaCommCommand_streamCommand_tag       4
 #define QromaCommHeartbeatResponse_uptimeInMs_tag 1
 #define QromaCommHeartbeatResponse_heartbeatTicks_tag 2
 #define QromaCommResponse_appResponseBytes_tag   1
 #define QromaCommResponse_fsResponse_tag         2
 #define QromaCommResponse_commConfigResponse_tag 3
 #define QromaCommResponse_heartbeatResponse_tag  4
+#define QromaCommResponse_streamResponse_tag     5
 
 /* Struct field encoding specification for nanopb */
 #define QromaCommCommand_FIELDLIST(X, a) \
 X(a, STATIC,   ONEOF,    BYTES,    (command,appCommandBytes,command.appCommandBytes),   1) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (command,fsCommand,command.fsCommand),   2) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,commConfigCommand,command.commConfigCommand),   3)
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,commConfigCommand,command.commConfigCommand),   3) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,streamCommand,command.streamCommand),   4)
 #define QromaCommCommand_CALLBACK NULL
 #define QromaCommCommand_DEFAULT NULL
 #define QromaCommCommand_command_fsCommand_MSGTYPE FileSystemCommand
 #define QromaCommCommand_command_commConfigCommand_MSGTYPE QromaCommConfigCommand
+#define QromaCommCommand_command_streamCommand_MSGTYPE QromaStreamCommand
 
 #define QromaCommHeartbeatResponse_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UINT32,   uptimeInMs,        1) \
@@ -82,12 +89,14 @@ X(a, STATIC,   SINGULAR, UINT32,   heartbeatTicks,    2)
 X(a, STATIC,   ONEOF,    BYTES,    (response,appResponseBytes,response.appResponseBytes),   1) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (response,fsResponse,response.fsResponse),   2) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (response,commConfigResponse,response.commConfigResponse),   3) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (response,heartbeatResponse,response.heartbeatResponse),   4)
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,heartbeatResponse,response.heartbeatResponse),   4) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,streamResponse,response.streamResponse),   5)
 #define QromaCommResponse_CALLBACK NULL
 #define QromaCommResponse_DEFAULT NULL
 #define QromaCommResponse_response_fsResponse_MSGTYPE FileSystemResponse
 #define QromaCommResponse_response_commConfigResponse_MSGTYPE QromaCommConfigResponse
 #define QromaCommResponse_response_heartbeatResponse_MSGTYPE QromaCommHeartbeatResponse
+#define QromaCommResponse_response_streamResponse_MSGTYPE QromaStreamResponse
 
 extern const pb_msgdesc_t QromaCommCommand_msg;
 extern const pb_msgdesc_t QromaCommHeartbeatResponse_msg;

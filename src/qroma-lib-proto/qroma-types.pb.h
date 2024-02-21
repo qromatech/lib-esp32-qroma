@@ -26,6 +26,12 @@ typedef enum _Qroma_DebugCommMode {
 } Qroma_DebugCommMode;
 
 /* Struct definitions */
+typedef struct _FileData { 
+    char filename[32]; 
+    uint32_t filesize; 
+    uint32_t checksum; 
+} FileData;
+
 typedef struct _Qroma_LogMessage { 
     uint32_t tick; 
     char message[60]; 
@@ -48,9 +54,14 @@ extern "C" {
 
 /* Initializer values for message structs */
 #define Qroma_LogMessage_init_default            {0, ""}
+#define FileData_init_default                    {"", 0, 0}
 #define Qroma_LogMessage_init_zero               {0, ""}
+#define FileData_init_zero                       {"", 0, 0}
 
 /* Field tags (for use in manual encoding/decoding) */
+#define FileData_filename_tag                    1
+#define FileData_filesize_tag                    2
+#define FileData_checksum_tag                    3
 #define Qroma_LogMessage_tick_tag                1
 #define Qroma_LogMessage_message_tag             2
 
@@ -61,12 +72,22 @@ X(a, STATIC,   SINGULAR, STRING,   message,           2)
 #define Qroma_LogMessage_CALLBACK NULL
 #define Qroma_LogMessage_DEFAULT NULL
 
+#define FileData_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, STRING,   filename,          1) \
+X(a, STATIC,   SINGULAR, UINT32,   filesize,          2) \
+X(a, STATIC,   SINGULAR, UINT32,   checksum,          3)
+#define FileData_CALLBACK NULL
+#define FileData_DEFAULT NULL
+
 extern const pb_msgdesc_t Qroma_LogMessage_msg;
+extern const pb_msgdesc_t FileData_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define Qroma_LogMessage_fields &Qroma_LogMessage_msg
+#define FileData_fields &FileData_msg
 
 /* Maximum encoded size of messages (where known) */
+#define FileData_size                            45
 #define Qroma_LogMessage_size                    67
 
 #ifdef __cplusplus

@@ -16,7 +16,7 @@ class QromaCommSerialPbRxBase {
       std::function<void(const uint8_t*, uint32_t)> responseFn
     );
 
-    void serialRx();
+    bool serialRx();
 
     bool processCommBuffer();
 

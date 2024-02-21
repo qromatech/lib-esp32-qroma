@@ -9,10 +9,18 @@ void QromaCommProcessor::init(IAppCommandProcessor * appCommandProcessor) {
 }
 
 
+void QromaCommProcessor::reset() {
+  _processingMode = QromaCommProcessingMode_QromaCommands;
+}
+
+
 uint32_t QromaCommProcessor::processBytes(const uint8_t * bytes, uint32_t byteCount, std::function<void(const uint8_t*, uint32_t)> txFn) {
 
-  if (_processingMode == QromaCommProcessingMode_FileReader) {
-    return _qromaCommFileReader.processBytes(bytes, byteCount);
+  if (_processingMode == QromaCommProcessingMode_StreamReader) {
+    // logInfoIntWithDescription("STREAM PROCESS BYTES: ", byteCount);
+    uint32_t numStreamBytesProcessed = _qromaCommStreamReader.processBytes(bytes, byteCount);
+    // logInfoIntWithDescription("QROMA COMM PROCESSOR STREAM MODE - NUM BYTES: ", numStreamBytesProcessed);
+    return numStreamBytesProcessed;
   }
 
   bool newLineFound = false;
@@ -67,11 +75,17 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
         shouldSendQromaCommResponse = _qromaFsCommandProcessor.handleFileSystemCommand(
             &(qromaCommCommand.command.fsCommand), 
             &qromaCommResponse, 
-            txFn,
-            this);
+            txFn);
 
         txFn((uint8_t *)"DONE FS COMMAND\n", 16);
 
+        break;
+      case QromaCommCommand_streamCommand_tag:
+        txFn((uint8_t *)"STREAM COMMAND", 14);
+
+        _qromaCommStreamReader.handleQromaStreamCommand(&(qromaCommCommand.command.streamCommand), txFn, this);
+
+        txFn((uint8_t *)"DONE STREAM COMMAND\n", 20);
         break;
       case QromaCommCommand_commConfigCommand_tag:
         _qromaCommConfigProcessor.handleQromaCommConfigCommand(
@@ -99,11 +113,11 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
 }
 
 
-void QromaCommProcessor::startFileReadingMode(uint32_t silenceDelayTimeoutInMs, FileData * fileData) {
-  _processingMode = QromaCommProcessingMode_FileReader;
+void QromaCommProcessor::startStreamReadingMode() {
+  _processingMode = QromaCommProcessingMode_StreamReader;
 }
     
-void QromaCommProcessor::endFileReadingMode() {
+void QromaCommProcessor::endStreamReadingMode() {
   _processingMode = QromaCommProcessingMode_QromaCommands;
 }
 
