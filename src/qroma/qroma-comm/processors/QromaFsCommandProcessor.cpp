@@ -33,8 +33,7 @@ void pbSendIntMessageLine(const char * msg, int value, std::function<void(uint8_
 // return true if caller should return the populated QromaCommResponse
 bool QromaFsCommandProcessor::handleFileSystemCommand(FileSystemCommand * fsCommand,
   QromaCommResponse * qromaCommResponse,
-  std::function<void(uint8_t*, uint32_t)> txFn,
-  IQromaFsCommandProcessorListener * fsListener)
+  std::function<void(uint8_t*, uint32_t)> txFn)
 {
   logInfoIntWithDescription("handleFileSystemCommand - ", fsCommand->which_command);
   
@@ -63,9 +62,11 @@ bool QromaFsCommandProcessor::handleFileSystemCommand(FileSystemCommand * fsComm
     case FileSystemCommand_listDirContentsCommand_tag:
       return handleListDirContentsCommand(&(fsCommand->command.listDirContentsCommand), qromaCommResponse);
       break;
+    
     case FileSystemCommand_mkDirCommand_tag:
       return handleMkDirCommand(&(fsCommand->command.mkDirCommand), qromaCommResponse);
       break;
+
     case FileSystemCommand_rmDirCommand_tag:
       return handleRmDirCommand(&(fsCommand->command.rmDirCommand), qromaCommResponse);
       break;
@@ -75,6 +76,47 @@ bool QromaFsCommandProcessor::handleFileSystemCommand(FileSystemCommand * fsComm
   }
 
   return false;
+}
+
+
+bool QromaFsCommandProcessor::handleReportFileDataCommand(ReportFileDataCommand * cmd, QromaCommResponse * response) {
+  response->which_response = QromaCommResponse_fsResponse_tag;
+  response->response.fsResponse.which_response = FileSystemResponse_reportFileDataResponse_tag;
+  
+  File file = LittleFS.open(cmd->filePath);
+
+  if (file == NULL) {
+    logError("reportFileDataResponse - failed to open file");
+    logError(cmd->filePath);
+    logError("FILE IS NULL");
+    response->response.fsResponse.response.reportFileDataResponse.fileStatus = GetFileStatusCode_GFSC_ERR_OPEN_FILE;
+    return true;
+  }
+
+  if (file.isDirectory()) {
+    logError("reportFileDataResponse - not a file; it's a directory");
+    logError(cmd->filePath);
+    logError("GOT DIRECTORY");
+    response->response.fsResponse.response.reportFileDataResponse.fileStatus = GetFileStatusCode_GFSC_ERR_INVALID_FILE_PATH;
+    return true;
+  }
+
+  int fileSize = file.size();
+  file.close();
+
+  uint32_t checkSum = getFileChecksum(cmd->filePath);
+
+  logInfoIntWithDescription("FILE SIZE: ", fileSize);
+  logInfoIntWithDescription("FILE CHECKSUM: ", checkSum);
+
+  response->response.fsResponse.response.reportFileDataResponse.fileStatus = GetFileStatusCode_GFSC_FILE_EXISTS;
+  response->response.fsResponse.response.reportFileDataResponse.has_fileData = true;
+  response->response.fsResponse.response.reportFileDataResponse.fileData.filesize = fileSize;
+  response->response.fsResponse.response.reportFileDataResponse.fileData.checksum = checkSum;
+  strncpy(response->response.fsResponse.response.reportFileDataResponse.fileData.filename, cmd->filePath, 
+    sizeof(response->response.fsResponse.response.reportFileDataResponse.fileData.filename));
+
+  return true;
 }
 
 
@@ -201,6 +243,10 @@ bool QromaFsCommandProcessor::handleWriteFileDataCommand(WriteFileDataCommand * 
   response->which_response = QromaCommResponse_fsResponse_tag;
   response->response.fsResponse.which_response = FileSystemResponse_writeFileDataResponse_tag;
 
+  logInfo("WRITING FILE");
+  logInfo(cmd->fileData.filename);
+  logInfo(cmd->fileData.filesize);
+  logInfo(cmd->fileData.checksum);
 
   File file = LittleFS.open(cmd->fileData.filename, FILE_WRITE);
   if (!file) {
@@ -221,36 +267,6 @@ bool QromaFsCommandProcessor::handleWriteFileDataCommand(WriteFileDataCommand * 
   }
 
   response->response.fsResponse.response.writeFileDataResponse.statusCode = WriteFileDataStatusCode_WFDSC_SUCCESS;
-  return true;
-}
-
-
-bool QromaFsCommandProcessor::handleReportFileDataCommand(ReportFileDataCommand * cmd, QromaCommResponse * response) {
-  logInfo("REPORT FILE DATA: ");
-  logInfo(cmd->filename);
-
-  bool isFile = true;
-  File file = LittleFS.open(cmd->filename);
-  if (!file || file.isDirectory()){
-    isFile = false;
-    logInfo("− failed to open file for reading");
-  }
-
-  int fileSize = file.size();
-  uint32_t checkSum = getFileChecksum(cmd->filename);
-
-  logInfo("FILE CHECKED");
-  response->which_response = QromaCommResponse_fsResponse_tag;
-  response->response.fsResponse.which_response = FileSystemResponse_reportFileDataResponse_tag;
-  response->response.fsResponse.response.reportFileDataResponse.fileExists = isFile;
-  response->response.fsResponse.response.reportFileDataResponse.has_fileData = true;
-  response->response.fsResponse.response.reportFileDataResponse.fileData.filesize = fileSize;
-  response->response.fsResponse.response.reportFileDataResponse.fileData.checksum = checkSum;
-  strncpy(response->response.fsResponse.response.reportFileDataResponse.fileData.filename, cmd->filename, 
-    sizeof(response->response.fsResponse.response.reportFileDataResponse.fileData.filename));
-
-  logInfo("RESPONSE DONE");
-
   return true;
 }
 
@@ -325,7 +341,7 @@ bool QromaFsCommandProcessor::handleGetFileContents(GetFileContentsCommand * cmd
     logError("doPrintFilePreamble - not a file; it's a directory");
     logError(cmd->filePath);
     logError("GOT DIRECTORY");
-    response->response.fsResponse.response.getFileContentsResponse.statusCode = GetFileStatusCode_GFSC_ERR_INVALID_FILE;
+    response->response.fsResponse.response.getFileContentsResponse.statusCode = GetFileStatusCode_GFSC_ERR_INVALID_FILE_PATH;
     return true;
   }
 
@@ -341,7 +357,7 @@ bool QromaFsCommandProcessor::handleGetFileContents(GetFileContentsCommand * cmd
   response->response.fsResponse.response.getFileContentsResponse.fileBytes.size = fileSize;
   file.readBytes((char*)response->response.fsResponse.response.getFileContentsResponse.fileBytes.bytes, fileSize);
 
-  response->response.fsResponse.response.getFileContentsResponse.statusCode = GetFileStatusCode_GFSC_SUCCESS;
+  response->response.fsResponse.response.getFileContentsResponse.statusCode = GetFileStatusCode_GFSC_FILE_EXISTS;
 
   file.close();
 

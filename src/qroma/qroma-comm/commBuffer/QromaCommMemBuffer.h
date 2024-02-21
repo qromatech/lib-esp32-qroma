@@ -12,11 +12,12 @@ class QromaCommMemBuffer: public IQromaCommReadBuffer {
 
     void reset();
     void removeFirstNFromBuffer(uint32_t n);
+    uint32_t getRemainingBufferByteCount();
 
     const uint8_t * getBufferContent();
     uint32_t getBufferWriteIndex();
     
-    void addByte(uint8_t incomingByte, int now);
+    uint32_t addByte(uint8_t incomingByte, int now);
     uint32_t getLastTimeAddedToInMs();
 
   private:

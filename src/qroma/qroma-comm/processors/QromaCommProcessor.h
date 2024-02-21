@@ -11,18 +11,19 @@
 #include "QromaFsCommandProcessor.h"
 #include "QromaCommConfigProcessor.h"
 #include "IAppCommandProcessor.h"
-#include "QromaCommFileReader.h"
+#include "QromaCommStreamReader.h"
+#include "IQromaCommStreamRxHandler.h"
 
 
 enum QromaCommProcessingMode {
   QromaCommProcessingMode_NotSet,
   QromaCommProcessingMode_QromaCommands,
-  QromaCommProcessingMode_FileReader
+  QromaCommProcessingMode_StreamReader
 };
 
 
 class QromaCommProcessor: public IQromaNewBytesProcessor, 
-                                 IQromaFsCommandProcessorListener 
+                                 IQromaCommStreamRxHandler 
 {
   public:
     void init(IAppCommandProcessor * appCommandProcessor);
@@ -33,9 +34,8 @@ class QromaCommProcessor: public IQromaNewBytesProcessor,
 
     uint32_t handleQromaCommCommand(uint8_t * bytes, uint32_t bytesLength, std::function<void(uint8_t*, uint32_t)> txFn);
 
-    void startFileReadingMode(uint32_t silenceDelayTimeoutInMs, FileData * fileData);
-    
-    void endFileReadingMode();
+    void startStreamReadingMode();    
+    void endStreamReadingMode();
 
     bool sendQromaCommResponse(QromaCommResponse * qromaCommResponse, std::function<void(uint8_t*, uint32_t)> txFn);
 
@@ -71,7 +71,7 @@ class QromaCommProcessor: public IQromaNewBytesProcessor,
     IAppCommandProcessor * _appCommandProcessor;
     QromaFsCommandProcessor _qromaFsCommandProcessor;
     QromaCommConfigProcessor _qromaCommConfigProcessor;
-    QromaCommFileReader _qromaCommFileReader;
+    QromaCommStreamReader _qromaCommStreamReader;
    
     unsigned char _base64DecodeBuffer[10000];
     unsigned char _base64EncodeBuffer[10000];

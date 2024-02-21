@@ -27,10 +27,17 @@ const uint8_t * QromaCommMemBuffer::getBufferContent() {
 }
 
 
-void QromaCommMemBuffer::addByte(uint8_t incomingByte, int now) {
+uint32_t QromaCommMemBuffer::getRemainingBufferByteCount() {
+  return _bufferSize - _bufferWriteIndex;
+}
+
+
+uint32_t QromaCommMemBuffer::addByte(uint8_t incomingByte, int now) {
   _bufferMemory[_bufferWriteIndex] = incomingByte;
   _bufferWriteIndex++;
   _lastTimeBufferAddedTo = now;
+
+  return getRemainingBufferByteCount();
 }
 
 
@@ -40,6 +47,8 @@ uint32_t QromaCommMemBuffer::getLastTimeAddedToInMs() {
 
 
 void QromaCommMemBuffer::removeFirstNFromBuffer(uint32_t n) {
+  // logInfoIntWithDescription("REMOVE FIRST N FROM BUFFER: ", n);
+  // logInfoIntWithDescription("BUFFER WRITE INDEX: ", _bufferWriteIndex);
 
   if (n >= _bufferWriteIndex) {
     reset();
@@ -47,6 +56,7 @@ void QromaCommMemBuffer::removeFirstNFromBuffer(uint32_t n) {
   }
 
   int remaining = _bufferWriteIndex - n;
+  logInfoIntWithDescription("BUFFER REMAINING: ", remaining);
 
   for (int i=0; i < remaining; i++) {
     _bufferMemory[i] = _bufferMemory[n + i];

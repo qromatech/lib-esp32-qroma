@@ -20,7 +20,7 @@
 
 
 template<
-  uint32_t bufferSize,
+  uint32_t MEM_BUFFER_SiZE,
   QromaCommSerialType * _serial
 >
 class QromaCommSerialIo: public QromaCommSerialPbRxBase,
@@ -59,7 +59,7 @@ class QromaCommSerialIo: public QromaCommSerialPbRxBase,
     }
 
   private:
-    TQromaCommMemBuffer<bufferSize> _tQromaCommMemBuffer;
+    TQromaCommMemBuffer<MEM_BUFFER_SiZE> _tQromaCommMemBuffer;
     IAppCommandProcessor * _appCommandProcessor;
 };
 

@@ -4,6 +4,7 @@
 #ifndef PB_FILE_SYSTEM_COMMANDS_PB_H_INCLUDED
 #define PB_FILE_SYSTEM_COMMANDS_PB_H_INCLUDED
 #include <pb.h>
+#include "qroma-types.pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.
@@ -18,9 +19,9 @@ typedef enum _DirItemType {
 
 typedef enum _GetFileStatusCode { 
     GetFileStatusCode_GFSC_NOT_SET = 0, 
-    GetFileStatusCode_GFSC_SUCCESS = 1, 
+    GetFileStatusCode_GFSC_FILE_EXISTS = 1, 
     GetFileStatusCode_GFSC_ERR_OPEN_FILE = 2, 
-    GetFileStatusCode_GFSC_ERR_INVALID_FILE = 3 
+    GetFileStatusCode_GFSC_ERR_INVALID_FILE_PATH = 3 
 } GetFileStatusCode;
 
 typedef enum _WriteFileDataStatusCode { 
@@ -37,15 +38,17 @@ typedef struct _DirItem {
     uint32_t filesize; 
 } DirItem;
 
-typedef struct _FileData { 
-    char filename[32]; 
-    uint32_t filesize; 
-    uint32_t checksum; 
-} FileData;
-
 typedef struct _GetFileContentsCommand { 
     char filePath[32]; 
 } GetFileContentsCommand;
+
+typedef PB_BYTES_ARRAY_T(5000) GetFileContentsResponse_fileBytes_t;
+typedef struct _GetFileContentsResponse { 
+    GetFileStatusCode statusCode; 
+    bool has_fileData;
+    FileData fileData; 
+    GetFileContentsResponse_fileBytes_t fileBytes; 
+} GetFileContentsResponse;
 
 typedef struct _ListDirContentsCommand { 
     char dirPath[32]; 
@@ -62,8 +65,14 @@ typedef struct _PrintDirContentsCommand {
 } PrintDirContentsCommand;
 
 typedef struct _ReportFileDataCommand { 
-    char filename[32]; 
+    char filePath[32]; 
 } ReportFileDataCommand;
+
+typedef struct _ReportFileDataResponse { 
+    GetFileStatusCode fileStatus; 
+    bool has_fileData;
+    FileData fileData; 
+} ReportFileDataResponse;
 
 typedef struct _ResetFilesystemCommand { 
     bool dummy; 
@@ -80,57 +89,6 @@ typedef struct _RmDirCommand {
 typedef struct _RmFileCommand { 
     char filePath[32]; 
 } RmFileCommand;
-
-typedef PB_BYTES_ARRAY_T(5000) GetFileContentsResponse_fileBytes_t;
-typedef struct _GetFileContentsResponse { 
-    GetFileStatusCode statusCode; 
-    bool has_fileData;
-    FileData fileData; 
-    GetFileContentsResponse_fileBytes_t fileBytes; 
-} GetFileContentsResponse;
-
-typedef struct _ListDirContentsResponse { 
-    char dirPath[32]; 
-    bool success; 
-    pb_size_t dirItems_count;
-    DirItem dirItems[50]; 
-} ListDirContentsResponse;
-
-typedef struct _MkDirResponse { 
-    bool success; 
-    bool has_mkDirCommand;
-    MkDirCommand mkDirCommand; 
-} MkDirResponse;
-
-typedef struct _ReportFileDataResponse { 
-    bool fileExists; 
-    bool has_fileData;
-    FileData fileData; 
-} ReportFileDataResponse;
-
-typedef struct _RmDirResponse { 
-    bool success; 
-    bool has_rmDirCommand;
-    RmDirCommand rmDirCommand; 
-} RmDirResponse;
-
-typedef struct _RmFileResponse { 
-    bool success; 
-    bool has_rmFileCommand;
-    RmFileCommand rmFileCommand; 
-} RmFileResponse;
-
-typedef struct _StoreUpcomingFileDataCommand { 
-    bool has_fileData;
-    FileData fileData; 
-} StoreUpcomingFileDataCommand;
-
-typedef struct _StoreUpcomingFileDataResponse { 
-    bool success; 
-    uint32_t bytesWritten; 
-    bool has_command;
-    FileData command; 
-} StoreUpcomingFileDataResponse;
 
 typedef PB_BYTES_ARRAY_T(5000) WriteFileDataCommand_fileBytes_t;
 typedef struct _WriteFileDataCommand { 
@@ -159,6 +117,31 @@ typedef struct _FileSystemCommand {
     } command; 
 } FileSystemCommand;
 
+typedef struct _ListDirContentsResponse { 
+    char dirPath[32]; 
+    bool success; 
+    pb_size_t dirItems_count;
+    DirItem dirItems[50]; 
+} ListDirContentsResponse;
+
+typedef struct _MkDirResponse { 
+    bool success; 
+    bool has_mkDirCommand;
+    MkDirCommand mkDirCommand; 
+} MkDirResponse;
+
+typedef struct _RmDirResponse { 
+    bool success; 
+    bool has_rmDirCommand;
+    RmDirCommand rmDirCommand; 
+} RmDirResponse;
+
+typedef struct _RmFileResponse { 
+    bool success; 
+    bool has_rmFileCommand;
+    RmFileCommand rmFileCommand; 
+} RmFileResponse;
+
 typedef struct _FileSystemResponse { 
     pb_size_t which_response;
     union {
@@ -180,8 +163,8 @@ typedef struct _FileSystemResponse {
 #define _DirItemType_ARRAYSIZE ((DirItemType)(DirItemType_DIT_DIR+1))
 
 #define _GetFileStatusCode_MIN GetFileStatusCode_GFSC_NOT_SET
-#define _GetFileStatusCode_MAX GetFileStatusCode_GFSC_ERR_INVALID_FILE
-#define _GetFileStatusCode_ARRAYSIZE ((GetFileStatusCode)(GetFileStatusCode_GFSC_ERR_INVALID_FILE+1))
+#define _GetFileStatusCode_MAX GetFileStatusCode_GFSC_ERR_INVALID_FILE_PATH
+#define _GetFileStatusCode_ARRAYSIZE ((GetFileStatusCode)(GetFileStatusCode_GFSC_ERR_INVALID_FILE_PATH+1))
 
 #define _WriteFileDataStatusCode_MIN WriteFileDataStatusCode_WFDSC_NOT_SET
 #define _WriteFileDataStatusCode_MAX WriteFileDataStatusCode_WFDSC_ERR_CRC_MISMATCH
@@ -194,9 +177,6 @@ extern "C" {
 
 /* Initializer values for message structs */
 #define DirItem_init_default                     {"", _DirItemType_MIN, 0}
-#define FileData_init_default                    {"", 0, 0}
-#define StoreUpcomingFileDataCommand_init_default {false, FileData_init_default}
-#define StoreUpcomingFileDataResponse_init_default {0, 0, false, FileData_init_default}
 #define RmFileCommand_init_default               {""}
 #define RmFileResponse_init_default              {0, false, RmFileCommand_init_default}
 #define RmDirCommand_init_default                {""}
@@ -204,7 +184,7 @@ extern "C" {
 #define MkDirCommand_init_default                {""}
 #define MkDirResponse_init_default               {0, false, MkDirCommand_init_default}
 #define ReportFileDataCommand_init_default       {""}
-#define ReportFileDataResponse_init_default      {0, false, FileData_init_default}
+#define ReportFileDataResponse_init_default      {_GetFileStatusCode_MIN, false, FileData_init_default}
 #define ListDirContentsCommand_init_default      {"", "", ""}
 #define ListDirContentsResponse_init_default     {"", 0, 0, {DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default, DirItem_init_default}}
 #define PrintDirContentsCommand_init_default     {""}
@@ -217,9 +197,6 @@ extern "C" {
 #define FileSystemCommand_init_default           {0, {GetFileContentsCommand_init_default}}
 #define FileSystemResponse_init_default          {0, {GetFileContentsResponse_init_default}}
 #define DirItem_init_zero                        {"", _DirItemType_MIN, 0}
-#define FileData_init_zero                       {"", 0, 0}
-#define StoreUpcomingFileDataCommand_init_zero   {false, FileData_init_zero}
-#define StoreUpcomingFileDataResponse_init_zero  {0, 0, false, FileData_init_zero}
 #define RmFileCommand_init_zero                  {""}
 #define RmFileResponse_init_zero                 {0, false, RmFileCommand_init_zero}
 #define RmDirCommand_init_zero                   {""}
@@ -227,7 +204,7 @@ extern "C" {
 #define MkDirCommand_init_zero                   {""}
 #define MkDirResponse_init_zero                  {0, false, MkDirCommand_init_zero}
 #define ReportFileDataCommand_init_zero          {""}
-#define ReportFileDataResponse_init_zero         {0, false, FileData_init_zero}
+#define ReportFileDataResponse_init_zero         {_GetFileStatusCode_MIN, false, FileData_init_zero}
 #define ListDirContentsCommand_init_zero         {"", "", ""}
 #define ListDirContentsResponse_init_zero        {"", 0, 0, {DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero, DirItem_init_zero}}
 #define PrintDirContentsCommand_init_zero        {""}
@@ -244,38 +221,22 @@ extern "C" {
 #define DirItem_name_tag                         1
 #define DirItem_dirItemType_tag                  2
 #define DirItem_filesize_tag                     3
-#define FileData_filename_tag                    1
-#define FileData_filesize_tag                    2
-#define FileData_checksum_tag                    3
 #define GetFileContentsCommand_filePath_tag      1
+#define GetFileContentsResponse_statusCode_tag   1
+#define GetFileContentsResponse_fileData_tag     2
+#define GetFileContentsResponse_fileBytes_tag    3
 #define ListDirContentsCommand_dirPath_tag       1
 #define ListDirContentsCommand_startsWithConstraint_tag 2
 #define ListDirContentsCommand_endsWithConstraint_tag 3
 #define MkDirCommand_dirPath_tag                 1
 #define PrintDirContentsCommand_dirPath_tag      1
-#define ReportFileDataCommand_filename_tag       1
+#define ReportFileDataCommand_filePath_tag       1
+#define ReportFileDataResponse_fileStatus_tag    1
+#define ReportFileDataResponse_fileData_tag      2
 #define ResetFilesystemCommand_dummy_tag         1
 #define ResetFilesystemResponse_success_tag      1
 #define RmDirCommand_dirPath_tag                 1
 #define RmFileCommand_filePath_tag               1
-#define GetFileContentsResponse_statusCode_tag   1
-#define GetFileContentsResponse_fileData_tag     2
-#define GetFileContentsResponse_fileBytes_tag    3
-#define ListDirContentsResponse_dirPath_tag      1
-#define ListDirContentsResponse_success_tag      2
-#define ListDirContentsResponse_dirItems_tag     3
-#define MkDirResponse_success_tag                1
-#define MkDirResponse_mkDirCommand_tag           2
-#define ReportFileDataResponse_fileExists_tag    1
-#define ReportFileDataResponse_fileData_tag      2
-#define RmDirResponse_success_tag                1
-#define RmDirResponse_rmDirCommand_tag           2
-#define RmFileResponse_success_tag               1
-#define RmFileResponse_rmFileCommand_tag         2
-#define StoreUpcomingFileDataCommand_fileData_tag 1
-#define StoreUpcomingFileDataResponse_success_tag 1
-#define StoreUpcomingFileDataResponse_bytesWritten_tag 2
-#define StoreUpcomingFileDataResponse_command_tag 3
 #define WriteFileDataCommand_fileData_tag        1
 #define WriteFileDataCommand_fileBytes_tag       2
 #define WriteFileDataResponse_statusCode_tag     1
@@ -288,6 +249,15 @@ extern "C" {
 #define FileSystemCommand_mkDirCommand_tag       10
 #define FileSystemCommand_rmDirCommand_tag       11
 #define FileSystemCommand_resetFilesystemCommand_tag 15
+#define ListDirContentsResponse_dirPath_tag      1
+#define ListDirContentsResponse_success_tag      2
+#define ListDirContentsResponse_dirItems_tag     3
+#define MkDirResponse_success_tag                1
+#define MkDirResponse_mkDirCommand_tag           2
+#define RmDirResponse_success_tag                1
+#define RmDirResponse_rmDirCommand_tag           2
+#define RmFileResponse_success_tag               1
+#define RmFileResponse_rmFileCommand_tag         2
 #define FileSystemResponse_getFileContentsResponse_tag 1
 #define FileSystemResponse_writeFileDataResponse_tag 2
 #define FileSystemResponse_reportFileDataResponse_tag 4
@@ -304,27 +274,6 @@ X(a, STATIC,   SINGULAR, UENUM,    dirItemType,       2) \
 X(a, STATIC,   SINGULAR, UINT32,   filesize,          3)
 #define DirItem_CALLBACK NULL
 #define DirItem_DEFAULT NULL
-
-#define FileData_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, STRING,   filename,          1) \
-X(a, STATIC,   SINGULAR, UINT32,   filesize,          2) \
-X(a, STATIC,   SINGULAR, UINT32,   checksum,          3)
-#define FileData_CALLBACK NULL
-#define FileData_DEFAULT NULL
-
-#define StoreUpcomingFileDataCommand_FIELDLIST(X, a) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  fileData,          1)
-#define StoreUpcomingFileDataCommand_CALLBACK NULL
-#define StoreUpcomingFileDataCommand_DEFAULT NULL
-#define StoreUpcomingFileDataCommand_fileData_MSGTYPE FileData
-
-#define StoreUpcomingFileDataResponse_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, BOOL,     success,           1) \
-X(a, STATIC,   SINGULAR, UINT32,   bytesWritten,      2) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  command,           3)
-#define StoreUpcomingFileDataResponse_CALLBACK NULL
-#define StoreUpcomingFileDataResponse_DEFAULT NULL
-#define StoreUpcomingFileDataResponse_command_MSGTYPE FileData
 
 #define RmFileCommand_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, STRING,   filePath,          1)
@@ -363,12 +312,12 @@ X(a, STATIC,   OPTIONAL, MESSAGE,  mkDirCommand,      2)
 #define MkDirResponse_mkDirCommand_MSGTYPE MkDirCommand
 
 #define ReportFileDataCommand_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, STRING,   filename,          1)
+X(a, STATIC,   SINGULAR, STRING,   filePath,          1)
 #define ReportFileDataCommand_CALLBACK NULL
 #define ReportFileDataCommand_DEFAULT NULL
 
 #define ReportFileDataResponse_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, BOOL,     fileExists,        1) \
+X(a, STATIC,   SINGULAR, UENUM,    fileStatus,        1) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  fileData,          2)
 #define ReportFileDataResponse_CALLBACK NULL
 #define ReportFileDataResponse_DEFAULT NULL
@@ -472,9 +421,6 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (response,resetFilesystemResponse,response.re
 #define FileSystemResponse_response_resetFilesystemResponse_MSGTYPE ResetFilesystemResponse
 
 extern const pb_msgdesc_t DirItem_msg;
-extern const pb_msgdesc_t FileData_msg;
-extern const pb_msgdesc_t StoreUpcomingFileDataCommand_msg;
-extern const pb_msgdesc_t StoreUpcomingFileDataResponse_msg;
 extern const pb_msgdesc_t RmFileCommand_msg;
 extern const pb_msgdesc_t RmFileResponse_msg;
 extern const pb_msgdesc_t RmDirCommand_msg;
@@ -497,9 +443,6 @@ extern const pb_msgdesc_t FileSystemResponse_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define DirItem_fields &DirItem_msg
-#define FileData_fields &FileData_msg
-#define StoreUpcomingFileDataCommand_fields &StoreUpcomingFileDataCommand_msg
-#define StoreUpcomingFileDataResponse_fields &StoreUpcomingFileDataResponse_msg
 #define RmFileCommand_fields &RmFileCommand_msg
 #define RmFileResponse_fields &RmFileResponse_msg
 #define RmDirCommand_fields &RmDirCommand_msg
@@ -522,7 +465,6 @@ extern const pb_msgdesc_t FileSystemResponse_msg;
 
 /* Maximum encoded size of messages (where known) */
 #define DirItem_size                             41
-#define FileData_size                            45
 #define FileSystemCommand_size                   5053
 #define FileSystemResponse_size                  5055
 #define GetFileContentsCommand_size              33
@@ -540,8 +482,6 @@ extern const pb_msgdesc_t FileSystemResponse_msg;
 #define RmDirResponse_size                       37
 #define RmFileCommand_size                       33
 #define RmFileResponse_size                      37
-#define StoreUpcomingFileDataCommand_size        47
-#define StoreUpcomingFileDataResponse_size       55
 #define WriteFileDataCommand_size                5050
 #define WriteFileDataResponse_size               49
 

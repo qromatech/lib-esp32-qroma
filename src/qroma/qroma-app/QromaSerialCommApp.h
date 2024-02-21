@@ -13,6 +13,10 @@ typedef std::function<void(QromaCommSerialIoConfig * config)> QromaCommSerialIoC
 
 typedef std::function<void(QromaAppConfig * config)> QromaAppConfigFn;
 
+#define MEM_BUFFER_SiZE        1000
+#define SERIAL_RX_BUFFER_SIZE  1000
+#define SERIAL_TX_BUFFER_SIZE  1000
+
 
 class QromaSerialCommApp: QromaApp
 {
@@ -78,13 +82,14 @@ class QromaSerialCommApp: QromaApp
   
   private:
 
-    QromaCommSerialIo<1000, &Serial> _qromaCommSerialIo;
+    QromaCommSerialIo<MEM_BUFFER_SiZE, &Serial> _qromaCommSerialIo;
     uint32_t _whenHeartbeatLastSentInMs = 0;
     uint32_t _numHeartbeatTicks = 0;
 
     QromaCommSerialIoConfig _serialIoConfig = {
       .baudRate = 115200,
-      .rxBufferSize = 1000
+      .rxBufferSize = SERIAL_RX_BUFFER_SIZE,
+      .txBufferSize = SERIAL_TX_BUFFER_SIZE,
     };
 
 };
