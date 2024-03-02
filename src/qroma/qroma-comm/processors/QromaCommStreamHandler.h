@@ -1,5 +1,5 @@
-#ifndef QROMA_COMM_STREAM_READER_H
-#define QROMA_COMM_STREAM_READER_H
+#ifndef QROMA_COMM_STREAM_HANDLER_H
+#define QROMA_COMM_STREAM_HANDLER_H
 
 #include "LittleFS.h"
 #include <qroma-lib-proto/qroma-streams.pb.h>
@@ -7,7 +7,7 @@
 #include "IQromaCommStreamRxHandler.h"
 
 
-class QromaCommStreamReader {
+class QromaCommStreamHandler {
   public:
     void handleQromaStreamCommand(QromaStreamCommand * streamCommand, std::function<void(uint8_t*, uint32_t)> txFn,
       IQromaCommStreamRxHandler * streamRxHandler);
@@ -22,8 +22,10 @@ class QromaCommStreamReader {
 
     void handleInitWriteFileStreamCommand(InitWriteFileStreamCommand * command,
       std::function<void(uint8_t*, uint32_t)> txFn, IQromaCommStreamRxHandler * streamRxHandler);
+    void handleInitReadFileStreamCommand(InitReadFileStreamCommand * command,
+      std::function<void(uint8_t*, uint32_t)> txFn, IQromaCommStreamRxHandler * streamRxHandler);
 
-    // void startStreamReadingMode(uint32_t silenceDelayTimeoutInMs, FileData * fileData);
+    bool doStreamSendFile(File file, std::function<void(uint8_t*, uint32_t)> txFn, uint32_t chunkSize, uint32_t sendDelayInMs);
 
   private:
     File _streamToFile;
@@ -37,10 +39,6 @@ class QromaCommStreamReader {
 
     uint32_t _numberOfBytesWrittenSoFar;
     uint32_t _lastCommReadTimeInMs;
-
-    // uint32_t _readToBufferSize;
-    // uint32_t _silenceDelayTimeoutInMs;
-    // uint32_t _readToBufferTimeoutInMs;
 };
 
 #endif

@@ -55,7 +55,7 @@ bool QromaCommSerialPbRxBase::serialRx() {
   uint32_t remainingBufferByteCount = _qromaCommMemBuffer->getRemainingBufferByteCount();
 
   if (remainingBufferByteCount < 1) {
-    logInfo("QromaCommSerialPbRxBase::serialRx() START - BUFFER FULL");
+    logInfoIntWithDescription("QromaCommSerialPbRxBase::serialRx() START - BUFFER FULL: ", remainingBufferByteCount);
     return true;
   }
 
@@ -67,7 +67,7 @@ bool QromaCommSerialPbRxBase::serialRx() {
   }
 
   if (remainingBufferByteCount < 1) {
-    logInfo("QromaCommSerialPbRxBase::serialRx() END - BUFFER FULL");
+    logInfoIntWithDescription("QromaCommSerialPbRxBase::serialRx() END - BUFFER FULL: ", remainingBufferByteCount);
     return true;
   }
 

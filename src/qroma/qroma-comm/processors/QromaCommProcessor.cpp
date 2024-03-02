@@ -18,7 +18,7 @@ uint32_t QromaCommProcessor::processBytes(const uint8_t * bytes, uint32_t byteCo
 
   if (_processingMode == QromaCommProcessingMode_StreamReader) {
     // logInfoIntWithDescription("STREAM PROCESS BYTES: ", byteCount);
-    uint32_t numStreamBytesProcessed = _qromaCommStreamReader.processBytes(bytes, byteCount);
+    uint32_t numStreamBytesProcessed = _qromaCommStreamHandler.processBytes(bytes, byteCount);
     // logInfoIntWithDescription("QROMA COMM PROCESSOR STREAM MODE - NUM BYTES: ", numStreamBytesProcessed);
     return numStreamBytesProcessed;
   }
@@ -83,7 +83,7 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
       case QromaCommCommand_streamCommand_tag:
         txFn((uint8_t *)"STREAM COMMAND", 14);
 
-        _qromaCommStreamReader.handleQromaStreamCommand(&(qromaCommCommand.command.streamCommand), txFn, this);
+        _qromaCommStreamHandler.handleQromaStreamCommand(&(qromaCommCommand.command.streamCommand), txFn, this);
 
         txFn((uint8_t *)"DONE STREAM COMMAND\n", 20);
         break;
@@ -123,7 +123,7 @@ void QromaCommProcessor::endStreamReadingMode() {
 
 
 bool QromaCommProcessor::sendQromaCommResponse(QromaCommResponse * qromaCommResponse, std::function<void(uint8_t*, uint32_t)> txFn) {
-  logInfo("SENDING QROMACOMM RESPONSE");
+  // logInfo("SENDING QROMACOMM RESPONSE");
   uint8_t encodeBuffer[1000];
   memset(encodeBuffer, 0, sizeof(encodeBuffer));
 
@@ -134,12 +134,12 @@ bool QromaCommProcessor::sendQromaCommResponse(QromaCommResponse * qromaCommResp
     return false;
   }
 
-  logInfoIntWithDescription("QROMACOMM RESPONSE ENCODED: ", ostream.bytes_written);
+  // logInfoIntWithDescription("QROMACOMM RESPONSE ENCODED: ", ostream.bytes_written);
   unsigned int b64EncodedBufferLength = q_encode_base64(encodeBuffer, ostream.bytes_written, _base64EncodeBuffer);
   _base64EncodeBuffer[b64EncodedBufferLength] = '\n';
-  logInfo("PRE-TX B64");
+  // logInfo("PRE-TX B64");
   txFn(_base64EncodeBuffer, b64EncodedBufferLength + 1);
-  logInfo("POST-TX B64");
+  // logInfo("POST-TX B64");
 
   return true;
 }

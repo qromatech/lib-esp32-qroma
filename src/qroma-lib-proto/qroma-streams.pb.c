@@ -15,6 +15,15 @@ PB_BIND(InitWriteFileStreamAckResponse, InitWriteFileStreamAckResponse, AUTO)
 PB_BIND(WriteFileStreamCompleteResponse, WriteFileStreamCompleteResponse, AUTO)
 
 
+PB_BIND(InitReadFileStreamCommand, InitReadFileStreamCommand, AUTO)
+
+
+PB_BIND(InitReadFileStreamAckResponse, InitReadFileStreamAckResponse, AUTO)
+
+
+PB_BIND(ReadFileStreamCompleteResponse, ReadFileStreamCompleteResponse, AUTO)
+
+
 PB_BIND(QromaStreamCommand, QromaStreamCommand, AUTO)
 
 

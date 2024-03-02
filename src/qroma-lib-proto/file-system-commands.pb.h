@@ -17,13 +17,6 @@ typedef enum _DirItemType {
     DirItemType_DIT_DIR = 2 
 } DirItemType;
 
-typedef enum _GetFileStatusCode { 
-    GetFileStatusCode_GFSC_NOT_SET = 0, 
-    GetFileStatusCode_GFSC_FILE_EXISTS = 1, 
-    GetFileStatusCode_GFSC_ERR_OPEN_FILE = 2, 
-    GetFileStatusCode_GFSC_ERR_INVALID_FILE_PATH = 3 
-} GetFileStatusCode;
-
 typedef enum _WriteFileDataStatusCode { 
     WriteFileDataStatusCode_WFDSC_NOT_SET = 0, 
     WriteFileDataStatusCode_WFDSC_SUCCESS = 1, 
@@ -161,10 +154,6 @@ typedef struct _FileSystemResponse {
 #define _DirItemType_MIN DirItemType_DIT_NOT_SET
 #define _DirItemType_MAX DirItemType_DIT_DIR
 #define _DirItemType_ARRAYSIZE ((DirItemType)(DirItemType_DIT_DIR+1))
-
-#define _GetFileStatusCode_MIN GetFileStatusCode_GFSC_NOT_SET
-#define _GetFileStatusCode_MAX GetFileStatusCode_GFSC_ERR_INVALID_FILE_PATH
-#define _GetFileStatusCode_ARRAYSIZE ((GetFileStatusCode)(GetFileStatusCode_GFSC_ERR_INVALID_FILE_PATH+1))
 
 #define _WriteFileDataStatusCode_MIN WriteFileDataStatusCode_WFDSC_NOT_SET
 #define _WriteFileDataStatusCode_MAX WriteFileDataStatusCode_WFDSC_ERR_CRC_MISMATCH

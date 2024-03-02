@@ -11,7 +11,7 @@
 #include "QromaFsCommandProcessor.h"
 #include "QromaCommConfigProcessor.h"
 #include "IAppCommandProcessor.h"
-#include "QromaCommStreamReader.h"
+#include "QromaCommStreamHandler.h"
 #include "IQromaCommStreamRxHandler.h"
 
 
@@ -71,7 +71,7 @@ class QromaCommProcessor: public IQromaNewBytesProcessor,
     IAppCommandProcessor * _appCommandProcessor;
     QromaFsCommandProcessor _qromaFsCommandProcessor;
     QromaCommConfigProcessor _qromaCommConfigProcessor;
-    QromaCommStreamReader _qromaCommStreamReader;
+    QromaCommStreamHandler _qromaCommStreamHandler;
    
     unsigned char _base64DecodeBuffer[10000];
     unsigned char _base64EncodeBuffer[10000];
