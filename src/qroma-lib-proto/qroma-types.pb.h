@@ -25,6 +25,13 @@ typedef enum _Qroma_DebugCommMode {
     Qroma_DebugCommMode_DebugCommMode_SerialAndBluetooth = 4 
 } Qroma_DebugCommMode;
 
+typedef enum _GetFileStatusCode { 
+    GetFileStatusCode_GFSC_NOT_SET = 0, 
+    GetFileStatusCode_GFSC_FILE_EXISTS = 1, 
+    GetFileStatusCode_GFSC_ERR_OPEN_FILE = 2, 
+    GetFileStatusCode_GFSC_ERR_INVALID_FILE_PATH = 3 
+} GetFileStatusCode;
+
 /* Struct definitions */
 typedef struct _FileData { 
     char filename[32]; 
@@ -46,6 +53,10 @@ typedef struct _Qroma_LogMessage {
 #define _Qroma_DebugCommMode_MIN Qroma_DebugCommMode_DebugCommMode_NotSet
 #define _Qroma_DebugCommMode_MAX Qroma_DebugCommMode_DebugCommMode_SerialAndBluetooth
 #define _Qroma_DebugCommMode_ARRAYSIZE ((Qroma_DebugCommMode)(Qroma_DebugCommMode_DebugCommMode_SerialAndBluetooth+1))
+
+#define _GetFileStatusCode_MIN GetFileStatusCode_GFSC_NOT_SET
+#define _GetFileStatusCode_MAX GetFileStatusCode_GFSC_ERR_INVALID_FILE_PATH
+#define _GetFileStatusCode_ARRAYSIZE ((GetFileStatusCode)(GetFileStatusCode_GFSC_ERR_INVALID_FILE_PATH+1))
 
 
 #ifdef __cplusplus

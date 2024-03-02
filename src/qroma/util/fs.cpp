@@ -17,8 +17,8 @@ void initFileSystem() {
 
 
 uint32_t getFileChecksum(const char * fname) {
-  logInfo("getFileChecksum()");
-  logInfo(fname);
+  // logInfo("getFileChecksum()");
+  // logInfo(fname);
 
   CRC32 crc;
   
@@ -29,7 +29,7 @@ uint32_t getFileChecksum(const char * fname) {
   }
 
   uint32_t checksum = crc.finalize();
-  logInfoIntWithDescription("CHECKSUM VALUE: ", checksum);
+  // logInfoIntWithDescription("CHECKSUM VALUE: ", checksum);
 
   return checksum;
 }

@@ -11,6 +11,19 @@
 #endif
 
 /* Struct definitions */
+typedef struct _InitReadFileStreamAckResponse { 
+    GetFileStatusCode fileStatus; 
+    uint32_t fileStreamId; 
+    char message[100]; 
+    bool has_fileData;
+    FileData fileData; 
+} InitReadFileStreamAckResponse;
+
+typedef struct _InitReadFileStreamCommand { 
+    char filePath[32]; 
+    uint32_t fileStreamId; 
+} InitReadFileStreamCommand;
+
 typedef struct _InitWriteFileStreamAckResponse { 
     bool success; 
     uint32_t fileStreamId; 
@@ -22,6 +35,14 @@ typedef struct _InitWriteFileStreamCommand {
     FileData fileData; 
     uint32_t fileStreamId; 
 } InitWriteFileStreamCommand;
+
+typedef struct _ReadFileStreamCompleteResponse { 
+    bool success; 
+    uint32_t fileStreamId; 
+    char message[100]; 
+    bool has_fileData;
+    FileData fileData; 
+} ReadFileStreamCompleteResponse;
 
 typedef struct _WriteFileStreamCompleteResponse { 
     bool success; 
@@ -35,6 +56,7 @@ typedef struct _QromaStreamCommand {
     pb_size_t which_command;
     union {
         InitWriteFileStreamCommand initWriteFileStreamCommand;
+        InitReadFileStreamCommand initReadFileStreamCommand;
     } command; 
 } QromaStreamCommand;
 
@@ -43,6 +65,8 @@ typedef struct _QromaStreamResponse {
     union {
         InitWriteFileStreamAckResponse initWriteFileStreamAckResponse;
         WriteFileStreamCompleteResponse writeFileStreamCompleteResponse;
+        InitReadFileStreamAckResponse initReadFileStreamAckResponse;
+        ReadFileStreamCompleteResponse readFileStreamCompleteResponse;
     } response; 
 } QromaStreamResponse;
 
@@ -55,27 +79,46 @@ extern "C" {
 #define InitWriteFileStreamCommand_init_default  {false, FileData_init_default, 0}
 #define InitWriteFileStreamAckResponse_init_default {0, 0, ""}
 #define WriteFileStreamCompleteResponse_init_default {0, 0, "", false, FileData_init_default}
+#define InitReadFileStreamCommand_init_default   {"", 0}
+#define InitReadFileStreamAckResponse_init_default {_GetFileStatusCode_MIN, 0, "", false, FileData_init_default}
+#define ReadFileStreamCompleteResponse_init_default {0, 0, "", false, FileData_init_default}
 #define QromaStreamCommand_init_default          {0, {InitWriteFileStreamCommand_init_default}}
 #define QromaStreamResponse_init_default         {0, {InitWriteFileStreamAckResponse_init_default}}
 #define InitWriteFileStreamCommand_init_zero     {false, FileData_init_zero, 0}
 #define InitWriteFileStreamAckResponse_init_zero {0, 0, ""}
 #define WriteFileStreamCompleteResponse_init_zero {0, 0, "", false, FileData_init_zero}
+#define InitReadFileStreamCommand_init_zero      {"", 0}
+#define InitReadFileStreamAckResponse_init_zero  {_GetFileStatusCode_MIN, 0, "", false, FileData_init_zero}
+#define ReadFileStreamCompleteResponse_init_zero {0, 0, "", false, FileData_init_zero}
 #define QromaStreamCommand_init_zero             {0, {InitWriteFileStreamCommand_init_zero}}
 #define QromaStreamResponse_init_zero            {0, {InitWriteFileStreamAckResponse_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
+#define InitReadFileStreamAckResponse_fileStatus_tag 1
+#define InitReadFileStreamAckResponse_fileStreamId_tag 2
+#define InitReadFileStreamAckResponse_message_tag 3
+#define InitReadFileStreamAckResponse_fileData_tag 4
+#define InitReadFileStreamCommand_filePath_tag   1
+#define InitReadFileStreamCommand_fileStreamId_tag 2
 #define InitWriteFileStreamAckResponse_success_tag 1
 #define InitWriteFileStreamAckResponse_fileStreamId_tag 2
 #define InitWriteFileStreamAckResponse_message_tag 3
 #define InitWriteFileStreamCommand_fileData_tag  1
 #define InitWriteFileStreamCommand_fileStreamId_tag 2
+#define ReadFileStreamCompleteResponse_success_tag 1
+#define ReadFileStreamCompleteResponse_fileStreamId_tag 2
+#define ReadFileStreamCompleteResponse_message_tag 3
+#define ReadFileStreamCompleteResponse_fileData_tag 4
 #define WriteFileStreamCompleteResponse_success_tag 1
 #define WriteFileStreamCompleteResponse_fileStreamId_tag 2
 #define WriteFileStreamCompleteResponse_message_tag 3
 #define WriteFileStreamCompleteResponse_fileData_tag 4
 #define QromaStreamCommand_initWriteFileStreamCommand_tag 1
+#define QromaStreamCommand_initReadFileStreamCommand_tag 2
 #define QromaStreamResponse_initWriteFileStreamAckResponse_tag 1
 #define QromaStreamResponse_writeFileStreamCompleteResponse_tag 2
+#define QromaStreamResponse_initReadFileStreamAckResponse_tag 3
+#define QromaStreamResponse_readFileStreamCompleteResponse_tag 4
 
 /* Struct field encoding specification for nanopb */
 #define InitWriteFileStreamCommand_FIELDLIST(X, a) \
@@ -101,23 +144,56 @@ X(a, STATIC,   OPTIONAL, MESSAGE,  fileData,          4)
 #define WriteFileStreamCompleteResponse_DEFAULT NULL
 #define WriteFileStreamCompleteResponse_fileData_MSGTYPE FileData
 
+#define InitReadFileStreamCommand_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, STRING,   filePath,          1) \
+X(a, STATIC,   SINGULAR, UINT32,   fileStreamId,      2)
+#define InitReadFileStreamCommand_CALLBACK NULL
+#define InitReadFileStreamCommand_DEFAULT NULL
+
+#define InitReadFileStreamAckResponse_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UENUM,    fileStatus,        1) \
+X(a, STATIC,   SINGULAR, UINT32,   fileStreamId,      2) \
+X(a, STATIC,   SINGULAR, STRING,   message,           3) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  fileData,          4)
+#define InitReadFileStreamAckResponse_CALLBACK NULL
+#define InitReadFileStreamAckResponse_DEFAULT NULL
+#define InitReadFileStreamAckResponse_fileData_MSGTYPE FileData
+
+#define ReadFileStreamCompleteResponse_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, BOOL,     success,           1) \
+X(a, STATIC,   SINGULAR, UINT32,   fileStreamId,      2) \
+X(a, STATIC,   SINGULAR, STRING,   message,           3) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  fileData,          4)
+#define ReadFileStreamCompleteResponse_CALLBACK NULL
+#define ReadFileStreamCompleteResponse_DEFAULT NULL
+#define ReadFileStreamCompleteResponse_fileData_MSGTYPE FileData
+
 #define QromaStreamCommand_FIELDLIST(X, a) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,initWriteFileStreamCommand,command.initWriteFileStreamCommand),   1)
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,initWriteFileStreamCommand,command.initWriteFileStreamCommand),   1) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,initReadFileStreamCommand,command.initReadFileStreamCommand),   2)
 #define QromaStreamCommand_CALLBACK NULL
 #define QromaStreamCommand_DEFAULT NULL
 #define QromaStreamCommand_command_initWriteFileStreamCommand_MSGTYPE InitWriteFileStreamCommand
+#define QromaStreamCommand_command_initReadFileStreamCommand_MSGTYPE InitReadFileStreamCommand
 
 #define QromaStreamResponse_FIELDLIST(X, a) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (response,initWriteFileStreamAckResponse,response.initWriteFileStreamAckResponse),   1) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (response,writeFileStreamCompleteResponse,response.writeFileStreamCompleteResponse),   2)
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,writeFileStreamCompleteResponse,response.writeFileStreamCompleteResponse),   2) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,initReadFileStreamAckResponse,response.initReadFileStreamAckResponse),   3) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (response,readFileStreamCompleteResponse,response.readFileStreamCompleteResponse),   4)
 #define QromaStreamResponse_CALLBACK NULL
 #define QromaStreamResponse_DEFAULT NULL
 #define QromaStreamResponse_response_initWriteFileStreamAckResponse_MSGTYPE InitWriteFileStreamAckResponse
 #define QromaStreamResponse_response_writeFileStreamCompleteResponse_MSGTYPE WriteFileStreamCompleteResponse
+#define QromaStreamResponse_response_initReadFileStreamAckResponse_MSGTYPE InitReadFileStreamAckResponse
+#define QromaStreamResponse_response_readFileStreamCompleteResponse_MSGTYPE ReadFileStreamCompleteResponse
 
 extern const pb_msgdesc_t InitWriteFileStreamCommand_msg;
 extern const pb_msgdesc_t InitWriteFileStreamAckResponse_msg;
 extern const pb_msgdesc_t WriteFileStreamCompleteResponse_msg;
+extern const pb_msgdesc_t InitReadFileStreamCommand_msg;
+extern const pb_msgdesc_t InitReadFileStreamAckResponse_msg;
+extern const pb_msgdesc_t ReadFileStreamCompleteResponse_msg;
 extern const pb_msgdesc_t QromaStreamCommand_msg;
 extern const pb_msgdesc_t QromaStreamResponse_msg;
 
@@ -125,14 +201,20 @@ extern const pb_msgdesc_t QromaStreamResponse_msg;
 #define InitWriteFileStreamCommand_fields &InitWriteFileStreamCommand_msg
 #define InitWriteFileStreamAckResponse_fields &InitWriteFileStreamAckResponse_msg
 #define WriteFileStreamCompleteResponse_fields &WriteFileStreamCompleteResponse_msg
+#define InitReadFileStreamCommand_fields &InitReadFileStreamCommand_msg
+#define InitReadFileStreamAckResponse_fields &InitReadFileStreamAckResponse_msg
+#define ReadFileStreamCompleteResponse_fields &ReadFileStreamCompleteResponse_msg
 #define QromaStreamCommand_fields &QromaStreamCommand_msg
 #define QromaStreamResponse_fields &QromaStreamResponse_msg
 
 /* Maximum encoded size of messages (where known) */
+#define InitReadFileStreamAckResponse_size       156
+#define InitReadFileStreamCommand_size           39
 #define InitWriteFileStreamAckResponse_size      109
 #define InitWriteFileStreamCommand_size          53
 #define QromaStreamCommand_size                  55
 #define QromaStreamResponse_size                 159
+#define ReadFileStreamCompleteResponse_size      156
 #define WriteFileStreamCompleteResponse_size     156
 
 #ifdef __cplusplus
