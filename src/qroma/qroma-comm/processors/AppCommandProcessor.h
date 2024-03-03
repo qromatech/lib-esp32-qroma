@@ -25,7 +25,7 @@ class AppCommandProcessor: public IAppCommandProcessor {
 
   uint32_t processBytes(const uint8_t * bytes, uint32_t byteCount, std::function<void(uint8_t*, uint32_t)> txFn, QromaCommResponse * qcResponse) {
 
-    txFn((uint8_t *)"DO APP COMMAND", 14);
+    txFn((uint8_t *)"DO APP COMMAND\n", 15);
 
     PbMessage appCommand;
     memset(&appCommand, 0, sizeof(appCommand));
@@ -33,7 +33,7 @@ class AppCommandProcessor: public IAppCommandProcessor {
     pb_istream_t appCommand_istream = pb_istream_from_buffer(bytes, byteCount);
     bool appCommandDecoded = pb_decode(&appCommand_istream, PbMessageFields, &appCommand);
     if (!appCommandDecoded) {
-      txFn((uint8_t *)"ERR APP COMMAND", 15);
+      txFn((uint8_t *)"ERR APP COMMAND\n", 16);
       return 0;
     }
 
