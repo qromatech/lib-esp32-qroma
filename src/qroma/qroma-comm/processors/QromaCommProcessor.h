@@ -36,6 +36,7 @@ class QromaCommProcessor: public IQromaNewBytesProcessor,
 
     void startStreamReadingMode();    
     void endStreamReadingMode();
+    void logMode();
 
     bool sendQromaCommResponse(QromaCommResponse * qromaCommResponse, std::function<void(uint8_t*, uint32_t)> txFn);
 

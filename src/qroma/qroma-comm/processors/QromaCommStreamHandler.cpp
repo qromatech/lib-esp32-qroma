@@ -108,6 +108,7 @@ void QromaCommStreamHandler::handleInitWriteFileStreamCommand(InitWriteFileStrea
 }
 
 
+// return number of bytes we consumed here
 uint32_t QromaCommStreamHandler::processBytes(const uint8_t * bytes, uint32_t byteCount) {
 
   // logInfoIntWithDescription("PROCESSING STREAM BYTES: ", byteCount);
@@ -143,8 +144,8 @@ uint32_t QromaCommStreamHandler::processBytes(const uint8_t * bytes, uint32_t by
     return byteCount;
   }
 
+  uint32_t numBytesLeftBehind = byteCount - numBytesRemainingToWrite;
   logInfoIntWithDescription("WRITING FINAL STREAM BYTES: ", numBytesRemainingToWrite);
-  _streamRxHandler->endStreamReadingMode();
 
   // no more bytes to read after this
   bool writeSuccess = _streamToFile.write(bytes, numBytesRemainingToWrite);
@@ -156,7 +157,7 @@ uint32_t QromaCommStreamHandler::processBytes(const uint8_t * bytes, uint32_t by
     populateWriteFileStreamCompleteWithErrResponse(&response, "Err doing final write to file", _fileStreamId);
     _streamRxHandler->sendQromaCommResponse(&response, _txFn);
     
-    return numBytesRemainingToWrite;
+    return numBytesLeftBehind;
   } 
   
   uint32_t crc = getFileChecksum(_readToFileName);
@@ -165,13 +166,16 @@ uint32_t QromaCommStreamHandler::processBytes(const uint8_t * bytes, uint32_t by
     populateWriteFileStreamCompleteWithErrResponse(&response, "File written. Checksum error", _fileStreamId);
     _streamRxHandler->sendQromaCommResponse(&response, _txFn);
     
-    return numBytesRemainingToWrite;
+    return numBytesLeftBehind;
   }
 
   populateWriteFileStreamCompleteSuccessResponse(&response, "File written successfully", _fileStreamId, crc);
   _streamRxHandler->sendQromaCommResponse(&response, _txFn);
 
-  return numBytesRemainingToWrite;
+  logInfoUintWithDescription("QromaCommStreamHandler::processBytes() FILE DONE. REMAINING BYTE COUNT ", numBytesLeftBehind);
+  _streamRxHandler->endStreamReadingMode();
+
+  return numBytesLeftBehind;
 }
 
 

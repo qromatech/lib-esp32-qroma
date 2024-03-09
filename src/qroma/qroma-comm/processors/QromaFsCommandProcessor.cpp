@@ -107,7 +107,7 @@ bool QromaFsCommandProcessor::handleReportFileDataCommand(ReportFileDataCommand 
   uint32_t checkSum = getFileChecksum(cmd->filePath);
 
   logInfoIntWithDescription("FILE SIZE: ", fileSize);
-  logInfoIntWithDescription("FILE CHECKSUM: ", checkSum);
+  logInfoUintWithDescription("FILE CHECKSUM: ", checkSum);
 
   response->response.fsResponse.response.reportFileDataResponse.fileStatus = GetFileStatusCode_GFSC_FILE_EXISTS;
   response->response.fsResponse.response.reportFileDataResponse.has_fileData = true;

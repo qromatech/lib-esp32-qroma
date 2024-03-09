@@ -9,6 +9,7 @@
 #define MS_25 25 / portTICK_PERIOD_MS   //vTaskDelay
 #define MS_50 50 / portTICK_PERIOD_MS   //vTaskDelay
 #define MS_100 100 / portTICK_PERIOD_MS   //vTaskDelay
+#define MS_1000 1000 / portTICK_PERIOD_MS   //vTaskDelay
 
 #define QROMA_COMM_SERVICE_UUID                   "211f838d-7c01-4798-a456-da93a2c5f469"
 

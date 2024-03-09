@@ -16,17 +16,18 @@ void QromaCommProcessor::reset() {
 
 uint32_t QromaCommProcessor::processBytes(const uint8_t * bytes, uint32_t byteCount, std::function<void(const uint8_t*, uint32_t)> txFn) {
 
+  uint32_t numBytesConsumed = 0;
+
   if (_processingMode == QromaCommProcessingMode_StreamReader) {
     // logInfoIntWithDescription("STREAM PROCESS BYTES: ", byteCount);
-    uint32_t numStreamBytesProcessed = _qromaCommStreamHandler.processBytes(bytes, byteCount);
+    numBytesConsumed = _qromaCommStreamHandler.processBytes(bytes, byteCount);
     // logInfoIntWithDescription("QROMA COMM PROCESSOR STREAM MODE - NUM BYTES: ", numStreamBytesProcessed);
-    return numStreamBytesProcessed;
+    return numBytesConsumed;
   }
 
   bool newLineFound = false;
   uint32_t newLineIndex = 0;
   int scanIndex = 0;
-  uint32_t numBytesConsumed = 0;
 
   while (scanIndex < byteCount && !newLineFound) {
     if (bytes[scanIndex] == '\n') {
@@ -114,11 +115,29 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
 
 
 void QromaCommProcessor::startStreamReadingMode() {
+  logInfo("QromaCommProcessor::startStreamReadingMode");
   _processingMode = QromaCommProcessingMode_StreamReader;
 }
     
 void QromaCommProcessor::endStreamReadingMode() {
+  logInfo("QromaCommProcessor::endStreamReadingMode");
   _processingMode = QromaCommProcessingMode_QromaCommands;
+}
+
+void QromaCommProcessor::logMode() {
+  switch (_processingMode)
+  {
+  case QromaCommProcessingMode_QromaCommands:
+    logInfo("QromaCommProcessor mode - QromaCommProcessingMode_QromaCommands");
+    break;
+  
+  case QromaCommProcessingMode_StreamReader:
+    logInfo("QromaCommProcessor mode - QromaCommProcessingMode_StreamReader");
+    break;
+
+  default:
+    logInfoIntWithDescription("LOG DEFAULT PROCESSING MODE: ", _processingMode);
+  }
 }
 
 

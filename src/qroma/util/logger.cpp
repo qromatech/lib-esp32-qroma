@@ -39,6 +39,10 @@ void logInfoIntWithDescription(const char * msg, int value) {
   debugCommIntWithDescription(msg, value, _commMode, Qroma_LogLevel_LogLevel_Info);
 }
 
+void logInfoUintWithDescription(const char * msg, unsigned int value) {
+  debugCommUintWithDescription(msg, value, _commMode, Qroma_LogLevel_LogLevel_Info);
+}
+
 void logError(const char * msg) {
   debugComm(msg, _commMode, Qroma_LogLevel_LogLevel_Error);
 }
@@ -96,6 +100,28 @@ void debugCommInt(int value, Qroma_DebugCommMode commMode, Qroma_LogLevel logLev
 }
 
 void debugCommIntWithDescription(const char * intDescription, int value, Qroma_DebugCommMode commMode, Qroma_LogLevel logLevel) {
+  if (commMode == Qroma_DebugCommMode_DebugCommMode_None ||
+      !shouldBeLogged(logLevel)) {
+    return;
+  }
+
+  if (commMode == Qroma_DebugCommMode_DebugCommMode_BluetoothOnly ||
+      commMode == Qroma_DebugCommMode_DebugCommMode_SerialAndBluetooth)
+  {
+    // sendQromaLogMessageBt(intDescription);
+    // appendQromaLogMessageBt(value);
+  }
+
+  if (commMode == Qroma_DebugCommMode_DebugCommMode_SerialOnly ||
+      commMode == Qroma_DebugCommMode_DebugCommMode_SerialAndBluetooth)
+  {
+    Serial.print(intDescription);
+    Serial.println(value);
+  }
+}
+
+  
+void debugCommUintWithDescription(const char * intDescription, unsigned int value, Qroma_DebugCommMode commMode, Qroma_LogLevel logLevel) {
   if (commMode == Qroma_DebugCommMode_DebugCommMode_None ||
       !shouldBeLogged(logLevel)) {
     return;
