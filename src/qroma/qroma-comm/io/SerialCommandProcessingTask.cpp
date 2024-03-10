@@ -11,20 +11,22 @@ void _doSerialCommandProcessingTask(void *pvParameters) {
   logInfo("STARTING TASK: doSerialCommandProcessingTask");
 
   QromaCommSerialPbRxBase * qcSerialRx = (QromaCommSerialPbRxBase*)pvParameters;
-  uint32_t lastDelay = millis();
+  // uint32_t lastDelay = millis();
 
   while (true) {
-    bool hasMoreProcessingToDo = qcSerialRx->processCommBuffer();
-    while (hasMoreProcessingToDo) {
-      logInfo("hasMoreProcessingToDo");
-      hasMoreProcessingToDo = qcSerialRx->processCommBuffer();
-    }
+    // bool hasMoreProcessingToDo = qcSerialRx->processCommBuffer();
+    // while (hasMoreProcessingToDo) {
+    //   logInfo("hasMoreProcessingToDo");
+    //   hasMoreProcessingToDo = qcSerialRx->processCommBuffer();
+    // }
+
+    qcSerialRx->processCommBuffer();
 
     bool rxNeedsDelay = qcSerialRx->serialRx();
     if (rxNeedsDelay) {
-      logInfo("rxNeedsDelay");
-      lastDelay = millis();
-      vTaskDelay(MS_1000);
+      // logInfo("rxNeedsDelay");
+      // lastDelay = millis();
+      vTaskDelay(MS_100);
     } else {
       // uint32_t msSinceLastDelay = millis() - lastDelay;
       // if (msSinceLastDelay >= 1000) {

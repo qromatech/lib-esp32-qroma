@@ -74,18 +74,28 @@ bool QromaCommSerialPbRxBase::serialRx() {
   }
 
   bool bufferWasAddedTo = false;
+  uint32_t numBytesRead = 0;
   while (Serial.available() &&
          remainingBufferByteCount > 0) 
   {
     char incomingByte = Serial.read();
     remainingBufferByteCount = _qromaCommMemBuffer->addByte(incomingByte, now);
     bufferWasAddedTo = true;
+    numBytesRead++;
     bufferIsFull = remainingBufferByteCount < 1;
   }
 
   if (bufferIsFull) {
     logInfoIntWithDescription("QromaCommSerialPbRxBase::serialRx() END - BUFFER FULL, DON'T DELAY: ", remainingBufferByteCount);
     return false;
+  }
+
+  if (bufferWasAddedTo) {
+    _nextBufferExpirationTime = now + _commSilenceDelayToClearBuffer;
+  }
+
+  if (numBytesRead > 0) {
+    logInfoUintWithDescription(" QromaCommSerialPbRxBase::serialRx() READ BYTES: ", numBytesRead);
   }
 
   return !bufferWasAddedTo;
