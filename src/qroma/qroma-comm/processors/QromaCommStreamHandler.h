@@ -27,6 +27,8 @@ class QromaCommStreamHandler {
 
     bool doStreamSendFile(File file, std::function<void(uint8_t*, uint32_t)> txFn, uint32_t chunkSize, uint32_t sendDelayInMs);
 
+    void reset();
+
   private:
     File _streamToFile;
     char _readToFileName[40];

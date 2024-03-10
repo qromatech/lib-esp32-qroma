@@ -74,6 +74,12 @@ void QromaCommStreamHandler::populateWriteFileStreamCompleteSuccessResponse(Qrom
 }
 
 
+void QromaCommStreamHandler::reset() {
+  logInfo("QromaCommStreamHandler::reset()");
+  logInfo("Maybe handle deleting partially uploaded file here?");
+}
+
+
 void QromaCommStreamHandler::handleInitWriteFileStreamCommand(InitWriteFileStreamCommand * command,
   std::function<void(uint8_t*, uint32_t)> txFn, IQromaCommStreamRxHandler * streamRxHandler)
 {
@@ -111,17 +117,17 @@ void QromaCommStreamHandler::handleInitWriteFileStreamCommand(InitWriteFileStrea
 // return number of bytes we consumed here
 uint32_t QromaCommStreamHandler::processBytes(const uint8_t * bytes, uint32_t byteCount) {
 
-  // logInfoIntWithDescription("PROCESSING STREAM BYTES: ", byteCount);
+  logInfoIntWithDescription("PROCESSING STREAM BYTES: ", byteCount);
 
   uint32_t numBytesRemainingToWrite = _expectedFileSize - _numberOfBytesWrittenSoFar;
 
-  // logInfoIntWithDescription("REMAINING STREAM BYTES: ", numBytesRemainingToWrite);
+  logInfoIntWithDescription("REMAINING STREAM BYTES: ", numBytesRemainingToWrite);
 
   if (numBytesRemainingToWrite > byteCount) {
     // we won't be done writing, but we're going to write what we got
-    // logInfo("WRITING NEXT BYTES");
-    // logInfo(byteCount);
-    // logInfo(numBytesRemainingToWrite);
+    logInfo("WRITING NEXT BYTES");
+    logInfo(byteCount);
+    logInfo(numBytesRemainingToWrite);
 
     bool writeSuccess = _streamToFile.write(bytes, byteCount);
 
@@ -138,8 +144,8 @@ uint32_t QromaCommStreamHandler::processBytes(const uint8_t * bytes, uint32_t by
 
     _numberOfBytesWrittenSoFar += byteCount;
 
-    // logInfoIntWithDescription("WROTE BYTES TO FILE: ", byteCount);
-    // logInfoIntWithDescription("BYTES WRITTEN SO FAR: ", _numberOfBytesWrittenSoFar);
+    logInfoIntWithDescription("WROTE BYTES TO FILE: ", byteCount);
+    logInfoIntWithDescription("BYTES WRITTEN SO FAR: ", _numberOfBytesWrittenSoFar);
 
     return byteCount;
   }

@@ -10,6 +10,10 @@ void QromaCommProcessor::init(IAppCommandProcessor * appCommandProcessor) {
 
 
 void QromaCommProcessor::reset() {
+  logInfo("RESETTING QromaCommProcessor");
+  if (_processingMode == QromaCommProcessingMode_StreamReader) {
+    _qromaCommStreamHandler.reset();
+  }
   _processingMode = QromaCommProcessingMode_QromaCommands;
 }
 

@@ -4,37 +4,39 @@
 #include "QromaCommSerialPbRxBase.h"
 #include <qroma/util/logger.h>
 #include <qroma/util/constants.h>
+#include "SerialCommandProcessingTask.h"
 
 
-void _doSerialCommandProcessingTask(void *pvParameters) {
-  logInfo("STARTING TASK: doSerialCommandProcessingTask");
+// void _doSerialCommandProcessingTask(void *pvParameters) {
+//   logInfo("STARTING TASK: doSerialCommandProcessingTask");
 
-  QromaCommSerialPbRxBase * qcSerialRx = (QromaCommSerialPbRxBase*)pvParameters;
-  // uint32_t lastDelay = millis();
+//   QromaCommSerialPbRxBase * qcSerialRx = (QromaCommSerialPbRxBase*)pvParameters;
+//   uint32_t lastDelay = millis();
 
-  while (true) {
-    bool hasMoreProcessingToDo = qcSerialRx->processCommBuffer();
-    while (hasMoreProcessingToDo) {
-      hasMoreProcessingToDo = qcSerialRx->processCommBuffer();
-    }
+//   while (true) {
+//     bool hasMoreProcessingToDo = qcSerialRx->processCommBuffer();
+//     while (hasMoreProcessingToDo) {
+//       logInfo("hasMoreProcessingToDo");
+//       hasMoreProcessingToDo = qcSerialRx->processCommBuffer();
+//     }
 
-    bool rxNeedsDelay = qcSerialRx->serialRx();
-    if (rxNeedsDelay) {
-      // logInfo("rxNeedsDelay");
-      // lastDelay = millis();
-      vTaskDelay(MS_10);
-    } else {
-      // uint32_t msSinceLastDelay = millis() - lastDelay;
-      // if (msSinceLastDelay >= 1000) {
-      //   // vTaskDelay(MS_10);
-      // }
-      // // logInfo("CONTINUE PROCESSING");
-    }
-  }
+//     bool rxNeedsDelay = qcSerialRx->serialRx();
+//     if (rxNeedsDelay) {
+//       logInfo("rxNeedsDelay");
+//       lastDelay = millis();
+//       vTaskDelay(MS_1000);
+//     } else {
+//       // uint32_t msSinceLastDelay = millis() - lastDelay;
+//       // if (msSinceLastDelay >= 1000) {
+//       //   // vTaskDelay(MS_10);
+//       // }
+//       // // logInfo("CONTINUE PROCESSING");
+//     }
+//   }
 
-  logInfo("OOPS - COMPLETED TASK: doSerialCommandProcessingTask");
-  vTaskDelete(NULL);
-}
+//   logInfo("OOPS - COMPLETED TASK: doSerialCommandProcessingTask");
+//   vTaskDelete(NULL);
+// }
 
 
 void QromaCommSerialPbRxBase::initPbRxBase(
@@ -43,6 +45,7 @@ void QromaCommSerialPbRxBase::initPbRxBase(
   std::function<void(const uint8_t*, uint32_t)> responseFn
 ) {
   _commSilenceDelayToClearBuffer = 3000;
+  _nextBufferExpirationTime = 0;
   
   _qromaCommMemBuffer = qromaCommMemBuffer;
   _qromaCommProcessor.init(appCommandProcessor);
@@ -76,27 +79,33 @@ bool QromaCommSerialPbRxBase::serialRx() {
   {
     char incomingByte = Serial.read();
     remainingBufferByteCount = _qromaCommMemBuffer->addByte(incomingByte, now);
-    // bufferWasAddedTo = true;
-    // bufferIsFull = remainingBufferByteCount < 1;
+    bufferWasAddedTo = true;
+    bufferIsFull = remainingBufferByteCount < 1;
   }
 
-  return true;
-}
-
-
-// - return whether or not anything was processed
-bool QromaCommSerialPbRxBase::processCommBuffer() {
-  int commBufferWriteIndex = _qromaCommMemBuffer->getBufferWriteIndex();
-  if (commBufferWriteIndex == 0) {
+  if (bufferIsFull) {
+    logInfoIntWithDescription("QromaCommSerialPbRxBase::serialRx() END - BUFFER FULL, DON'T DELAY: ", remainingBufferByteCount);
     return false;
   }
 
+  return !bufferWasAddedTo;
+}
+
+
+// - return whether or not more processing should happen
+bool QromaCommSerialPbRxBase::processCommBuffer() {
   int now = millis();
-  int bufferExpirationTime = _qromaCommMemBuffer->getLastTimeAddedToInMs() + _commSilenceDelayToClearBuffer;
-  if (now > bufferExpirationTime) {
-    logInfo("processCommBuffer EXPIRED");
+  if (now > _nextBufferExpirationTime) {
+    _nextBufferExpirationTime = now + _commSilenceDelayToClearBuffer;
+    logInfoUintWithDescription("processCommBuffer EXPIRED - ", now);
+    logInfo(_nextBufferExpirationTime);
     _qromaCommMemBuffer->reset();
     _qromaCommProcessor.reset();
+    return false;
+  }
+
+  int commBufferWriteIndex = _qromaCommMemBuffer->getBufferWriteIndex();
+  if (commBufferWriteIndex == 0) {
     return false;
   }
 
@@ -109,8 +118,9 @@ bool QromaCommSerialPbRxBase::processCommBuffer() {
 
   if (numBytesConsumed > 0) {
     _qromaCommMemBuffer->removeFirstNFromBuffer(numBytesConsumed);
-    // logInfoIntWithDescription("QromaCommSerialPbRxBase::processCommBuffer() PROCESSED BYTES: ", numBytesProcessed);
-    return true;
+    logInfoIntWithDescription("QromaCommSerialPbRxBase::processCommBuffer() PROCESSED BYTES: ", numBytesConsumed);
+    commBufferWriteIndex = _qromaCommMemBuffer->getBufferWriteIndex();
+    return commBufferWriteIndex != 1;
   }
 
   return false;

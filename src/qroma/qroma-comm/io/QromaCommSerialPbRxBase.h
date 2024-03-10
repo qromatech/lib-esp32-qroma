@@ -28,9 +28,9 @@ class QromaCommSerialPbRxBase {
     bool sendQromaCommResponse(QromaCommResponse * qromaCommResponse);
 
 
-
   private:
     uint32_t _commSilenceDelayToClearBuffer;
+    uint32_t _nextBufferExpirationTime;
     
     QromaCommMemBuffer * _qromaCommMemBuffer;
     QromaCommProcessor _qromaCommProcessor;
