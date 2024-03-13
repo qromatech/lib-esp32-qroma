@@ -14,8 +14,8 @@ class QromaApp {
     virtual void init() = 0;
     void initApp();
 
-    // QromaAppConfig * getAppConfigRef() { return &_appConfig; }
     QromaCoreConfig * getCoreConfigRef() { return &_qromaCoreConfig; }
+    QromaCoreManagementConfiguration * getCoreManagementConfigRef();
     void configureQromaCore(QromaCoreConfigFn configFn);
 
     void applyQromaCoreConfig(QromaCoreConfig * config);

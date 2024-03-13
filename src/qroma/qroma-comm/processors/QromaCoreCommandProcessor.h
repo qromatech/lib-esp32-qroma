@@ -27,12 +27,4 @@ class QromaCoreCommandProcessor {
     void handleSetQromaProjectConfiguration(QromaProjectConfiguration * config);
 };
 
-
-
-// extern void populateQromaProjectConfiguration(QromaProjectConfiguration * config);
-// extern void setHeartbeatConfiguration(QromaProjectConfiguration * config);
-
-// extern void populateHeartbeatConfiguration(HeartbeatConfiguration * config);
-// extern void setHeartbeatConfiguration(HeartbeatConfiguration * config);
-
 #endif

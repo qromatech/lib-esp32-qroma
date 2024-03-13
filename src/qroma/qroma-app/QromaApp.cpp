@@ -31,3 +31,11 @@ void QromaApp::applyQromaCoreConfig(QromaCoreConfig * config) {
 void QromaApp::populateQromaCoreConfig(QromaCoreConfig * config) {
   _qromaCoreManager.populateQromaCoreConfig(config, &_qromaCoreConfig);
 }
+
+
+QromaCoreManagementConfiguration * QromaApp::getCoreManagementConfigRef() {
+  if (_qromaCoreConfig.has_managementConfig) {
+    return &(_qromaCoreConfig.managementConfig);
+  }
+  return NULL;
+}
