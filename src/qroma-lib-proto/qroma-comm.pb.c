@@ -9,9 +9,6 @@
 PB_BIND(QromaCommCommand, QromaCommCommand, 4)
 
 
-PB_BIND(QromaCommHeartbeatResponse, QromaCommHeartbeatResponse, AUTO)
-
-
 PB_BIND(QromaCommResponse, QromaCommResponse, 4)
 
 

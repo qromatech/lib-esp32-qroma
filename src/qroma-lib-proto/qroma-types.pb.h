@@ -32,12 +32,29 @@ typedef enum _GetFileStatusCode {
     GetFileStatusCode_GFSC_ERR_INVALID_FILE_PATH = 3 
 } GetFileStatusCode;
 
+typedef enum _HeartbeatType { 
+    HeartbeatType_HeartbeatType_NotSet = 0, 
+    HeartbeatType_HeartbeatType_None = 1, 
+    HeartbeatType_HeartbeatType_Interval = 2 
+} HeartbeatType;
+
 /* Struct definitions */
 typedef struct _FileData { 
     char filename[32]; 
     uint32_t filesize; 
     uint32_t checksum; 
 } FileData;
+
+typedef struct _FirmwareDetails { 
+    char buildTime[50]; 
+    char qromaFirmwareLibVersion[50]; 
+    char qromaDeviceFirmwareVersion[50]; 
+} FirmwareDetails;
+
+typedef struct _HeartbeatResponse { 
+    uint32_t uptimeInMs; 
+    uint32_t heartbeatTicks; 
+} HeartbeatResponse;
 
 typedef struct _Qroma_LogMessage { 
     uint32_t tick; 
@@ -58,6 +75,10 @@ typedef struct _Qroma_LogMessage {
 #define _GetFileStatusCode_MAX GetFileStatusCode_GFSC_ERR_INVALID_FILE_PATH
 #define _GetFileStatusCode_ARRAYSIZE ((GetFileStatusCode)(GetFileStatusCode_GFSC_ERR_INVALID_FILE_PATH+1))
 
+#define _HeartbeatType_MIN HeartbeatType_HeartbeatType_NotSet
+#define _HeartbeatType_MAX HeartbeatType_HeartbeatType_Interval
+#define _HeartbeatType_ARRAYSIZE ((HeartbeatType)(HeartbeatType_HeartbeatType_Interval+1))
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -66,13 +87,22 @@ extern "C" {
 /* Initializer values for message structs */
 #define Qroma_LogMessage_init_default            {0, ""}
 #define FileData_init_default                    {"", 0, 0}
+#define FirmwareDetails_init_default             {"", "", ""}
+#define HeartbeatResponse_init_default           {0, 0}
 #define Qroma_LogMessage_init_zero               {0, ""}
 #define FileData_init_zero                       {"", 0, 0}
+#define FirmwareDetails_init_zero                {"", "", ""}
+#define HeartbeatResponse_init_zero              {0, 0}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define FileData_filename_tag                    1
 #define FileData_filesize_tag                    2
 #define FileData_checksum_tag                    3
+#define FirmwareDetails_buildTime_tag            1
+#define FirmwareDetails_qromaFirmwareLibVersion_tag 2
+#define FirmwareDetails_qromaDeviceFirmwareVersion_tag 3
+#define HeartbeatResponse_uptimeInMs_tag         1
+#define HeartbeatResponse_heartbeatTicks_tag     2
 #define Qroma_LogMessage_tick_tag                1
 #define Qroma_LogMessage_message_tag             2
 
@@ -90,15 +120,34 @@ X(a, STATIC,   SINGULAR, UINT32,   checksum,          3)
 #define FileData_CALLBACK NULL
 #define FileData_DEFAULT NULL
 
+#define FirmwareDetails_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, STRING,   buildTime,         1) \
+X(a, STATIC,   SINGULAR, STRING,   qromaFirmwareLibVersion,   2) \
+X(a, STATIC,   SINGULAR, STRING,   qromaDeviceFirmwareVersion,   3)
+#define FirmwareDetails_CALLBACK NULL
+#define FirmwareDetails_DEFAULT NULL
+
+#define HeartbeatResponse_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   uptimeInMs,        1) \
+X(a, STATIC,   SINGULAR, UINT32,   heartbeatTicks,    2)
+#define HeartbeatResponse_CALLBACK NULL
+#define HeartbeatResponse_DEFAULT NULL
+
 extern const pb_msgdesc_t Qroma_LogMessage_msg;
 extern const pb_msgdesc_t FileData_msg;
+extern const pb_msgdesc_t FirmwareDetails_msg;
+extern const pb_msgdesc_t HeartbeatResponse_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define Qroma_LogMessage_fields &Qroma_LogMessage_msg
 #define FileData_fields &FileData_msg
+#define FirmwareDetails_fields &FirmwareDetails_msg
+#define HeartbeatResponse_fields &HeartbeatResponse_msg
 
 /* Maximum encoded size of messages (where known) */
 #define FileData_size                            45
+#define FirmwareDetails_size                     153
+#define HeartbeatResponse_size                   12
 #define Qroma_LogMessage_size                    67
 
 #ifdef __cplusplus

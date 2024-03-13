@@ -9,10 +9,19 @@
 PB_BIND(QromaCommSerialIoConfig, QromaCommSerialIoConfig, AUTO)
 
 
-PB_BIND(QromaCommReportingConfig, QromaCommReportingConfig, AUTO)
+PB_BIND(QromaCommSerialProcessingConfig, QromaCommSerialProcessingConfig, AUTO)
 
 
-PB_BIND(QromaCommConfig, QromaCommConfig, AUTO)
+PB_BIND(QromaCoreLoggingConfig, QromaCoreLoggingConfig, AUTO)
+
+
+PB_BIND(HeartbeatConfiguration, HeartbeatConfiguration, AUTO)
+
+
+PB_BIND(QromaProjectConfiguration, QromaProjectConfiguration, AUTO)
+
+
+PB_BIND(QromaCoreConfig, QromaCoreConfig, AUTO)
 
 
 

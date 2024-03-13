@@ -11,10 +11,10 @@
 #endif
 
 /* Struct definitions */
-typedef struct _QromaCommReportingConfig { 
-    Qroma_LogLevel logLevel; 
+typedef struct _HeartbeatConfiguration { 
+    HeartbeatType heartbeatType; 
     uint32_t heartbeatIntervalInMs; 
-} QromaCommReportingConfig;
+} HeartbeatConfiguration;
 
 typedef struct _QromaCommSerialIoConfig { 
     uint32_t baudRate; 
@@ -22,12 +22,30 @@ typedef struct _QromaCommSerialIoConfig {
     uint32_t txBufferSize; 
 } QromaCommSerialIoConfig;
 
-typedef struct _QromaCommConfig { 
+typedef struct _QromaCommSerialProcessingConfig { 
+    uint32_t msDelayInProcessingLoop; 
+} QromaCommSerialProcessingConfig;
+
+typedef struct _QromaCoreLoggingConfig { 
+    Qroma_LogLevel logLevel; 
+} QromaCoreLoggingConfig;
+
+typedef struct _QromaProjectConfiguration { 
+    uint32_t projectLoopDelayInMs; 
+    bool has_heartbeatConfiguration;
+    HeartbeatConfiguration heartbeatConfiguration; 
+} QromaProjectConfiguration;
+
+typedef struct _QromaCoreConfig { 
     bool has_serialIoConfig;
     QromaCommSerialIoConfig serialIoConfig; 
-    bool has_reportingConfig;
-    QromaCommReportingConfig reportingConfig; 
-} QromaCommConfig;
+    bool has_serialProcessingConfig;
+    QromaCommSerialProcessingConfig serialProcessingConfig; 
+    bool has_loggingConfig;
+    QromaCoreLoggingConfig loggingConfig; 
+    bool has_projectConfiguration;
+    QromaProjectConfiguration projectConfiguration; 
+} QromaCoreConfig;
 
 
 #ifdef __cplusplus
@@ -36,20 +54,32 @@ extern "C" {
 
 /* Initializer values for message structs */
 #define QromaCommSerialIoConfig_init_default     {0, 0, 0}
-#define QromaCommReportingConfig_init_default    {_Qroma_LogLevel_MIN, 0}
-#define QromaCommConfig_init_default             {false, QromaCommSerialIoConfig_init_default, false, QromaCommReportingConfig_init_default}
+#define QromaCommSerialProcessingConfig_init_default {0}
+#define QromaCoreLoggingConfig_init_default      {_Qroma_LogLevel_MIN}
+#define HeartbeatConfiguration_init_default      {_HeartbeatType_MIN, 0}
+#define QromaProjectConfiguration_init_default   {0, false, HeartbeatConfiguration_init_default}
+#define QromaCoreConfig_init_default             {false, QromaCommSerialIoConfig_init_default, false, QromaCommSerialProcessingConfig_init_default, false, QromaCoreLoggingConfig_init_default, false, QromaProjectConfiguration_init_default}
 #define QromaCommSerialIoConfig_init_zero        {0, 0, 0}
-#define QromaCommReportingConfig_init_zero       {_Qroma_LogLevel_MIN, 0}
-#define QromaCommConfig_init_zero                {false, QromaCommSerialIoConfig_init_zero, false, QromaCommReportingConfig_init_zero}
+#define QromaCommSerialProcessingConfig_init_zero {0}
+#define QromaCoreLoggingConfig_init_zero         {_Qroma_LogLevel_MIN}
+#define HeartbeatConfiguration_init_zero         {_HeartbeatType_MIN, 0}
+#define QromaProjectConfiguration_init_zero      {0, false, HeartbeatConfiguration_init_zero}
+#define QromaCoreConfig_init_zero                {false, QromaCommSerialIoConfig_init_zero, false, QromaCommSerialProcessingConfig_init_zero, false, QromaCoreLoggingConfig_init_zero, false, QromaProjectConfiguration_init_zero}
 
 /* Field tags (for use in manual encoding/decoding) */
-#define QromaCommReportingConfig_logLevel_tag    1
-#define QromaCommReportingConfig_heartbeatIntervalInMs_tag 2
+#define HeartbeatConfiguration_heartbeatType_tag 1
+#define HeartbeatConfiguration_heartbeatIntervalInMs_tag 2
 #define QromaCommSerialIoConfig_baudRate_tag     1
 #define QromaCommSerialIoConfig_rxBufferSize_tag 2
 #define QromaCommSerialIoConfig_txBufferSize_tag 3
-#define QromaCommConfig_serialIoConfig_tag       1
-#define QromaCommConfig_reportingConfig_tag      2
+#define QromaCommSerialProcessingConfig_msDelayInProcessingLoop_tag 1
+#define QromaCoreLoggingConfig_logLevel_tag      1
+#define QromaProjectConfiguration_projectLoopDelayInMs_tag 1
+#define QromaProjectConfiguration_heartbeatConfiguration_tag 2
+#define QromaCoreConfig_serialIoConfig_tag       1
+#define QromaCoreConfig_serialProcessingConfig_tag 2
+#define QromaCoreConfig_loggingConfig_tag        3
+#define QromaCoreConfig_projectConfiguration_tag 4
 
 /* Struct field encoding specification for nanopb */
 #define QromaCommSerialIoConfig_FIELDLIST(X, a) \
@@ -59,33 +89,63 @@ X(a, STATIC,   SINGULAR, UINT32,   txBufferSize,      3)
 #define QromaCommSerialIoConfig_CALLBACK NULL
 #define QromaCommSerialIoConfig_DEFAULT NULL
 
-#define QromaCommReportingConfig_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UENUM,    logLevel,          1) \
-X(a, STATIC,   SINGULAR, UINT32,   heartbeatIntervalInMs,   2)
-#define QromaCommReportingConfig_CALLBACK NULL
-#define QromaCommReportingConfig_DEFAULT NULL
+#define QromaCommSerialProcessingConfig_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   msDelayInProcessingLoop,   1)
+#define QromaCommSerialProcessingConfig_CALLBACK NULL
+#define QromaCommSerialProcessingConfig_DEFAULT NULL
 
-#define QromaCommConfig_FIELDLIST(X, a) \
+#define QromaCoreLoggingConfig_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UENUM,    logLevel,          1)
+#define QromaCoreLoggingConfig_CALLBACK NULL
+#define QromaCoreLoggingConfig_DEFAULT NULL
+
+#define HeartbeatConfiguration_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UENUM,    heartbeatType,     1) \
+X(a, STATIC,   SINGULAR, UINT32,   heartbeatIntervalInMs,   2)
+#define HeartbeatConfiguration_CALLBACK NULL
+#define HeartbeatConfiguration_DEFAULT NULL
+
+#define QromaProjectConfiguration_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   projectLoopDelayInMs,   1) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  heartbeatConfiguration,   2)
+#define QromaProjectConfiguration_CALLBACK NULL
+#define QromaProjectConfiguration_DEFAULT NULL
+#define QromaProjectConfiguration_heartbeatConfiguration_MSGTYPE HeartbeatConfiguration
+
+#define QromaCoreConfig_FIELDLIST(X, a) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  serialIoConfig,    1) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  reportingConfig,   2)
-#define QromaCommConfig_CALLBACK NULL
-#define QromaCommConfig_DEFAULT NULL
-#define QromaCommConfig_serialIoConfig_MSGTYPE QromaCommSerialIoConfig
-#define QromaCommConfig_reportingConfig_MSGTYPE QromaCommReportingConfig
+X(a, STATIC,   OPTIONAL, MESSAGE,  serialProcessingConfig,   2) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  loggingConfig,     3) \
+X(a, STATIC,   OPTIONAL, MESSAGE,  projectConfiguration,   4)
+#define QromaCoreConfig_CALLBACK NULL
+#define QromaCoreConfig_DEFAULT NULL
+#define QromaCoreConfig_serialIoConfig_MSGTYPE QromaCommSerialIoConfig
+#define QromaCoreConfig_serialProcessingConfig_MSGTYPE QromaCommSerialProcessingConfig
+#define QromaCoreConfig_loggingConfig_MSGTYPE QromaCoreLoggingConfig
+#define QromaCoreConfig_projectConfiguration_MSGTYPE QromaProjectConfiguration
 
 extern const pb_msgdesc_t QromaCommSerialIoConfig_msg;
-extern const pb_msgdesc_t QromaCommReportingConfig_msg;
-extern const pb_msgdesc_t QromaCommConfig_msg;
+extern const pb_msgdesc_t QromaCommSerialProcessingConfig_msg;
+extern const pb_msgdesc_t QromaCoreLoggingConfig_msg;
+extern const pb_msgdesc_t HeartbeatConfiguration_msg;
+extern const pb_msgdesc_t QromaProjectConfiguration_msg;
+extern const pb_msgdesc_t QromaCoreConfig_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define QromaCommSerialIoConfig_fields &QromaCommSerialIoConfig_msg
-#define QromaCommReportingConfig_fields &QromaCommReportingConfig_msg
-#define QromaCommConfig_fields &QromaCommConfig_msg
+#define QromaCommSerialProcessingConfig_fields &QromaCommSerialProcessingConfig_msg
+#define QromaCoreLoggingConfig_fields &QromaCoreLoggingConfig_msg
+#define HeartbeatConfiguration_fields &HeartbeatConfiguration_msg
+#define QromaProjectConfiguration_fields &QromaProjectConfiguration_msg
+#define QromaCoreConfig_fields &QromaCoreConfig_msg
 
 /* Maximum encoded size of messages (where known) */
-#define QromaCommConfig_size                     31
-#define QromaCommReportingConfig_size            9
+#define HeartbeatConfiguration_size              8
 #define QromaCommSerialIoConfig_size             18
+#define QromaCommSerialProcessingConfig_size     6
+#define QromaCoreConfig_size                     51
+#define QromaCoreLoggingConfig_size              3
+#define QromaProjectConfiguration_size           16
 
 #ifdef __cplusplus
 } /* extern "C" */

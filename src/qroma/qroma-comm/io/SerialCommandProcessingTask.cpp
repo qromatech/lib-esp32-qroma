@@ -4,7 +4,29 @@
 #include "SerialCommandProcessingTask.h"
 #include "QromaCommSerialPbRxBase.h"
 #include <qroma/util/constants.h>
+#include <qroma/util/logger.h>
 
+
+uint32_t _msDelayInProcessingLoop = 100;
+uint32_t _processingLoopDelayInterval = _msDelayInProcessingLoop * MS_1;
+
+
+bool setMsDelayInProcessingLoop(uint32_t msDelay) {
+  if (msDelay > 0 &&
+      msDelay <= 5000)
+  {
+    _msDelayInProcessingLoop = msDelay;
+    _processingLoopDelayInterval = msDelay * MS_1;
+    return true;
+  } else {
+    logError("MS DELAY IN PROCESSING LOOP MUST BE 5000 OR LESS");
+    return false;
+  }
+}
+
+uint32_t getMsDelayInProcessingLoop() {
+  return _msDelayInProcessingLoop;
+}
 
 
 void _doSerialCommandProcessingTask(void *pvParameters) {
@@ -26,7 +48,7 @@ void _doSerialCommandProcessingTask(void *pvParameters) {
     if (rxNeedsDelay) {
       // logInfo("rxNeedsDelay");
       // lastDelay = millis();
-      vTaskDelay(MS_100);
+      vTaskDelay(_processingLoopDelayInterval);
     } else {
       // uint32_t msSinceLastDelay = millis() - lastDelay;
       // if (msSinceLastDelay >= 1000) {

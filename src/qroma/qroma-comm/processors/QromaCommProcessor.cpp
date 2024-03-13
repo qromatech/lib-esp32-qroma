@@ -10,8 +10,8 @@ void QromaCommProcessor::init(IAppCommandProcessor * appCommandProcessor) {
 
 
 void QromaCommProcessor::reset() {
-  logInfo("RESETTING QromaCommProcessor");
   if (_processingMode == QromaCommProcessingMode_StreamReader) {
+    logInfo("RESETTING QromaCommProcessor");
     _qromaCommStreamHandler.reset();
   }
   _processingMode = QromaCommProcessingMode_QromaCommands;
@@ -92,13 +92,14 @@ uint32_t QromaCommProcessor::handleQromaCommCommand(uint8_t * bytes, uint32_t by
 
         txFn((uint8_t *)"DONE STREAM COMMAND\n", 20);
         break;
-      case QromaCommCommand_commConfigCommand_tag:
-        _qromaCommConfigProcessor.handleQromaCommConfigCommand(
-          &(qromaCommCommand.command.commConfigCommand), 
+      case QromaCommCommand_coreCommand_tag:
+        _qromaCoreCommandProcessor.handleQromaCoreCommand(
+          &(qromaCommCommand.command.coreCommand),
           &qromaCommResponse, 
+          this,
           txFn);
         shouldSendQromaCommResponse = true;
-        qromaCommResponse.which_response = QromaCommResponse_commConfigResponse_tag;
+        qromaCommResponse.which_response = QromaCommResponse_coreResponse_tag;
         break;
     }
 

@@ -9,16 +9,17 @@
 #include <qroma/util/fs.h>
 
 
-typedef std::function<void(QromaCommSerialIoConfig * config)> QromaCommSerialIoConfigFn;
+// typedef std::function<void(QromaCommSerialIoConfig * config)> QromaCommSerialIoConfigFn;
+// typedef std::function<void(QromaAppConfig * config)> QromaAppConfigFn;
 
-typedef std::function<void(QromaAppConfig * config)> QromaAppConfigFn;
+// typedef std::function<void(QromaCoreConfig * config)> QromaCoreConfigFn;
 
 #define MEM_BUFFER_SiZE        1000
 #define SERIAL_RX_BUFFER_SIZE  1000
 #define SERIAL_TX_BUFFER_SIZE  1000
 
 
-class QromaSerialCommApp: QromaApp
+class QromaSerialCommApp: public QromaApp
 {
   public:
 
@@ -28,50 +29,54 @@ class QromaSerialCommApp: QromaApp
       _qromaCommSerialIo.setAppCommandProcessor(processor);
     }
     
-    void configureSerialCommIo(QromaCommSerialIoConfigFn serialIoConfigFn) {
-      serialIoConfigFn(&_serialIoConfig);
-    }
+    // void configureSerialCommIo(QromaCommSerialIoConfigFn serialIoConfigFn) {
+    //   serialIoConfigFn(&_serialIoConfig);
+    // }
 
-    void configureQromaApp(QromaAppConfigFn configFn) {
-      configFn(this->getAppConfigRef());
-    }
+    // void configureQromaApp(QromaAppConfigFn configFn) {
+    //   configFn(this->getAppConfigRef());
+    // }
+
+    // void configureQromaCore(QromaCoreConfigFn configFn) {
+    //   configFn(this->getCoreConfigRef());
+    // }
 
     IQromaCommSerialTx * getQromaCommSerialTxRef() {
       return &_qromaCommSerialIo;
     }
 
-    void copySerialIoConfig(QromaCommSerialIoConfig * config) {
-      config->baudRate = _serialIoConfig.baudRate;
-      config->rxBufferSize = _serialIoConfig.rxBufferSize;
-      config->txBufferSize = _serialIoConfig.txBufferSize;
-    }
+    // void copySerialIoConfig(QromaCommSerialIoConfig * config) {
+    //   config->baudRate = _serialIoConfig.baudRate;
+    //   config->rxBufferSize = _serialIoConfig.rxBufferSize;
+    //   config->txBufferSize = _serialIoConfig.txBufferSize;
+    // }
 
     template<typename PbMessage, const pb_msgdesc_t *PbMessageFields>
     bool sendQromaAppResponse(PbMessage * response) {
       return _qromaCommSerialIo.sendQromaAppResponse<PbMessage, PbMessageFields>(response);
     }
 
-    bool processHeartbeat() {
-      uint32_t rightNow = millis();
-      uint32_t msSinceLastSent = rightNow - _whenHeartbeatLastSentInMs;
-      uint32_t heartbeatIntervalInMs = getHeartbeatIntervalInMs();
+    // bool processHeartbeat() {
+    //   uint32_t rightNow = millis();
+    //   uint32_t msSinceLastSent = rightNow - _whenHeartbeatLastSentInMs;
+    //   uint32_t heartbeatIntervalInMs = getHeartbeatIntervalInMs();
 
-      if (heartbeatIntervalInMs != 0 &&
-          msSinceLastSent >= heartbeatIntervalInMs) 
-      {
-        _whenHeartbeatLastSentInMs = rightNow;
-        _numHeartbeatTicks++;
+    //   if (heartbeatIntervalInMs != 0 &&
+    //       msSinceLastSent >= heartbeatIntervalInMs) 
+    //   {
+    //     _whenHeartbeatLastSentInMs = rightNow;
+    //     _numHeartbeatTicks++;
         
-        QromaCommResponse heartbeatResponse;
-        heartbeatResponse.which_response = QromaCommResponse_heartbeatResponse_tag;
-        heartbeatResponse.response.heartbeatResponse.heartbeatTicks = _numHeartbeatTicks;
-        heartbeatResponse.response.heartbeatResponse.uptimeInMs = rightNow;
+    //     QromaCommResponse heartbeatResponse;
+    //     heartbeatResponse.which_response = QromaCommResponse_heartbeatResponse_tag;
+    //     heartbeatResponse.response.heartbeatResponse.heartbeatTicks = _numHeartbeatTicks;
+    //     heartbeatResponse.response.heartbeatResponse.uptimeInMs = rightNow;
 
-        return _qromaCommSerialIo.sendQromaCommResponse(&heartbeatResponse);
-      }
+    //     return _qromaCommSerialIo.sendQromaCommResponse(&heartbeatResponse);
+    //   }
 
-      return false;
-    };
+    //   return false;
+    // };
 
     void init() {
       initFileSystem();

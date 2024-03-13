@@ -14,5 +14,20 @@ void setQromaApp(QromaApp * qromaApp) {
 
 
 void QromaApp::initApp() {
-  setLogLevel(_appConfig.loggerConfig.logLevel);
+  _qromaCoreManager.initQromaCoreConfigDefaults(&_qromaCoreConfig);
+}
+
+
+void QromaApp::configureQromaCore(QromaCoreConfigFn configFn) {
+  configFn(&_qromaCoreConfig);
+}
+
+
+void QromaApp::applyQromaCoreConfig(QromaCoreConfig * config) {
+  _qromaCoreManager.applyQromaCoreConfig(config);
+}
+
+
+void QromaApp::populateQromaCoreConfig(QromaCoreConfig * config) {
+  _qromaCoreManager.populateQromaCoreConfig(config, &_qromaCoreConfig);
 }

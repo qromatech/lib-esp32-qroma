@@ -20,16 +20,16 @@ class QromaFsCommandProcessor {
     bool handleRmFileCommand(RmFileCommand * cmd);
     bool handleResetFilesystemCommand(ResetFilesystemCommand * cmd);
 
-    bool handleReportFileDataCommand(ReportFileDataCommand * cmd, QromaCommResponse * qromaCommResponse);
+    bool handleReportFileDataCommand(ReportFileDataCommand * cmd, FileSystemResponse * fsResponse);
 
-    bool handleWriteFileDataCommand(WriteFileDataCommand * cmd, QromaCommResponse * qromaCommResponse);
+    bool handleWriteFileDataCommand(WriteFileDataCommand * cmd, FileSystemResponse * fsResponse);
 
     void handlePrintDirContents(PrintDirContentsCommand * cmd, std::function<void(uint8_t*, uint32_t)> txFn);
-    bool handleGetFileContents(GetFileContentsCommand * cmd, QromaCommResponse * response);
+    bool handleGetFileContents(GetFileContentsCommand * cmd, FileSystemResponse * fsResponse);
 
-    bool handleListDirContentsCommand(ListDirContentsCommand * cmd, QromaCommResponse * response);
-    bool handleMkDirCommand(MkDirCommand * cmd, QromaCommResponse * response);
-    bool handleRmDirCommand(RmDirCommand * cmd, QromaCommResponse * response);
+    bool handleListDirContentsCommand(ListDirContentsCommand * cmd, FileSystemResponse * fsResponse);
+    bool handleMkDirCommand(MkDirCommand * cmd, FileSystemResponse * fsResponse);
+    bool handleRmDirCommand(RmDirCommand * cmd, FileSystemResponse * fsResponse);
 };
 
 #endif

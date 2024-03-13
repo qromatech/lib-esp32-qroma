@@ -9,9 +9,10 @@
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include "QromaFsCommandProcessor.h"
-#include "QromaCommConfigProcessor.h"
+#include "QromaCoreCommandProcessor.h"
 #include "IAppCommandProcessor.h"
 #include "QromaCommStreamHandler.h"
+#include "IQromaCommResponseHandler.h"
 #include "IQromaCommStreamRxHandler.h"
 
 
@@ -71,7 +72,7 @@ class QromaCommProcessor: public IQromaNewBytesProcessor,
 
     IAppCommandProcessor * _appCommandProcessor;
     QromaFsCommandProcessor _qromaFsCommandProcessor;
-    QromaCommConfigProcessor _qromaCommConfigProcessor;
+    QromaCoreCommandProcessor _qromaCoreCommandProcessor;
     QromaCommStreamHandler _qromaCommStreamHandler;
    
     unsigned char _base64DecodeBuffer[10000];

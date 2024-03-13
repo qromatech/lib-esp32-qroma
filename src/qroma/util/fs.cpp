@@ -39,10 +39,13 @@ bool resetFilesystem() {
   logInfo("INITIATING FILE SYSTEM RESET");
   logInfo("OPENING");
 
+  bool errorOccurred = false;
+
   File root = LittleFS.open("/");
   logInfo("ROOT OPEN");
   if (root == NULL) {
     logError("ROOT NULL");
+    errorOccurred = true;
   }
   logInfo(root.name());
  
@@ -50,6 +53,7 @@ bool resetFilesystem() {
   File file = root.openNextFile();
   if (file == NULL) {
     logError("FILE NULL");
+    errorOccurred = true;
   } else {
     logInfo("FILE >>");
     logInfo(file.name());
@@ -63,6 +67,8 @@ bool resetFilesystem() {
     file = root.openNextFile();
   }
   logInfo("FILE SYSTEM RESET COMPLETE");
+
+  return !errorOccurred;
 }
 
 
