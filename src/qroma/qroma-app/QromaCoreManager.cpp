@@ -21,8 +21,8 @@ void QromaCoreManager::initQromaCoreConfigDefaults(QromaCoreConfig * config) {
     .logLevel = Qroma_LogLevel_LogLevel_Info,
   };
 
-  config->has_projectConfiguration = true;
-  config->projectConfiguration = {
+  config->has_managementConfig = true;
+  config->managementConfig = {
     .projectLoopDelayInMs = 100,
     .has_heartbeatConfiguration = true,
     .heartbeatConfiguration = {
