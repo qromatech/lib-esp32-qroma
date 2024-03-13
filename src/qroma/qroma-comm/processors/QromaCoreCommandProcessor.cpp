@@ -198,11 +198,11 @@ void QromaCoreCommandProcessor::handleSetQromaCoreLoggingConfig(QromaCoreLogging
 }
 
 
-void QromaCoreCommandProcessor::handleSetQromaProjectConfiguration(QromaProjectConfiguration * config) {
+void QromaCoreCommandProcessor::handleSetQromaCoreManagementConfiguration(QromaCoreManagementConfiguration * config) {
   QromaCoreConfig refConfig;
   getQromaApp()->populateQromaCoreConfig(&refConfig);
-  if (refConfig.has_projectConfiguration) {
-    memcpy(&(refConfig.projectConfiguration), config, sizeof(refConfig.projectConfiguration));
+  if (refConfig.has_managementConfig) {
+    memcpy(&(refConfig.managementConfig), config, sizeof(refConfig.managementConfig));
   }
   getQromaApp()->applyQromaCoreConfig(&refConfig);
 }

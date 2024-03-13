@@ -24,7 +24,7 @@ class QromaCoreCommandProcessor {
     void handleSetQromaCommSerialIoConfig(QromaCommSerialIoConfig * config);
     void handleSetQromaCommSerialProcessingConfig(QromaCommSerialProcessingConfig * config);
     void handleSetQromaCoreLoggingConfig(QromaCoreLoggingConfig * config);
-    void handleSetQromaProjectConfiguration(QromaProjectConfiguration * config);
+    void handleSetQromaCoreManagementConfiguration(QromaCoreManagementConfiguration * config);
 };
 
 #endif
