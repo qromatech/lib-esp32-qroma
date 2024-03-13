@@ -48,10 +48,10 @@ typedef struct _SetQromaCoreLoggingConfigCommand {
     QromaCoreLoggingConfig config; 
 } SetQromaCoreLoggingConfigCommand;
 
-typedef struct _SetQromaProjectConfiguration { 
+typedef struct _SetQromaCoreManagementConfiguration { 
     bool has_config;
-    QromaProjectConfiguration config; 
-} SetQromaProjectConfiguration;
+    QromaCoreManagementConfiguration config; 
+} SetQromaCoreManagementConfiguration;
 
 typedef struct _QromaCoreCommand { 
     pb_size_t which_command;
@@ -62,7 +62,7 @@ typedef struct _QromaCoreCommand {
         SetQromaCommSerialIoConfigCommand setQromaCommSerialIoConfig;
         SetQromaCommSerialProcessingConfig setQromaCommSerialProcessingConfig;
         SetQromaCoreLoggingConfigCommand setQromaCoreLoggingConfig;
-        SetQromaProjectConfiguration setQromaProjectConfiguration;
+        SetQromaCoreManagementConfiguration setQromaCoreManagementConfiguration;
     } command; 
 } QromaCoreCommand;
 
@@ -90,7 +90,7 @@ extern "C" {
 #define SetQromaCommSerialProcessingConfig_init_default {false, QromaCommSerialProcessingConfig_init_default}
 #define SetQromaCoreLoggingConfigCommand_init_default {false, QromaCoreLoggingConfig_init_default}
 #define SetHeartbeatConfigurationCommand_init_default {false, HeartbeatConfiguration_init_default}
-#define SetQromaProjectConfiguration_init_default {false, QromaProjectConfiguration_init_default}
+#define SetQromaCoreManagementConfiguration_init_default {false, QromaCoreManagementConfiguration_init_default}
 #define QromaCoreCommand_init_default            {0, {GetQromaCoreConfigCommand_init_default}}
 #define QromaCoreResponse_init_default           {0, {QromaCoreConfig_init_default}}
 #define GetQromaCoreConfigCommand_init_zero      {0}
@@ -101,7 +101,7 @@ extern "C" {
 #define SetQromaCommSerialProcessingConfig_init_zero {false, QromaCommSerialProcessingConfig_init_zero}
 #define SetQromaCoreLoggingConfigCommand_init_zero {false, QromaCoreLoggingConfig_init_zero}
 #define SetHeartbeatConfigurationCommand_init_zero {false, HeartbeatConfiguration_init_zero}
-#define SetQromaProjectConfiguration_init_zero   {false, QromaProjectConfiguration_init_zero}
+#define SetQromaCoreManagementConfiguration_init_zero {false, QromaCoreManagementConfiguration_init_zero}
 #define QromaCoreCommand_init_zero               {0, {GetQromaCoreConfigCommand_init_zero}}
 #define QromaCoreResponse_init_zero              {0, {QromaCoreConfig_init_zero}}
 
@@ -114,14 +114,14 @@ extern "C" {
 #define SetQromaCommSerialIoConfigCommand_config_tag 1
 #define SetQromaCommSerialProcessingConfig_config_tag 1
 #define SetQromaCoreLoggingConfigCommand_config_tag 1
-#define SetQromaProjectConfiguration_config_tag  1
+#define SetQromaCoreManagementConfiguration_config_tag 1
 #define QromaCoreCommand_getQromaCoreConfig_tag  1
 #define QromaCoreCommand_getFirmwareDetails_tag  2
 #define QromaCoreCommand_restartQromaDevice_tag  3
 #define QromaCoreCommand_setQromaCommSerialIoConfig_tag 4
 #define QromaCoreCommand_setQromaCommSerialProcessingConfig_tag 5
 #define QromaCoreCommand_setQromaCoreLoggingConfig_tag 6
-#define QromaCoreCommand_setQromaProjectConfiguration_tag 7
+#define QromaCoreCommand_setQromaCoreManagementConfiguration_tag 7
 #define QromaCoreResponse_qromaCoreConfig_tag    1
 #define QromaCoreResponse_heartbeat_tag          2
 #define QromaCoreResponse_firmwareDetails_tag    3
@@ -172,11 +172,11 @@ X(a, STATIC,   OPTIONAL, MESSAGE,  config,            1)
 #define SetHeartbeatConfigurationCommand_DEFAULT NULL
 #define SetHeartbeatConfigurationCommand_config_MSGTYPE HeartbeatConfiguration
 
-#define SetQromaProjectConfiguration_FIELDLIST(X, a) \
+#define SetQromaCoreManagementConfiguration_FIELDLIST(X, a) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  config,            1)
-#define SetQromaProjectConfiguration_CALLBACK NULL
-#define SetQromaProjectConfiguration_DEFAULT NULL
-#define SetQromaProjectConfiguration_config_MSGTYPE QromaProjectConfiguration
+#define SetQromaCoreManagementConfiguration_CALLBACK NULL
+#define SetQromaCoreManagementConfiguration_DEFAULT NULL
+#define SetQromaCoreManagementConfiguration_config_MSGTYPE QromaCoreManagementConfiguration
 
 #define QromaCoreCommand_FIELDLIST(X, a) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (command,getQromaCoreConfig,command.getQromaCoreConfig),   1) \
@@ -185,7 +185,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (command,restartQromaDevice,command.restartQr
 X(a, STATIC,   ONEOF,    MESSAGE,  (command,setQromaCommSerialIoConfig,command.setQromaCommSerialIoConfig),   4) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (command,setQromaCommSerialProcessingConfig,command.setQromaCommSerialProcessingConfig),   5) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (command,setQromaCoreLoggingConfig,command.setQromaCoreLoggingConfig),   6) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,setQromaProjectConfiguration,command.setQromaProjectConfiguration),   7)
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,setQromaCoreManagementConfiguration,command.setQromaCoreManagementConfiguration),   7)
 #define QromaCoreCommand_CALLBACK NULL
 #define QromaCoreCommand_DEFAULT NULL
 #define QromaCoreCommand_command_getQromaCoreConfig_MSGTYPE GetQromaCoreConfigCommand
@@ -194,7 +194,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (command,setQromaProjectConfiguration,command
 #define QromaCoreCommand_command_setQromaCommSerialIoConfig_MSGTYPE SetQromaCommSerialIoConfigCommand
 #define QromaCoreCommand_command_setQromaCommSerialProcessingConfig_MSGTYPE SetQromaCommSerialProcessingConfig
 #define QromaCoreCommand_command_setQromaCoreLoggingConfig_MSGTYPE SetQromaCoreLoggingConfigCommand
-#define QromaCoreCommand_command_setQromaProjectConfiguration_MSGTYPE SetQromaProjectConfiguration
+#define QromaCoreCommand_command_setQromaCoreManagementConfiguration_MSGTYPE SetQromaCoreManagementConfiguration
 
 #define QromaCoreResponse_FIELDLIST(X, a) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (response,qromaCoreConfig,response.qromaCoreConfig),   1) \
@@ -216,7 +216,7 @@ extern const pb_msgdesc_t SetQromaCommSerialIoConfigCommand_msg;
 extern const pb_msgdesc_t SetQromaCommSerialProcessingConfig_msg;
 extern const pb_msgdesc_t SetQromaCoreLoggingConfigCommand_msg;
 extern const pb_msgdesc_t SetHeartbeatConfigurationCommand_msg;
-extern const pb_msgdesc_t SetQromaProjectConfiguration_msg;
+extern const pb_msgdesc_t SetQromaCoreManagementConfiguration_msg;
 extern const pb_msgdesc_t QromaCoreCommand_msg;
 extern const pb_msgdesc_t QromaCoreResponse_msg;
 
@@ -229,7 +229,7 @@ extern const pb_msgdesc_t QromaCoreResponse_msg;
 #define SetQromaCommSerialProcessingConfig_fields &SetQromaCommSerialProcessingConfig_msg
 #define SetQromaCoreLoggingConfigCommand_fields &SetQromaCoreLoggingConfigCommand_msg
 #define SetHeartbeatConfigurationCommand_fields &SetHeartbeatConfigurationCommand_msg
-#define SetQromaProjectConfiguration_fields &SetQromaProjectConfiguration_msg
+#define SetQromaCoreManagementConfiguration_fields &SetQromaCoreManagementConfiguration_msg
 #define QromaCoreCommand_fields &QromaCoreCommand_msg
 #define QromaCoreResponse_fields &QromaCoreResponse_msg
 
@@ -244,7 +244,7 @@ extern const pb_msgdesc_t QromaCoreResponse_msg;
 #define SetQromaCommSerialIoConfigCommand_size   20
 #define SetQromaCommSerialProcessingConfig_size  8
 #define SetQromaCoreLoggingConfigCommand_size    5
-#define SetQromaProjectConfiguration_size        18
+#define SetQromaCoreManagementConfiguration_size 18
 
 #ifdef __cplusplus
 } /* extern "C" */

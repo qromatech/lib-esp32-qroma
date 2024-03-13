@@ -18,7 +18,7 @@ PB_BIND(QromaCoreLoggingConfig, QromaCoreLoggingConfig, AUTO)
 PB_BIND(HeartbeatConfiguration, HeartbeatConfiguration, AUTO)
 
 
-PB_BIND(QromaProjectConfiguration, QromaProjectConfiguration, AUTO)
+PB_BIND(QromaCoreManagementConfiguration, QromaCoreManagementConfiguration, AUTO)
 
 
 PB_BIND(QromaCoreConfig, QromaCoreConfig, AUTO)
