@@ -46,11 +46,11 @@ void QromaCoreManager::applyQromaCoreConfig(QromaCoreConfig * config) {
     setLogLevel(config->loggingConfig.logLevel);
   }
 
-  if (config->has_projectConfiguration) {
-    setProjectLoopDelayInMs(config->projectConfiguration.projectLoopDelayInMs);
-    if (config->projectConfiguration.has_heartbeatConfiguration) {
-      setHeartbeatIntervalInMs(config->projectConfiguration.heartbeatConfiguration.heartbeatIntervalInMs);
-      setHeartbeatType(config->projectConfiguration.heartbeatConfiguration.heartbeatType);
+  if (config->has_managementConfig) {
+    setProjectLoopDelayInMs(config->managementConfig.projectLoopDelayInMs);
+    if (config->managementConfig.has_heartbeatConfiguration) {
+      setHeartbeatIntervalInMs(config->managementConfig.heartbeatConfiguration.heartbeatIntervalInMs);
+      setHeartbeatType(config->managementConfig.heartbeatConfiguration.heartbeatType);
     }
   }
 }
