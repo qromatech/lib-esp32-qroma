@@ -141,9 +141,9 @@ void QromaCoreCommandProcessor::handleQromaCoreCommand(QromaCoreCommand * comman
       populateCoreConfigurationResponse(coreResponse);
       break;
 
-    case QromaCoreCommand_setQromaProjectConfiguration_tag:
-      if (command->command.setQromaProjectConfiguration.has_config) {
-        handleSetQromaProjectConfiguration(&(command->command.setQromaProjectConfiguration.config));
+    case QromaCoreCommand_setQromaCoreManagementConfiguration_tag:
+      if (command->command.setQromaCoreManagementConfiguration.has_config) {
+        handleSetQromaCoreManagementConfiguration(&(command->command.setQromaCoreManagementConfiguration.config));
       } else {
         logError("NO CONFIG VALUE PROVIDED FOR CORE COMMAND");
         logError(command->which_command);
