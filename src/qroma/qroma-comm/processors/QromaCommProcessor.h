@@ -40,6 +40,7 @@ class QromaCommProcessor: public IQromaNewBytesProcessor,
     void logMode();
 
     bool sendQromaCommResponse(QromaCommResponse * qromaCommResponse, std::function<void(uint8_t*, uint32_t)> txFn);
+    bool sendQromaCoreResponse(QromaCoreResponse * qromaCoreResponse, std::function<void(uint8_t*, uint32_t)> txFn);
 
     template<typename PbMessage, const pb_msgdesc_t *PbMessageFields>
     bool sendQromaAppResponse(PbMessage * qromaAppResponse, std::function<void(uint8_t*, uint32_t)> txFn) {

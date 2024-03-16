@@ -33,6 +33,23 @@ void QromaApp::populateQromaCoreConfig(QromaCoreConfig * config) {
 }
 
 
+// bool QromaApp::tick() {
+//   bool waitedConfiguredDelay = false;
+  
+//   if (_qromaCoreConfig.has_managementConfig && _qromaCoreConfig.managementConfig.projectLoopDelayInMs >= 10) {
+//     logInfoUintWithDescription("QROMA APP PRE-DELAY - ", _qromaCoreConfig.managementConfig.projectLoopDelayInMs);
+//     delay(_qromaCoreConfig.managementConfig.projectLoopDelayInMs);
+//     logInfo("QROMA APP POST-DELAY");
+//     waitedConfiguredDelay = true;
+//   } else {
+//     delay(100);
+//     logInfo("QROMA APP UNABLE TO SUCCESSFULLY TICK - DELAYING 100 MS");
+//   }
+
+//   return waitedConfiguredDelay;
+// }
+
+
 QromaCoreManagementConfiguration * QromaApp::getCoreManagementConfigRef() {
   if (_qromaCoreConfig.has_managementConfig) {
     return &(_qromaCoreConfig.managementConfig);

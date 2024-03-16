@@ -167,3 +167,13 @@ bool QromaCommProcessor::sendQromaCommResponse(QromaCommResponse * qromaCommResp
 
   return true;
 }
+
+
+bool QromaCommProcessor::sendQromaCoreResponse(QromaCoreResponse * response, std::function<void(uint8_t*, uint32_t)> txFn) {
+  QromaCommResponse qromaCommResponse;
+  qromaCommResponse.which_response = QromaCommResponse_coreResponse_tag;
+
+  memcpy(&(qromaCommResponse.response.coreResponse), response, sizeof(qromaCommResponse.response.coreResponse));
+
+  return sendQromaCommResponse(&qromaCommResponse, txFn);
+}

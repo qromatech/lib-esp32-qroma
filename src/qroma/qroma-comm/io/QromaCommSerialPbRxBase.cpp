@@ -140,3 +140,8 @@ bool QromaCommSerialPbRxBase::processCommBuffer() {
 bool QromaCommSerialPbRxBase::sendQromaCommResponse(QromaCommResponse * qromaCommResponse) {
   return _qromaCommProcessor.sendQromaCommResponse(qromaCommResponse, _responseFn);
 }
+
+
+bool QromaCommSerialPbRxBase::sendQromaCoreResponse(QromaCoreResponse * qromaCoreResponse) {
+  return _qromaCommProcessor.sendQromaCoreResponse(qromaCoreResponse, _responseFn);
+}

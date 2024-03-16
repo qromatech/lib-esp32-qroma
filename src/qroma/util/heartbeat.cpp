@@ -2,8 +2,8 @@
 #include "../../qroma-lib-proto/qroma-comm.pb.h"
 
 
-uint32_t _projectLoopDelayInMs = 10;
-uint32_t _heartbeatIntervalInMs = 0;
+uint32_t _projectLoopDelayInMs = 1000;
+uint32_t _heartbeatIntervalInMs = 1000;
 HeartbeatType _heartbeatType = HeartbeatType_HeartbeatType_None;
 
 

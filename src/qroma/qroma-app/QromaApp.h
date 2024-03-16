@@ -14,6 +14,8 @@ class QromaApp {
     virtual void init() = 0;
     void initApp();
 
+    bool tick();
+
     QromaCoreConfig * getCoreConfigRef() { return &_qromaCoreConfig; }
     QromaCoreManagementConfiguration * getCoreManagementConfigRef();
     void configureQromaCore(QromaCoreConfigFn configFn);
@@ -21,13 +23,7 @@ class QromaApp {
     void applyQromaCoreConfig(QromaCoreConfig * config);
     void populateQromaCoreConfig(QromaCoreConfig * config);
 
-  private:
-    // QromaAppConfig _appConfig = {
-    //   .loggerConfig = {
-    //     .logLevel = Qroma_LogLevel_LogLevel_Error
-    //   }
-    // };
-
+  protected:
     QromaCoreConfig _qromaCoreConfig;
     QromaCoreManager _qromaCoreManager;
 
