@@ -81,6 +81,4 @@ void QromaSerialCommApp::_sendHeartbeatResponse() {
   _qromaCommSerialIo.sendQromaCoreResponse(&response);
 
   _nextHeartbeatSendTimeInMs = now + _qromaCoreConfig.managementConfig.heartbeatConfiguration.heartbeatIntervalInMs;
-
-  logInfo("Update from qroma app");
 }
