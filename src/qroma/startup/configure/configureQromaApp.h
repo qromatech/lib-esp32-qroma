@@ -6,9 +6,7 @@
 #include <qroma/qroma-app/QromaAppConfig.h>
 
 
-typedef std::function<void(QromaAppConfig * config)> QromaAppConfigFn;
-
-void configureQromaApp(QromaAppConfigFn configFn, QromaApp * app);
+void configureQromaApp(QromaCoreConfigFn configFn, QromaApp * app);
 
 #endif
 

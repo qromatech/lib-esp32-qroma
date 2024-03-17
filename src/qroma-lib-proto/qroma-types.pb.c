@@ -12,6 +12,13 @@ PB_BIND(Qroma_LogMessage, Qroma_LogMessage, AUTO)
 PB_BIND(FileData, FileData, AUTO)
 
 
+PB_BIND(FirmwareDetails, FirmwareDetails, AUTO)
+
+
+PB_BIND(HeartbeatResponse, HeartbeatResponse, AUTO)
+
+
+
 
 
 

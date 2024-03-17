@@ -14,5 +14,6 @@
 #include "startup/configure/configureQromaApp.h"
 
 #include "util/qroma-persist.h"
+#include "qroma-lib-proto/qroma-core.pb.h"
 
 #endif

@@ -95,7 +95,7 @@ bool QromaCommSerialPbRxBase::serialRx() {
   }
 
   if (numBytesRead > 0) {
-    logInfoUintWithDescription(" QromaCommSerialPbRxBase::serialRx() READ BYTES: ", numBytesRead);
+    // logInfoUintWithDescription(" QromaCommSerialPbRxBase::serialRx() READ BYTES: ", numBytesRead);
   }
 
   return !bufferWasAddedTo;
@@ -107,8 +107,8 @@ bool QromaCommSerialPbRxBase::processCommBuffer() {
   int now = millis();
   if (now > _nextBufferExpirationTime) {
     _nextBufferExpirationTime = now + _commSilenceDelayToClearBuffer;
-    logInfoUintWithDescription("processCommBuffer EXPIRED - ", now);
-    logInfo(_nextBufferExpirationTime);
+    // logInfoUintWithDescription("processCommBuffer EXPIRED - ", now);
+    // logInfo(_nextBufferExpirationTime);
     _qromaCommMemBuffer->reset();
     _qromaCommProcessor.reset();
     return false;
@@ -128,7 +128,7 @@ bool QromaCommSerialPbRxBase::processCommBuffer() {
 
   if (numBytesConsumed > 0) {
     _qromaCommMemBuffer->removeFirstNFromBuffer(numBytesConsumed);
-    logInfoIntWithDescription("QromaCommSerialPbRxBase::processCommBuffer() PROCESSED BYTES: ", numBytesConsumed);
+    // logInfoIntWithDescription("QromaCommSerialPbRxBase::processCommBuffer() PROCESSED BYTES: ", numBytesConsumed);
     commBufferWriteIndex = _qromaCommMemBuffer->getBufferWriteIndex();
     return commBufferWriteIndex != 1;
   }
@@ -139,4 +139,9 @@ bool QromaCommSerialPbRxBase::processCommBuffer() {
 
 bool QromaCommSerialPbRxBase::sendQromaCommResponse(QromaCommResponse * qromaCommResponse) {
   return _qromaCommProcessor.sendQromaCommResponse(qromaCommResponse, _responseFn);
+}
+
+
+bool QromaCommSerialPbRxBase::sendQromaCoreResponse(QromaCoreResponse * qromaCoreResponse) {
+  return _qromaCommProcessor.sendQromaCoreResponse(qromaCoreResponse, _responseFn);
 }

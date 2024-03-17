@@ -26,6 +26,7 @@ class QromaCommSerialPbRxBase {
     }
 
     bool sendQromaCommResponse(QromaCommResponse * qromaCommResponse);
+    bool sendQromaCoreResponse(QromaCoreResponse * qromaCoreResponse);
 
 
   private:

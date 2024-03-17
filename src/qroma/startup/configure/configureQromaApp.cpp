@@ -1,6 +1,6 @@
 #include "configureQromaApp.h"
 
 
-void configureQromaApp(QromaAppConfigFn configFn, QromaApp * app) {
-  configFn(app->getAppConfigRef());
+void configureQromaApp(QromaCoreConfigFn configFn, QromaApp * app) {
+  configFn(app->getCoreConfigRef());
 }

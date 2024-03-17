@@ -9,9 +9,10 @@
 #include <pb_decode.h>
 #include <pb_encode.h>
 #include "QromaFsCommandProcessor.h"
-#include "QromaCommConfigProcessor.h"
+#include "QromaCoreCommandProcessor.h"
 #include "IAppCommandProcessor.h"
 #include "QromaCommStreamHandler.h"
+#include "IQromaCommResponseHandler.h"
 #include "IQromaCommStreamRxHandler.h"
 
 
@@ -39,6 +40,7 @@ class QromaCommProcessor: public IQromaNewBytesProcessor,
     void logMode();
 
     bool sendQromaCommResponse(QromaCommResponse * qromaCommResponse, std::function<void(uint8_t*, uint32_t)> txFn);
+    bool sendQromaCoreResponse(QromaCoreResponse * qromaCoreResponse, std::function<void(uint8_t*, uint32_t)> txFn);
 
     template<typename PbMessage, const pb_msgdesc_t *PbMessageFields>
     bool sendQromaAppResponse(PbMessage * qromaAppResponse, std::function<void(uint8_t*, uint32_t)> txFn) {
@@ -71,7 +73,7 @@ class QromaCommProcessor: public IQromaNewBytesProcessor,
 
     IAppCommandProcessor * _appCommandProcessor;
     QromaFsCommandProcessor _qromaFsCommandProcessor;
-    QromaCommConfigProcessor _qromaCommConfigProcessor;
+    QromaCoreCommandProcessor _qromaCoreCommandProcessor;
     QromaCommStreamHandler _qromaCommStreamHandler;
    
     unsigned char _base64DecodeBuffer[10000];
