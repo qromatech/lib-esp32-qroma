@@ -20,6 +20,7 @@ void QromaApp::initApp() {
 
 void QromaApp::configureQromaCore(QromaCoreConfigFn configFn) {
   configFn(&_qromaCoreConfig);
+  applyQromaCoreConfig(&_qromaCoreConfig);
 }
 
 

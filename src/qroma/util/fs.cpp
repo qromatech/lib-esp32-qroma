@@ -75,3 +75,26 @@ bool resetFilesystem() {
 bool doesFileExist(const char * fname) {
   return LittleFS.exists(fname);
 }
+
+
+uint32_t getFileCountForDirectory(const char * dirName) {
+  File dir = LittleFS.open(dirName);
+
+  if (!dir || !dir.isDirectory()) {
+    logError("INVALID DIR");
+    logError(dirName);
+    return 0;
+  }
+
+  uint32_t fileCount = 0;
+  File file = dir.openNextFile();
+
+  while (file) {
+    if (!file.isDirectory()) {
+      fileCount++;
+    }
+    file = file.openNextFile();
+  }
+
+  return fileCount;
+}

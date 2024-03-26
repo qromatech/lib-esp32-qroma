@@ -9,4 +9,6 @@ bool resetFilesystem();
 bool doesFileExist(const char * fname);
 uint32_t getFileChecksum(const char * fname);
 
+uint32_t getFileCountForDirectory(const char * dirName);
+
 #endif

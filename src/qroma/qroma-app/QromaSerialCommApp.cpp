@@ -1,4 +1,5 @@
 #include "QromaSerialCommApp.h"
+#include <qroma/util/qroma-persist.h>
 
 
 QromaSerialCommApp * _gQromaSerialCommApp;
@@ -81,4 +82,19 @@ void QromaSerialCommApp::_sendHeartbeatResponse() {
   _qromaCommSerialIo.sendQromaCoreResponse(&response);
 
   _nextHeartbeatSendTimeInMs = now + _qromaCoreConfig.managementConfig.heartbeatConfiguration.heartbeatIntervalInMs;
+}
+
+
+bool QromaSerialCommApp::saveDefaultQromaCoreConfig() {
+  if (!doesFileExist(QROMA_CORE_CONFIG_FILENAME)) {
+    bool saved = saveQromaCoreConfig();
+    return saved;
+  }
+  return true;
+}
+
+
+bool QromaSerialCommApp::saveQromaCoreConfig() {
+  bool saved = savePbToPersistence(&_qromaCoreConfig, QROMA_CORE_CONFIG_FILENAME, QromaCoreConfig_fields);
+  return saved;
 }

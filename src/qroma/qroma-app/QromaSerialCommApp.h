@@ -13,6 +13,8 @@
 #define SERIAL_RX_BUFFER_SIZE  1000
 #define SERIAL_TX_BUFFER_SIZE  1000
 
+#define QROMA_CORE_CONFIG_FILENAME "/qroma-core-config.qroma"
+
 
 class QromaSerialCommApp: public QromaApp
 {
@@ -36,11 +38,13 @@ class QromaSerialCommApp: public QromaApp
     void init() {
       initFileSystem();
       initApp();
-      // _qromaCommSerialIo.init(&_serialIoConfig);
       _qromaCommSerialIo.init(&(_qromaCoreConfig.serialIoConfig));
     }
 
-    bool tick();    
+    bool tick();
+
+    bool saveDefaultQromaCoreConfig();
+    bool saveQromaCoreConfig();
 
   
   private:
@@ -50,13 +54,6 @@ class QromaSerialCommApp: public QromaApp
     QromaCommSerialIo<MEM_BUFFER_SiZE, &Serial> _qromaCommSerialIo;
     uint32_t _nextHeartbeatSendTimeInMs = 0;
     uint32_t _numHeartbeatTicks = 0;
-
-    // QromaCommSerialIoConfig _serialIoConfig = {
-    //   .baudRate = 115200,
-    //   .rxBufferSize = SERIAL_RX_BUFFER_SIZE,
-    //   .txBufferSize = SERIAL_TX_BUFFER_SIZE,
-    // };
-
 };
 
 
