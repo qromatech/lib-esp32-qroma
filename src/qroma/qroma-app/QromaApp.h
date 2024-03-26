@@ -26,6 +26,7 @@ class QromaApp {
   protected:
     QromaCoreConfig _qromaCoreConfig;
     QromaCoreManager _qromaCoreManager;
+    QromaCoreConfigFn _appCoreConfigFn;
 
     bool _qromaCoreConfigSet = false;
 };
