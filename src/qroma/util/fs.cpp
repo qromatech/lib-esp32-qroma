@@ -93,7 +93,7 @@ uint32_t getFileCountForDirectory(const char * dirName) {
     if (!file.isDirectory()) {
       fileCount++;
     }
-    file = file.openNextFile();
+    file = dir.openNextFile();
   }
 
   return fileCount;
