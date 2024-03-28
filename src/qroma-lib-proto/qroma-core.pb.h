@@ -11,6 +11,17 @@
 #error Regenerate this file with the current version of nanopb generator.
 #endif
 
+/* Enum definitions */
+typedef enum _QromaCoreNoArgCommands { 
+    QromaCoreNoArgCommands_Qc_Nac_NotSet = 0, 
+    QromaCoreNoArgCommands_Qc_Nac_GetQromaCoreConfig = 1, 
+    QromaCoreNoArgCommands_Qc_Nac_GetQromaCoreFirmwareDetails = 2, 
+    QromaCoreNoArgCommands_Qc_Nac_DisableCoreHeartbeat = 3, 
+    QromaCoreNoArgCommands_Qc_Nac_EnableCoreHeartbeat = 4, 
+    QromaCoreNoArgCommands_Qc_Nac_DisableLogging = 5, 
+    QromaCoreNoArgCommands_Qc_Nac_EnableAllLogging = 6 
+} QromaCoreNoArgCommands;
+
 /* Struct definitions */
 typedef struct _GetQromaCoreConfigCommand { 
     uint32_t ignoreThis; 
@@ -21,11 +32,11 @@ typedef struct _GetQromaCoreFirmwareDetailsCommand {
 } GetQromaCoreFirmwareDetailsCommand;
 
 typedef struct _RestartQromaDeviceAck { 
-    uint32_t ignoreThis; 
+    uint32_t youWerentSureSoWeDidnt; 
 } RestartQromaDeviceAck;
 
 typedef struct _RestartQromaDeviceCommand { 
-    uint32_t ignoreThis; 
+    bool areYouSure; /* must be set to true to actually restart */
 } RestartQromaDeviceCommand;
 
 typedef struct _SetHeartbeatConfigurationCommand { 
@@ -56,8 +67,7 @@ typedef struct _SetQromaCoreManagementConfiguration {
 typedef struct _QromaCoreCommand { 
     pb_size_t which_command;
     union {
-        GetQromaCoreConfigCommand getQromaCoreConfig;
-        GetQromaCoreFirmwareDetailsCommand getFirmwareDetails;
+        QromaCoreNoArgCommands noArgCommand;
         RestartQromaDeviceCommand restartQromaDevice;
         SetQromaCommSerialIoConfigCommand setQromaCommSerialIoConfig;
         SetQromaCommSerialProcessingConfig setQromaCommSerialProcessingConfig;
@@ -77,6 +87,12 @@ typedef struct _QromaCoreResponse {
 } QromaCoreResponse;
 
 
+/* Helper constants for enums */
+#define _QromaCoreNoArgCommands_MIN QromaCoreNoArgCommands_Qc_Nac_NotSet
+#define _QromaCoreNoArgCommands_MAX QromaCoreNoArgCommands_Qc_Nac_EnableAllLogging
+#define _QromaCoreNoArgCommands_ARRAYSIZE ((QromaCoreNoArgCommands)(QromaCoreNoArgCommands_Qc_Nac_EnableAllLogging+1))
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -91,7 +107,7 @@ extern "C" {
 #define SetQromaCoreLoggingConfigCommand_init_default {false, QromaCoreLoggingConfig_init_default}
 #define SetHeartbeatConfigurationCommand_init_default {false, HeartbeatConfiguration_init_default}
 #define SetQromaCoreManagementConfiguration_init_default {false, QromaCoreManagementConfiguration_init_default}
-#define QromaCoreCommand_init_default            {0, {GetQromaCoreConfigCommand_init_default}}
+#define QromaCoreCommand_init_default            {0, {_QromaCoreNoArgCommands_MIN}}
 #define QromaCoreResponse_init_default           {0, {QromaCoreConfig_init_default}}
 #define GetQromaCoreConfigCommand_init_zero      {0}
 #define GetQromaCoreFirmwareDetailsCommand_init_zero {0}
@@ -102,26 +118,25 @@ extern "C" {
 #define SetQromaCoreLoggingConfigCommand_init_zero {false, QromaCoreLoggingConfig_init_zero}
 #define SetHeartbeatConfigurationCommand_init_zero {false, HeartbeatConfiguration_init_zero}
 #define SetQromaCoreManagementConfiguration_init_zero {false, QromaCoreManagementConfiguration_init_zero}
-#define QromaCoreCommand_init_zero               {0, {GetQromaCoreConfigCommand_init_zero}}
+#define QromaCoreCommand_init_zero               {0, {_QromaCoreNoArgCommands_MIN}}
 #define QromaCoreResponse_init_zero              {0, {QromaCoreConfig_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define GetQromaCoreConfigCommand_ignoreThis_tag 1
 #define GetQromaCoreFirmwareDetailsCommand_ignoreThis_tag 1
-#define RestartQromaDeviceAck_ignoreThis_tag     1
-#define RestartQromaDeviceCommand_ignoreThis_tag 1
+#define RestartQromaDeviceAck_youWerentSureSoWeDidnt_tag 1
+#define RestartQromaDeviceCommand_areYouSure_tag 1
 #define SetHeartbeatConfigurationCommand_config_tag 1
 #define SetQromaCommSerialIoConfigCommand_config_tag 1
 #define SetQromaCommSerialProcessingConfig_config_tag 1
 #define SetQromaCoreLoggingConfigCommand_config_tag 1
 #define SetQromaCoreManagementConfiguration_config_tag 1
-#define QromaCoreCommand_getQromaCoreConfig_tag  1
-#define QromaCoreCommand_getFirmwareDetails_tag  2
-#define QromaCoreCommand_restartQromaDevice_tag  3
-#define QromaCoreCommand_setQromaCommSerialIoConfig_tag 4
-#define QromaCoreCommand_setQromaCommSerialProcessingConfig_tag 5
-#define QromaCoreCommand_setQromaCoreLoggingConfig_tag 6
-#define QromaCoreCommand_setQromaCoreManagementConfiguration_tag 7
+#define QromaCoreCommand_noArgCommand_tag        1
+#define QromaCoreCommand_restartQromaDevice_tag  2
+#define QromaCoreCommand_setQromaCommSerialIoConfig_tag 3
+#define QromaCoreCommand_setQromaCommSerialProcessingConfig_tag 4
+#define QromaCoreCommand_setQromaCoreLoggingConfig_tag 5
+#define QromaCoreCommand_setQromaCoreManagementConfiguration_tag 6
 #define QromaCoreResponse_qromaCoreConfig_tag    1
 #define QromaCoreResponse_heartbeat_tag          2
 #define QromaCoreResponse_firmwareDetails_tag    3
@@ -139,12 +154,12 @@ X(a, STATIC,   SINGULAR, UINT32,   ignoreThis,        1)
 #define GetQromaCoreFirmwareDetailsCommand_DEFAULT NULL
 
 #define RestartQromaDeviceCommand_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   ignoreThis,        1)
+X(a, STATIC,   SINGULAR, BOOL,     areYouSure,        1)
 #define RestartQromaDeviceCommand_CALLBACK NULL
 #define RestartQromaDeviceCommand_DEFAULT NULL
 
 #define RestartQromaDeviceAck_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   ignoreThis,        1)
+X(a, STATIC,   SINGULAR, UINT32,   youWerentSureSoWeDidnt,   1)
 #define RestartQromaDeviceAck_CALLBACK NULL
 #define RestartQromaDeviceAck_DEFAULT NULL
 
@@ -179,17 +194,14 @@ X(a, STATIC,   OPTIONAL, MESSAGE,  config,            1)
 #define SetQromaCoreManagementConfiguration_config_MSGTYPE QromaCoreManagementConfiguration
 
 #define QromaCoreCommand_FIELDLIST(X, a) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,getQromaCoreConfig,command.getQromaCoreConfig),   1) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,getFirmwareDetails,command.getFirmwareDetails),   2) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,restartQromaDevice,command.restartQromaDevice),   3) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,setQromaCommSerialIoConfig,command.setQromaCommSerialIoConfig),   4) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,setQromaCommSerialProcessingConfig,command.setQromaCommSerialProcessingConfig),   5) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,setQromaCoreLoggingConfig,command.setQromaCoreLoggingConfig),   6) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (command,setQromaCoreManagementConfiguration,command.setQromaCoreManagementConfiguration),   7)
+X(a, STATIC,   ONEOF,    UENUM,    (command,noArgCommand,command.noArgCommand),   1) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,restartQromaDevice,command.restartQromaDevice),   2) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,setQromaCommSerialIoConfig,command.setQromaCommSerialIoConfig),   3) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,setQromaCommSerialProcessingConfig,command.setQromaCommSerialProcessingConfig),   4) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,setQromaCoreLoggingConfig,command.setQromaCoreLoggingConfig),   5) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (command,setQromaCoreManagementConfiguration,command.setQromaCoreManagementConfiguration),   6)
 #define QromaCoreCommand_CALLBACK NULL
 #define QromaCoreCommand_DEFAULT NULL
-#define QromaCoreCommand_command_getQromaCoreConfig_MSGTYPE GetQromaCoreConfigCommand
-#define QromaCoreCommand_command_getFirmwareDetails_MSGTYPE GetQromaCoreFirmwareDetailsCommand
 #define QromaCoreCommand_command_restartQromaDevice_MSGTYPE RestartQromaDeviceCommand
 #define QromaCoreCommand_command_setQromaCommSerialIoConfig_MSGTYPE SetQromaCommSerialIoConfigCommand
 #define QromaCoreCommand_command_setQromaCommSerialProcessingConfig_MSGTYPE SetQromaCommSerialProcessingConfig
@@ -239,7 +251,7 @@ extern const pb_msgdesc_t QromaCoreResponse_msg;
 #define QromaCoreCommand_size                    22
 #define QromaCoreResponse_size                   156
 #define RestartQromaDeviceAck_size               6
-#define RestartQromaDeviceCommand_size           6
+#define RestartQromaDeviceCommand_size           2
 #define SetHeartbeatConfigurationCommand_size    10
 #define SetQromaCommSerialIoConfigCommand_size   20
 #define SetQromaCommSerialProcessingConfig_size  8

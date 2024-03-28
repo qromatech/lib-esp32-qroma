@@ -13,6 +13,11 @@ void setQromaApp(QromaApp * qromaApp) {
 }
 
 
+void updateQromaAppCoreConfig(QromaCoreConfigFn configFn) {
+  _gQromaApp->updateQromaCoreConfig(configFn);
+}
+
+
 void QromaApp::initApp() {
   _qromaCoreManager.initQromaCoreConfigDefaults(&_qromaCoreConfig);
   if (_appCoreConfigFn != NULL) {
@@ -26,6 +31,12 @@ void QromaApp::configureQromaCore(QromaCoreConfigFn configFn) {
   _appCoreConfigFn = configFn;
   // configFn(&_qromaCoreConfig);
   // applyQromaCoreConfig(&_qromaCoreConfig);
+}
+
+
+void QromaApp::updateQromaCoreConfig(QromaCoreConfigFn configFn) {
+  configFn(&_qromaCoreConfig);
+  applyQromaCoreConfig(&_qromaCoreConfig);
 }
 
 

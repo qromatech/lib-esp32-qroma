@@ -18,6 +18,8 @@ class QromaCoreCommandProcessor {
     void handleQromaCoreCommand(QromaCoreCommand * command, QromaCommResponse * response,
       IQromaCommResponseHandler * responseHandler, std::function<void(uint8_t*, uint32_t)> txFn);
 
+    void handleQromaCoreNoArgCommand(QromaCoreNoArgCommands noArgCommand, QromaCommResponse * response);
+
     void populateGetFirmwareDetailsResponse(FirmwareDetails * response);
     void populateCoreConfigurationResponse(QromaCoreResponse * response);
 

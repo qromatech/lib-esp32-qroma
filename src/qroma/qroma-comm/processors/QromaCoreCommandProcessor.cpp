@@ -24,31 +24,6 @@ bool copyQromaCoreConfigFromFile(QromaCoreConfig * config) {
 }
 
 
-// void copyQromaCoreConfig(QromaCoreConfig * config) {
-
-//   QromaSerialCommApp * serialCommApp = getQromaSerialCommApp();
-//   if (serialCommApp != NULL) {
-//     config->has_serialIoConfig = true;
-//     serialCommApp->copySerialIoConfig(&(config->serialIoConfig));
-//   } else {
-//     config->has_serialIoConfig = false;
-//     config->serialIoConfig.baudRate = 0;
-//     config->serialIoConfig.rxBufferSize = 0;
-//     config->serialIoConfig.txBufferSize = 0;
-//   }
-
-//   config->has_loggingConfig = true;
-//   config->loggingConfig.logLevel = getLogLevel();
-
-//   config->has_projectConfiguration = true;
-//   config->projectConfiguration.projectLoopDelayInMs = getProjectLoopDelayInMs();
-
-//   config->projectConfiguration.has_heartbeatConfiguration = true;
-//   config->projectConfiguration.heartbeatConfiguration.heartbeatType = getHeartbeatType();
-//   config->projectConfiguration.heartbeatConfiguration.heartbeatIntervalInMs = getHeartbeatIntervalInMs();
-// }
-
-
 void populateQromaCoreConfig(QromaCoreConfig * config) {
   if (hasQromaCoreConfigFile()) {
     if (copyQromaCoreConfigFromFile(config)) {
@@ -56,7 +31,6 @@ void populateQromaCoreConfig(QromaCoreConfig * config) {
     }
   }
 
-  // copyQromaCoreConfig(config);
   getQromaApp()->populateQromaCoreConfig(config);
 }
 
@@ -66,8 +40,6 @@ bool saveQromaCoreConfig() {
   QromaCoreConfig config;
   
   getQromaApp()->populateQromaCoreConfig(&config);
-
-  // copyQromaCoreConfig(&config);
 
   bool saved = savePbToPersistence<QromaCoreConfig>(&config, QROMA_CORE_CONFIG_FILE_NAME, QromaCoreConfig_fields);
 
@@ -91,25 +63,37 @@ void QromaCoreCommandProcessor::handleQromaCoreCommand(QromaCoreCommand * comman
   QromaCoreResponse * coreResponse = &(qromaCommResponse->response.coreResponse);
 
   switch (command->which_command) {
-    case QromaCoreCommand_getFirmwareDetails_tag:
-      coreResponse->which_response = QromaCoreResponse_firmwareDetails_tag;
-      populateGetFirmwareDetailsResponse(&(coreResponse->response.firmwareDetails));
+    case QromaCoreCommand_noArgCommand_tag:
+      handleQromaCoreNoArgCommand(command->command.noArgCommand, qromaCommResponse);
       break;
+
+    // case QromaCoreCommand_getFirmwareDetails_tag:
+    //   coreResponse->which_response = QromaCoreResponse_firmwareDetails_tag;
+    //   populateGetFirmwareDetailsResponse(&(coreResponse->response.firmwareDetails));
+    //   break;
 
     case QromaCoreCommand_restartQromaDevice_tag:
       QromaCommResponse ackResponse;
       ackResponse.which_response = QromaCommResponse_coreResponse_tag;
       ackResponse.response.coreResponse.which_response = QromaCoreResponse_restartAck_tag;
+
+      if (!command->command.restartQromaDevice.areYouSure) {
+        ackResponse.response.coreResponse.response.restartAck.youWerentSureSoWeDidnt = true;
+      }
   
       responseHandler->sendQromaCommResponse(&ackResponse, txFn);
       delay(100);
-      
-      ESP.restart();
+
+      if (command->command.restartQromaDevice.areYouSure) {
+        ESP.restart();
+      }
+
       break;
 
-    case QromaCoreCommand_getQromaCoreConfig_tag:
-      populateCoreConfigurationResponse(coreResponse);
-      break;
+    // case QromaCoreCommand_getQromaCoreConfig_tag:
+    //   qromaCommResponse->which_response = QromaCommResponse_coreResponse_tag;
+    //   populateCoreConfigurationResponse(coreResponse);
+    //   break;
 
     case QromaCoreCommand_setQromaCommSerialIoConfig_tag:
       if (command->command.setQromaCommSerialIoConfig.has_config) {
@@ -118,6 +102,7 @@ void QromaCoreCommandProcessor::handleQromaCoreCommand(QromaCoreCommand * comman
         logError("NO CONFIG VALUE PROVIDED FOR CORE COMMAND");
         logError(command->which_command);
       }
+      qromaCommResponse->which_response = QromaCommResponse_coreResponse_tag;
       populateCoreConfigurationResponse(coreResponse);
       break;
 
@@ -128,6 +113,7 @@ void QromaCoreCommandProcessor::handleQromaCoreCommand(QromaCoreCommand * comman
         logError("NO CONFIG VALUE PROVIDED FOR CORE COMMAND");
         logError(command->which_command);
       }
+      qromaCommResponse->which_response = QromaCommResponse_coreResponse_tag;
       populateCoreConfigurationResponse(coreResponse);
       break;
 
@@ -138,6 +124,7 @@ void QromaCoreCommandProcessor::handleQromaCoreCommand(QromaCoreCommand * comman
         logError("NO CONFIG VALUE PROVIDED FOR CORE COMMAND");
         logError(command->which_command);
       }
+      qromaCommResponse->which_response = QromaCommResponse_coreResponse_tag;
       populateCoreConfigurationResponse(coreResponse);
       break;
 
@@ -148,6 +135,7 @@ void QromaCoreCommandProcessor::handleQromaCoreCommand(QromaCoreCommand * comman
         logError("NO CONFIG VALUE PROVIDED FOR CORE COMMAND");
         logError(command->which_command);
       }
+      qromaCommResponse->which_response = QromaCommResponse_coreResponse_tag;
       populateCoreConfigurationResponse(coreResponse);
 
     default:
@@ -205,4 +193,70 @@ void QromaCoreCommandProcessor::handleSetQromaCoreManagementConfiguration(QromaC
     memcpy(&(refConfig.managementConfig), config, sizeof(refConfig.managementConfig));
   }
   getQromaApp()->applyQromaCoreConfig(&refConfig);
+}
+
+
+void QromaCoreCommandProcessor::handleQromaCoreNoArgCommand(QromaCoreNoArgCommands noArgCommand, QromaCommResponse * qromaCommResponse) {
+  QromaCoreResponse * coreResponse = &(qromaCommResponse->response.coreResponse);
+  
+  switch (noArgCommand) {
+    case QromaCoreNoArgCommands_Qc_Nac_GetQromaCoreConfig:
+      qromaCommResponse->which_response = QromaCommResponse_coreResponse_tag;
+      populateCoreConfigurationResponse(coreResponse);
+      break;
+
+    case QromaCoreNoArgCommands_Qc_Nac_GetQromaCoreFirmwareDetails:
+      qromaCommResponse->which_response = QromaCommResponse_coreResponse_tag;
+      coreResponse->which_response = QromaCoreResponse_firmwareDetails_tag;
+      populateGetFirmwareDetailsResponse(&(coreResponse->response.firmwareDetails));
+      break;
+
+    case QromaCoreNoArgCommands_Qc_Nac_DisableCoreHeartbeat:
+      updateQromaAppCoreConfig([](QromaCoreConfig * config) {
+        if (config->has_managementConfig && config->managementConfig.has_heartbeatConfiguration) {
+          config->managementConfig.heartbeatConfiguration.heartbeatType = HeartbeatType_HeartbeatType_None;
+        }
+      });
+
+      qromaCommResponse->which_response = QromaCommResponse_coreResponse_tag;
+      populateCoreConfigurationResponse(coreResponse);
+      break;
+
+    case QromaCoreNoArgCommands_Qc_Nac_EnableCoreHeartbeat:
+      updateQromaAppCoreConfig([](QromaCoreConfig * config) {
+        if (config->has_managementConfig && config->managementConfig.has_heartbeatConfiguration) {
+          config->managementConfig.heartbeatConfiguration.heartbeatType = HeartbeatType_HeartbeatType_Interval;
+        }
+      });
+
+      qromaCommResponse->which_response = QromaCommResponse_coreResponse_tag;
+      populateCoreConfigurationResponse(coreResponse);
+      break;
+
+    case QromaCoreNoArgCommands_Qc_Nac_DisableLogging:
+      updateQromaAppCoreConfig([](QromaCoreConfig * config) {
+        if (config->has_loggingConfig) {
+          config->loggingConfig.logLevel = Qroma_LogLevel_LogLevel_Nothing;
+        }
+      });
+
+      qromaCommResponse->which_response = QromaCommResponse_coreResponse_tag;
+      populateCoreConfigurationResponse(coreResponse);
+      break;
+
+    case QromaCoreNoArgCommands_Qc_Nac_EnableAllLogging:
+      updateQromaAppCoreConfig([](QromaCoreConfig * config) {
+        if (config->has_loggingConfig) {
+          config->loggingConfig.logLevel = Qroma_LogLevel_LogLevel_All;
+        }
+      });
+
+      qromaCommResponse->which_response = QromaCommResponse_coreResponse_tag;
+      populateCoreConfigurationResponse(coreResponse);
+      break;
+
+    default:
+      logError("UNRECOGNIZED CORE NO-ARG COMMAND");
+      logError(noArgCommand);
+  }
 }

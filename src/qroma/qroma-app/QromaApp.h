@@ -18,7 +18,9 @@ class QromaApp {
 
     QromaCoreConfig * getCoreConfigRef() { return &_qromaCoreConfig; }
     QromaCoreManagementConfiguration * getCoreManagementConfigRef();
+
     void configureQromaCore(QromaCoreConfigFn configFn);
+    void updateQromaCoreConfig(QromaCoreConfigFn configFn);
 
     void applyQromaCoreConfig(QromaCoreConfig * config);
     void populateQromaCoreConfig(QromaCoreConfig * config);
@@ -35,6 +37,8 @@ class QromaApp {
 
 QromaApp * getQromaApp();
 void setQromaApp(QromaApp * qromaApp);
+
+void updateQromaAppCoreConfig(QromaCoreConfigFn configFn);
 
 // void initQromaCoreConfig(QromaCoreConfig * config);
 
